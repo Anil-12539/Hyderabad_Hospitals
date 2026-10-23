@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hyderabad health directory</title>
+<style>
+  :root {
+    --bg:#F6F8FA; --panel:#FFFFFF; --ink:#14263A; --soft:#52627A; --line:#DCE3EA; --link:#1B5FD6;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#0F1822; --panel:#17232F; --ink:#E8EEF4; --soft:#9AAABB; --line:#2A3947; --link:#7FB0FF; }
+  }
+  :root[data-theme="dark"] { --bg:#0F1822; --panel:#17232F; --ink:#E8EEF4; --soft:#9AAABB; --line:#2A3947; --link:#7FB0FF; }
+  html { scroll-padding-top:env(safe-area-inset-top,0px); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; line-height:1.4; }
+  main { max-width:960px; margin:0 auto; padding:20px 16px 48px; }
+  h1 { margin:0 0 4px; font-size:1.6rem; letter-spacing:-.01em; }
+  .sub { margin:0 0 16px; color:var(--soft); font-size:.92rem; }
+  .bar { position:sticky; top:env(safe-area-inset-top,0px); background:var(--bg); padding:8px 0 10px; z-index:5; }
+  input[type=search] { width:100%; padding:11px 14px; font-size:1rem; border:1.5px solid var(--line); border-radius:10px; background:var(--panel); color:var(--ink); }
+  input:focus-visible, button:focus-visible, a:focus-visible { outline:3px solid var(--link); outline-offset:2px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .chip { padding:7px 12px; border-radius:99px; border:1.5px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; font-size:.88rem; display:flex; gap:7px; align-items:center; }
+  .chip i { width:10px; height:10px; border-radius:50%; background:var(--c); }
+  .chip[aria-pressed="true"] { border-color:var(--c); background:color-mix(in srgb,var(--c) 14%,var(--panel)); font-weight:700; }
+  .count { margin:10px 0 4px; color:var(--soft); font-size:.85rem; }
+  .lbl { margin:12px 0 0; font-size:.8rem; color:var(--soft); }
+  .areas { display:flex; flex-wrap:wrap; gap:8px; padding-top:6px; }
+  .areas .chip { --c:var(--link); border-radius:8px; }
+  .list { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px; border-left:5px solid var(--c); }
+  .card h2 { margin:0; font-size:1rem; }
+  .meta { margin:3px 0 0; color:var(--soft); font-size:.85rem; }
+  .row { margin-top:8px; display:flex; flex-wrap:wrap; gap:6px 16px; font-size:.9rem; }
+  .row a { color:var(--link); font-weight:700; text-decoration:none; }
+  .row a:hover { text-decoration:underline; }
+  .empty { padding:24px; text-align:center; color:var(--soft); }
+  .note { margin-top:22px; font-size:.8rem; color:var(--soft); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Hyderabad health directory</h1>
+  <p class="sub">98 hospitals, pharmacies, labs, blood banks and ambulance services from Google Maps. Tap Open in Google Maps to see a place on the map.</p>
+  <div class="bar">
+    <input id="q" type="search" placeholder="Search by name or area, for example Kukatpally" aria-label="Search places" autocomplete="off">
+    <p class="lbl">Area</p>
+    <div class="areas" id="areas" role="group" aria-label="Filter by area"></div>
+    <p class="lbl">Type</p>
+    <div class="chips" id="chips" role="group" aria-label="Filter by type" style="margin-top:6px"></div>
+  </div>
+  <div class="count" id="count" aria-live="polite"></div>
+  <ul class="list" id="list"></ul>
+  <p class="note">Hours and phone numbers are as listed on Google Maps. Call before travelling. In an emergency dial 108 for an ambulance. This is a sample of the city, not every healthcare place.</p>
+</main>
+<script>
+(function () {
+  "use strict";
+  var T = {
+    H: ["Hospitals", "#C62F2F"], G: ["Government hospitals", "#2563C9"], P: ["Pharmacies", "#16915F"],
+    L: ["Labs", "#C77800"], B: ["Blood banks", "#B0235E"], A: ["Ambulances", "#5F6B7A"], C: ["Clinics, eye and children’s care", "#7C4DCC"]
+  };
+  var D = [
+    ["Star Hospitals, Banjara Hills","H","Open 24 hours","+91 1800 102 7827",17.41508,78.44776,"ChIJedOsFByXyzsRmRQv6FS6CWg"],
+    ["Renova Century Hospitals, Banjara Hills","H","Open 24 hours","+91 40 2333 3333",17.40731,78.44473,"ChIJY48N5niXyzsR4FAt6B1NidQ"],
+    ["TX Hospitals, Banjara Hills","H","Open 24 hours","+91 91445 14459",17.40777,78.44466,"ChIJnc_Ad_6XyzsRra12TaQv6P4"],
+    ["CARE Outpatient Centre, Banjara Hills","H","Open 24 hours","+91 40 6810 6589",17.41426,78.44649,"ChIJTSCWqTCXyzsRZuV-k9fZY7M"],
+    ["CARE Hospitals, Banjara Hills","H","Open 24 hours","+91 40 6810 6589",17.41261,78.45024,"ChIJWfkf9S-XyzsRN2Yb1aN2UwU"],
+    ["Rainbow Children’s Hospital, Banjara Hills","C","Open 24 hours","+91 80 6530 9001",17.42495,78.43208,"ChIJr6UeI0KRyzsRqCl-_ogANiw"],
+    ["Yashoda Hospitals, Hitec City","H","Open 24 hours","+91 40 4567 4567",17.46231,78.38491,"ChIJqVt-932RyzsRoj3v3sUhcqQ"],
+    ["Medicover Hospitals, Hitech City","H","Open 24 hours","+91 40 6833 4455",17.44667,78.38013,"ChIJ1b_L7d2TyzsRcmghZhoAyVM"],
+    ["CARE Hospitals, Hitec City","H","Open 24 hours","+91 40 6810 6589",17.43054,78.37224,"ChIJEwkxe_CTyzsRacNKcJGoAVs"],
+    ["PACE Hospitals, Hitec City","H","Open 24 hours","+91 40 4848 6868",17.44691,78.38424,"ChIJozoJIGCRyzsRp0RU300kf-M"],
+    ["SIMS Sigma Hospitals, Madhapur","H","Open 24 hours","+91 88582 34345",17.44492,78.38542,"ChIJ_YXEGrmRyzsR2Oqm4GIz4Ro"],
+    ["KIMS Sunshine Hospitals, Begumpet","H","Open 24 hours","+91 40 4455 0000",17.44384,78.47183,"ChIJfzkOHxCayzsRNQIyTxhTJMc"],
+    ["Vivekananda Hospital, Begumpet","H","Open 24 hours","+91 72079 04418",17.43126,78.45544,"ChIJnULSBbqQyzsRdKt6AaRkAoA"],
+    ["Wellness Hospitals, Begumpet","H","Open 24 hours","+91 95595 51955",17.43793,78.45665,"ChIJf-aA_-qRyzsRG3p73nACftQ"],
+    ["Oxycare Multi Speciality Hospitals, Begumpet","H","Open 24 hours","+91 90002 07666",17.44339,78.47541,"ChIJvxSymv2RyzsRrMDbzIOpVHM"],
+    ["KIMS Hospitals, Secunderabad","H","Open 24 hours","+91 40 4488 5000",17.43722,78.48304,"ChIJnXfoTASayzsRKx1qMbKZ0OM"],
+    ["NextGen Hospitals, KPHB","H","Open 24 hours","+91 93914 23050",17.48919,78.39611,"ChIJ-122XG6RyzsRqfWtNHl6W4o"],
+    ["My Health Hospitals, Kukatpally","H","Open 24 hours","+91 91116 74111",17.49301,78.40207,"ChIJtwtGFuSRyzsRE42-2guzGGA"],
+    ["Sree Manju Hospitals, KPHB","H","Open 24 hours","+91 77779 32772",17.483,78.39265,"ChIJpcQ89hmRyzsRcmBmaWI7c1k"],
+    ["Prathima Hospitals, KPHB","H","Open 24 hours","+91 73373 36600",17.49695,78.39763,"ChIJR7pFuu2RyzsRrFzkTzEpUj0"],
+    ["Sankhya Hospitals, KPHB","H","Open 24 hours","+91 40 6704 4444",17.48396,78.39343,"ChIJB1J_o4-RyzsRoExJFeS9wXE"],
+    ["Lakshmi Health Care Hospital, Vanasthalipuram","H","Open 24 hours","+91 96180 90301",17.33206,78.57323,"ChIJjXmmxeShyzsRX5qWe5eGL3w"],
+    ["Pranahitha Hospitals, Dilsukhnagar","H","Open 24 hours","+91 80088 01192",17.36952,78.53041,"ChIJ4YvT1OmZyzsRDciCoqPw5SA"],
+    ["Prasidh Hospitals, LB Nagar","H","Open 24 hours","+91 82970 45678",17.33909,78.57195,"ChIJYxscMYafyzsROK17YrhfYA4"],
+    ["Himalaya Hospitals, LB Nagar","H","Open 24 hours","+91 78425 55108",17.34074,78.55854,"ChIJJSkrL4mZyzsRES_F7WKjbeM"],
+    ["Agastya Hospitals, LB Nagar","H","Open 24 hours","+91 40 6510 8108",17.33792,78.55014,"ChIJw24sRwCjyzsRWlEXBwUFh_s"],
+    ["Smt. Bhagwan Devi Hospital, Char Kaman","H","Open 24 hours","+91 40 2456 6490",17.36433,78.47333,"ChIJq6qqJoqXyzsRAEb3YLcZwbw"],
+    ["Indo-US Multi Speciality Hospital, Malakpet","H","Open 24 hours","+91 40 6901 9000",17.37272,78.50067,"ChIJU5b6WEiYyzsRYWLSPUmlDuM"],
+    ["HKC Hospital, Hyderabad Kidney Centre, Malakpet","H","Open 24 hours","+91 83097 71005",17.37163,78.50049,"ChIJa2Z9IUaYyzsRHkK3g6VPqzg"],
+    ["CARE Hospitals, Malakpet","H","Open 24 hours","+91 40 6810 6589",17.37696,78.49041,"ChIJA08S9C2YyzsRu3zI0LJRZ_4"],
+    ["Aster Prime Hospital, Ameerpet","H","Open 24 hours","+91 40 4959 4959",17.43762,78.44596,"ChIJKa_xGMWQyzsRmO9XzP-U5cw"],
+    ["Pristyn Care Zoi, Ameerpet","H","Open 24 hours","+91 80 6542 3647",17.43962,78.45059,"ChIJUy3QWYCRyzsRf5JuR7KXOqE"],
+    ["Wellness Hospitals, Ameerpet","H","Open 24 hours","+91 95595 51955",17.43653,78.45271,"ChIJRbGZC8mQyzsRqCD0ezog324"],
+    ["Medi Star Hospitals, Ameerpet","H","Open 24 hours","+91 92481 12284",17.43842,78.44256,"ChIJy6qOasWQyzsR95AmCGwwLSs"],
+    ["Apollo Spectra Hospitals, Ameerpet","H","Open 24 hours","+91 40 2378 2378",17.43766,78.45261,"ChIJybvx_7eQyzsRHmJan45kJHw"],
+    ["Sri Abhaya Hospitals, Uppal","H","Open 24 hours","+91 90595 55202",17.40088,78.56328,"ChIJlTMHbACZyzsRA9q01C3CL0k"],
+    ["Shree Pooja Hospital, Nacharam","H","Open 24 hours","+91 91000 12555",17.423,78.547,"ChIJ8XbuF-aZyzsRKMmHKCuC-7k"],
+    ["Siris Hospital, Habsiguda","H","10 AM to 9 PM (Sun to 1 PM)","+91 40 2717 2764",17.40974,78.54408,"ChIJT6UbPkCZyzsRLAKdQGENkYs"],
+    ["TX Hospitals, Uppal","H","Open 24 hours","+91 91445 14459",17.40235,78.56696,"ChIJz8A6KxyfyzsRHYrqF7OTICE"],
+    ["Shree Healthcare Multi Specialty Hospital, Uppal","H","Open 24 hours","+91 63093 53535",17.401,78.57966,"ChIJq8_8bbWfyzsRSWx6f0QTb08"],
+    ["Sree Manju Hospitals, Kondapur","H","Open 24 hours","+91 90101 52772",17.46933,78.36093,"ChIJAZJb0oWTyzsRq31Upn2lkHs"],
+    ["Zoi Hospitals, Attapur","H","Open 24 hours","+91 40 4720 1201",17.36298,78.42843,"ChIJm_n83UyWyzsROVosDlUPyoY"],
+    ["Sri Sri Holistic Hospital, Kondapur","H","Open 24 hours","+91 92402 12343",17.46496,78.3432,"ChIJ1bE7BfOTyzsRtTNSN4TxyLs"],
+    ["Mythri Hospital, Mehdipatnam","H","Open 24 hours","+91 79979 96030",17.38367,78.42925,"ChIJlbH5Bv6WyzsRRcvC2jqNJl0"],
+    ["Apollo Spectra Hospitals, Kondapur","H","Open 24 hours","+91 40 6914 6071",17.45969,78.36604,"ChIJd4DnIsmTyzsR0OYaOfPU738"],
+    ["District Hospital, King Koti","G","Open 24 hours","+91 80085 53878",17.39326,78.48248,"ChIJ11GMDNqZyzsR3_fmCfzQpe4"],
+    ["Nampally Government Hospital","G","Open 24 hours","",17.39227,78.46329,"ChIJAQAAcG6XyzsRnCjlEiUhlvM"],
+    ["Govt General and Chest Hospital","G","Open 24 hours","",17.44627,78.43614,"ChIJq0l5092QyzsRLjL3XoCAA0c"],
+    ["Gandhi Hospital, Musheerabad","G","Open 24 hours","",17.42281,78.5042,"ChIJY5KI-IyZyzsR_wcVyHslQiE"],
+    ["Govt Fever Hospital, Nallakunta","G","Open 24 hours","",17.39615,78.5025,"ChIJ0dcC2U-ZyzsRTuzO4JGeFvQ"],
+    ["Apollo Pharmacy, Banjara Hills Road 12","P","Open 24 hours","+91 79 4748 0043",17.40793,78.45009,"ChIJR-ylo2gvtDsRPLwNzoJRTQ8"],
+    ["Medicines & More, Banjara Hills","P","Open 24 hours","",17.41197,78.44995,"ChIJz3aETTiXyzsRKGLyNT9HT3g"],
+    ["Apollo Pharmacy, Anand Nagar","P","Open 24 hours","+91 79 4748 0042",17.41204,78.45375,"ChIJ_akfD3mYyzsR7Ad6uXfTGY0"],
+    ["Cloudnine Pharmacy, Banjara Hills","P","Open 24 hours","+91 99728 99728",17.42467,78.43316,"ChIJpdQh63CXyzsRAagQlMOf_nc"],
+    ["Ameerpet Drug Mart","P","Open 24 hours","",17.43095,78.4485,"ChIJO2CHCQCRyzsRK0OaRjumtqI"],
+    ["JANAGEN Pharmacy, Kutbiguda","P","Open 24 hours","+91 90690 76868",17.38881,78.48996,"ChIJCRyzE7SZyzsRb9rUkfmzseE"],
+    ["JANAGEN Pharmacy, Kachiguda","P","Open 24 hours","+91 90690 75858",17.3903,78.49645,"ChIJn4sY6XqZyzsRlZRJj92yq6c"],
+    ["Sri Padamavathi Pharmacy, Begumpet","P","Open 24 hours","",17.4465,78.47609,"ChIJc48wTQCbyzsRlUIQ8qD8H9w"],
+    ["JANAGEN Pharmacy, East Marredpally","P","Open 24 hours","+91 82473 98704",17.44884,78.50922,"ChIJu4L6GPCbyzsRdg6ZGje8EnA"],
+    ["Apollo Pharmacy, Kachiguda","P","Open 24 hours","+91 79 4748 0005",17.38974,78.49591,"ChIJ8dUqWFf6tjsRa5lPjOW9ar0"],
+    ["Medicare Pharmacy, Gachibowli","P","9 AM to 2 AM","+91 97039 26021",17.44042,78.36384,"ChIJlajFf7eTyzsRrpyOlZZoDzs"],
+    ["Apollo Pharmacy, Kothaguda","P","9 AM to 10 PM","+91 79 4748 0010",17.45989,78.36592,"ChIJM9KsnSjQ0TsR8npXZP07oNM"],
+    ["Aster Pharmacy, Kondapur","P","8 AM to 11 PM","+91 8071 177 997",17.46024,78.35137,"ChIJR9hdFICTyzsRIhqnAzYDlxg"],
+    ["Apollo Pharmacy, Masjid Banda","P","7 AM to 11 PM","+91 79 4281 3452",17.46643,78.33976,"ChIJSb4ByrWTyzsRu7FJBEy5whs"],
+    ["Apollo Pharmacy, Kondapur","P","7 AM to 11 PM","+91 79 4747 9526",17.46216,78.36688,"ChIJncd9bMuTyzsR5oj_pBq2bhw"],
+    ["Apollo Pharmacy, Kukatpally","P","Open 24 hours","+91 79 4281 3651",17.49203,78.39732,"ChIJt35MYBiP2TsRti6a6qg69Q0"],
+    ["JANAGEN Pharmacy, KPHB Street 4","P","Open 24 hours","+91 91548 19747",17.49223,78.39734,"ChIJkbGqkG-RyzsRZcWT_RuRoXs"],
+    ["Remedy Pharmacy and Clinic, KPHB","P","Open 24 hours","+91 97036 11911",17.4679,78.40084,"ChIJ3ZI7YSmRyzsR39OquOeu3c8"],
+    ["Wellness Pharmacy, KPHB","P","Open 24 hours","+91 81421 18150",17.49028,78.40118,"ChIJweGkOXSRyzsRJfoTovoEqmc"],
+    ["Shree Siddhi Generic Medical, Kukatpally","P","Mostly 24 hours","+91 90302 58055",17.49066,78.41376,"ChIJhTL2ny-RyzsRL23ZRhdVPm0"],
+    ["JANAGEN Pharmacy, Dilsukhnagar","P","Open 24 hours","+91 90001 39775",17.36323,78.5262,"ChIJ9SK5SXmZyzsRHFOdkt4QQRU"],
+    ["Venki Pharmacy, Uppal","P","Open 24 hours","+91 79951 85011",17.39928,78.56306,"ChIJPxmGbACZyzsRnlU_H2WWENo"],
+    ["Med Mart Pharmacy, Uppal","P","Open 24 hours","",17.40182,78.56237,"ChIJe1G3OwCZyzsRZc7ulGE_RFk"],
+    ["Sathwika Pharmacy, Uppal","P","Open 24 hours","+91 94418 71706",17.39554,78.56658,"ChIJl1_1QnWfyzsR0jaGPMRO8os"],
+    ["JANAGEN Pharmacy, Boduppal","P","Open 24 hours","+91 99892 48080",17.41582,78.58488,"ChIJdbko2oOfyzsReyjEn8lLBro"],
+    ["Kings Medical, Mehdipatnam","P","Open 24 hours","+91 74164 23873",17.39396,78.44223,"ChIJe6eT_S2XyzsRxmGzvR6JZNo"],
+    ["Medzo Pharmacy, Attapur","P","Open 24 hours","+91 88977 62921",17.38266,78.43053,"ChIJ6d8TQN2XyzsR7emJk2GFBQw"],
+    ["M. G. Pharma Planet, Old Malakpet","P","Open 24 hours","+91 91603 47907",17.38136,78.50125,"ChIJY-IJl_GZyzsRuUEgi3bjmlc"],
+    ["Apollo Pharmacy, Malakpet","P","Open 24 hours","+91 79 4748 0004",17.37369,78.50068,"ChIJu_PY2jaYyzsRoNlGNvQ1IZg"],
+    ["Orignal Plus Pharmacy, Moghalpura","P","Open 24 hours","",17.35692,78.47503,"ChIJqXMJV_WXyzsRUoJyFVITtYs"],
+    ["AmPath Lab, Kachiguda","L","Open 24 hours","+91 89775 34365",17.38978,78.49441,"ChIJUVvMPbGZyzsRqETrWMGkxvM"],
+    ["Vijaya Diagnostic Centre, Himayatnagar","L","6:30 AM to 11 PM","+91 92402 22222",17.40416,78.47988,"ChIJ2bRcF-eZyzsRaK9-jGHoSZc"],
+    ["Vijaya Diagnostic Centre, Chaderghat","L","7 AM to 9 PM","+91 92402 22222",17.37716,78.49194,"ChIJB4CNeWWZyzsRhnvCBJVP7DI"],
+    ["Vijaya Diagnostic Centre, Punjagutta","L","7 AM to 10 PM","+91 92402 22222",17.42248,78.45464,"ChIJ3WmBmiyXyzsRe_L8pI__IAE"],
+    ["Sri Rama Diagnostic Center, Koti","L","Open 24 hours","+91 87121 38645",17.38532,78.48698,"ChIJQ2x-dNKZyzsRAbXxOo5mhcM"],
+    ["PV Blood Centre, Himayatnagar","B","Open 24 hours","+91 93476 92277",17.39868,78.485,"ChIJGbEfwmWZyzsRzoDiCQcZgAY"],
+    ["Sanjeevini Blood Bank, Kavadiguda","B","Open 24 hours","+91 40 2766 7500",17.40794,78.49613,"ChIJxRJwXpWZyzsR8e1cXjaxLZs"],
+    ["Hyderabad Blood Bank, New Malakpet","B","Open 24 hours","+91 83415 55225",17.37157,78.50018,"ChIJ4wR1MheZyzsR6z5786hhcKo"],
+    ["Sangam Blood Centre, LB Nagar","B","Open 24 hours","+91 85001 08111",17.34313,78.55436,"ChIJUVNEgRmZyzsRvSfr7NNCHJU"],
+    ["Yashoda Blood Bank, Malakpet","B","Open 24 hours","+91 40 4567 4567",17.37641,78.49492,"ChIJP8ojr0mYyzsRJX4u7iyuFxk"],
+    ["Ambulance Service, Banjara Hills","A","Open 24 hours","+91 99485 82750",17.42451,78.45668,"ChIJo4oyhaaRyzsRKjXBYfFwZvA"],
+    ["Neeraj Ambulance Service, Punjagutta","A","Open 24 hours","+91 96761 24108",17.41943,78.45492,"ChIJSZTy_8-XyzsRwd0zsEseXo4"],
+    ["SK Ambulance Services, Karwan","A","Open 24 hours","+91 73301 08108",17.36499,78.45667,"ChIJgSFl4JaXyzsRg0sy40nDlF0"],
+    ["KPK Ambulance Services, Lothukunta","A","Open 24 hours","",17.49407,78.51336,"ChIJhVdPocibyzsRzh2bk3Pdp-A"],
+    ["Sri Sai Ambulance Services, Kavadiguda","A","Open 24 hours","+91 95424 24242",17.41995,78.48963,"ChIJczG6A_GZyzsR_CrBleqv3p8"],
+    ["Child Care Clinic and Roshni Eye Hospital","C","9:30 AM to 6 PM, closed Sun","+91 40 2446 8938",17.34504,78.46457,"ChIJv-nCp_qXyzsRVkm8OKxiEFs"],
+    ["Netra Eye & Multi Specialty Hospital","C","Closed Sun","",17.4121,78.45345,"ChIJA6kZTBWQyzsRhb3WEe06eEo"],
+    ["K.K Eye & Child Health Care, Narsingi","C","5:30 to 8:30 PM, closed Sun","+91 86887 46479",17.39519,78.3534,"ChIJ7_dxVX6VyzsRwCWgTwa5BLo"],
+    ["Dr Aloka’s Eye Care, Kukatpally","C","9 AM to 6 PM, closed Sun","+91 74164 27503",17.48565,78.38782,"ChIJgWktKqOXyzsRryWguPnW6y4"]
+  ];
+  var active = {}, query = "", area = "All areas";
+  var AREAS = ["Banjara Hills", "Hitec City, Gachibowli & Kondapur", "Kukatpally & KPHB", "Secunderabad & Begumpet", "Ameerpet & Punjagutta", "Koti, Himayatnagar & Nampally", "Malakpet & Old City", "Mehdipatnam & Attapur", "LB Nagar & Dilsukhnagar", "Uppal & Habsiguda"];
+  var RULES = [
+    [/Vivekananda|Chest Hospital|Ameerpet|Punjagutta/, 4],
+    [/Banjara|Anand Nagar|Cloudnine|Renova|Rainbow|Netra/, 0],
+    [/Hitec|Hitech|Madhapur|Gachibowli|Kondapur|Kothaguda|Masjid Banda|Narsingi|Sigma/, 1],
+    [/Kukatpally|KPHB|Remedy/, 2],
+    [/Begumpet|Secunderabad|Marredpally|Lothukunta/, 3],
+    [/Kachiguda|Kutbiguda|Himayatnagar|Nampally|Kavadiguda|Koti|Nallakunta|Gandhi|AmPath/, 5],
+    [/Malakpet|Chaderghat|Char Kaman|Moghalpura|Karwan|Roshni/, 6],
+    [/Mehdipatnam|Attapur|Medzo|Kings Medical/, 7],
+    [/LB Nagar|Vanasthalipuram|Dilsukhnagar|Sangam/, 8],
+    [/Uppal|Nacharam|Habsiguda|Boduppal/, 9]
+  ];
+  function areaOf(d) {
+    for (var i = 0; i < RULES.length; i++) { if (RULES[i][0].test(d[0])) return AREAS[RULES[i][1]]; }
+    return "Other";
+  }
+  function areaChips() {
+    var box = document.getElementById("areas");
+    var names = ["All areas"].concat(AREAS);
+    names.forEach(function (name) {
+      var n = name === "All areas" ? D.length : D.filter(function (d) { return areaOf(d) === name; }).length;
+      var b = document.createElement("button");
+      b.className = "chip";
+      b.setAttribute("aria-pressed", name === area ? "true" : "false");
+      b.textContent = name + " (" + n + ")";
+      b.addEventListener("click", function () {
+        area = name;
+        var all = box.children;
+        for (var i = 0; i < all.length; i++) all[i].setAttribute("aria-pressed", all[i] === b ? "true" : "false");
+        render();
+      });
+      box.appendChild(b);
+    });
+  }
+  Object.keys(T).forEach(function (k) { active[k] = true; });
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]; }); }
+
+  function chips() {
+    var box = document.getElementById("chips");
+    Object.keys(T).forEach(function (k) {
+      var n = D.filter(function (d) { return d[1] === k; }).length;
+      var b = document.createElement("button");
+      b.className = "chip"; b.style.setProperty("--c", T[k][1]);
+      b.setAttribute("aria-pressed", "true");
+      b.innerHTML = "<i></i>" + T[k][0] + " (" + n + ")";
+      b.addEventListener("click", function () {
+        active[k] = !active[k];
+        b.setAttribute("aria-pressed", active[k] ? "true" : "false");
+        render();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function render() {
+    var rows = D.filter(function (d) {
+      return active[d[1]] && (area === "All areas" || areaOf(d) === area) && (!query || (d[0] + " " + T[d[1]][0]).toLowerCase().indexOf(query) > -1);
+    });
+    document.getElementById("count").textContent = rows.length + " of " + D.length + " places";
+    var ul = document.getElementById("list");
+    if (!rows.length) { ul.innerHTML = "<li class=\"empty\">No places match. Clear the search or turn on more types.</li>"; return; }
+    ul.innerHTML = rows.map(function (d) {
+      var tel = d[3] ? "<a href=\"tel:" + esc(d[3].replace(/[^\d+]/g, "")) + "\">" + esc(d[3]) + "</a>" : "";
+      return "<li class=\"card\" style=\"--c:" + T[d[1]][1] + "\"><h2>" + esc(d[0]) + "</h2>" +
+        "<p class=\"meta\">" + esc(T[d[1]][0]) + " · " + esc(d[2]) + "</p>" +
+        "<div class=\"row\"><a href=\"https://www.google.com/maps/place/?q=place_id:" + d[6] + "\" target=\"_blank\" rel=\"noopener\">Open in Google Maps</a>" +
+        "<a href=\"https://www.google.com/maps/dir/?api=1&destination=" + d[4] + "," + d[5] + "\" target=\"_blank\" rel=\"noopener\">Directions</a>" + tel + "</div></li>";
+    }).join("");
+  }
+
+  document.getElementById("q").addEventListener("input", function (e) { query = e.target.value.trim().toLowerCase(); render(); });
+  chips(); areaChips(); render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hyderabad health map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root {
+    --ink: #14263A;
+    --ink-soft: #52627A;
+    --paper: #F6F8FA;
+    --panel: #FFFFFF;
+    --line: #DCE3EA;
+    --accent: #14263A;
+    --focus: #1B6EF3;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: 390px 1fr;
+    overflow: hidden;
+  }
+  button, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  .panel {
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    display: flex; flex-direction: column;
+    min-height: 0; z-index: 2;
+  }
+  .head { padding: 20px 20px 12px; }
+  h1 { margin: 0; font-size: 1.55rem; line-height: 1.15; letter-spacing: -0.01em; }
+  .sub { margin: 6px 0 0; color: var(--ink-soft); font-size: 0.9rem; }
+
+  .search { padding: 0 20px 12px; }
+  .search input {
+    width: 100%; padding: 11px 14px; border: 1.5px solid var(--line);
+    border-radius: 10px; background: var(--paper); font-size: 1rem;
+  }
+  .search input:focus { border-color: var(--focus); outline: none; box-shadow: 0 0 0 3px rgba(27,110,243,.18); }
+
+  .chips { padding: 0 20px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .chip {
+    display: flex; align-items: center; gap: 8px; text-align: left;
+    padding: 8px 10px; border-radius: 10px; cursor: pointer;
+    border: 1.5px solid var(--line); background: #fff;
+    font-size: 0.88rem; line-height: 1.2;
+  }
+  .chip .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; background: var(--c); }
+  .chip .n { margin-left: auto; color: var(--ink-soft); font-variant-numeric: tabular-nums; font-size: 0.82rem; }
+  .chip[aria-pressed="true"] { border-color: var(--c); background: color-mix(in srgb, var(--c) 9%, white); }
+  .chip[aria-pressed="false"] { opacity: .55; }
+  .chip[aria-pressed="false"] .dot { background: transparent; box-shadow: inset 0 0 0 2px var(--c); }
+  .chip.wide { grid-column: 1 / -1; }
+
+  .actions { padding: 4px 20px 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    padding: 8px 12px; border-radius: 9px; border: 1.5px solid var(--ink);
+    background: var(--ink); color: #fff; cursor: pointer; font-size: 0.88rem;
+  }
+  .btn.ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+  .btn:hover { filter: brightness(1.12); }
+
+  .listhead {
+    padding: 10px 20px; border-top: 1px solid var(--line);
+    font-size: 0.85rem; color: var(--ink-soft);
+    display: flex; justify-content: space-between;
+  }
+  .list { flex: 1; overflow-y: auto; min-height: 0; margin: 0; padding: 0; list-style: none; }
+  .item {
+    display: block; width: 100%; text-align: left; background: none; border: 0;
+    border-top: 1px solid var(--line); padding: 11px 20px; cursor: pointer;
+  }
+  .item:hover { background: var(--paper); }
+  .item .t { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; }
+  .item .t i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+  .item .m { margin-top: 2px; padding-left: 18px; color: var(--ink-soft); font-size: 0.82rem; }
+  .badge {
+    margin-left: auto; font-size: 0.7rem; font-weight: 700; padding: 2px 7px;
+    border-radius: 99px; background: #FDE8E8; color: #9B1C1C; white-space: nowrap;
+  }
+  .empty { padding: 28px 20px; color: var(--ink-soft); font-size: 0.92rem; }
+
+  .foot { padding: 10px 20px; border-top: 1px solid var(--line); font-size: 0.75rem; color: var(--ink-soft); }
+
+  #map { height: 100%; width: 100%; background: #E9EEF2; }
+  .mapwrap { position: relative; min-height: 0; }
+
+  .status {
+    position: absolute; z-index: 1000; left: 50%; top: 16px; transform: translateX(-50%);
+    background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 99px;
+    font-size: 0.9rem; box-shadow: 0 6px 20px rgba(20,38,58,.3); max-width: 90%;
+    display: flex; gap: 10px; align-items: center;
+  }
+  .status[hidden] { display: none; }
+  .status.err { background: #9B1C1C; }
+  .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; animation: sp 0.8s linear infinite; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+
+  .mc {
+    background: var(--ink); color: #fff; border-radius: 50%;
+    display: grid; place-items: center; font-weight: 700; font-size: 12px;
+    border: 3px solid rgba(255,255,255,.85); box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+
+  .pop h3 { margin: 0 0 4px; font-size: 1rem; }
+  .pop .ty { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 6px; }
+  .pop .ty i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+  .pop p { margin: 3px 0; font-size: 0.85rem; }
+  .pop a { color: var(--focus); }
+  .pop .go { display: flex; gap: 12px; margin-top: 8px; font-weight: 700; }
+  .leaflet-popup-content { margin: 14px 16px; min-width: 210px; }
+  .leaflet-container { font-family: inherit; }
+
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; grid-template-rows: 50vh 1fr; }
+    .mapwrap { order: 1; }
+    .panel { order: 2; border-right: 0; border-top: 1px solid var(--line); }
+    .head { padding: 12px 16px 6px; }
+    h1 { font-size: 1.2rem; }
+    .sub { display: none; }
+    .search, .chips, .actions { padding-left: 16px; padding-right: 16px; }
+    .chips { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<aside class="panel">
+  <div class="head">
+    <h1>Hyderabad health map</h1>
+    <p class="sub" id="sub">Hospitals, clinics, pharmacies, labs and more across the city.</p>
+  </div>
+  <div class="search">
+    <input id="q" type="search" placeholder="Search by name, area or speciality" aria-label="Search places" autocomplete="off">
+  </div>
+  <div class="chips" id="chips" role="group" aria-label="Filter by type"></div>
+  <div class="actions">
+    <button class="btn" id="locate">Find near me</button>
+    <button class="btn ghost" id="all">Show all types</button>
+    <button class="btn ghost" id="refresh">Refresh data</button>
+  </div>
+  <div class="listhead"><span id="inview">Loading…</span><span>Nearest to map centre</span></div>
+  <ul class="list" id="list"></ul>
+  <div class="foot">Data © OpenStreetMap contributors. Small clinics and pharmacies may be missing or out of date; check by phone before travelling in an emergency (dial 108 for an ambulance).</div>
+</aside>
+
+<main class="mapwrap">
+  <div id="map" aria-label="Map of healthcare places in Hyderabad"></div>
+  <div class="status" id="status" role="status"><span class="spin"></span><span id="statusText">Loading healthcare places from OpenStreetMap…</span></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // Greater Hyderabad bounding box: south, west, north, east
+  var BBOX = "17.15,78.18,17.70,78.75";
+  var ENDPOINTS = [
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter",
+    "https://maps.mail.ru/osm/tools/overpass/api/interpreter"
+  ];
+  var CACHE_KEY = "hyd-health-v1";
+  var CACHE_TTL = 7 * 24 * 3600 * 1000;
+
+  var CATS = {
+    hospital: { label: "Hospitals", one: "Hospital", color: "#C62F2F", r: 9 },
+    clinic:   { label: "Clinics & doctors", one: "Clinic", color: "#2563C9", r: 6 },
+    pharmacy: { label: "Pharmacies", one: "Pharmacy", color: "#16915F", r: 6 },
+    dentist:  { label: "Dentists", one: "Dentist", color: "#7C4DCC", r: 6 },
+    lab:      { label: "Labs & diagnostics", one: "Lab", color: "#C77800", r: 6 },
+    blood:    { label: "Blood banks", one: "Blood bank", color: "#B0235E", r: 7 },
+    other:    { label: "Other care", one: "Health service", color: "#5F6B7A", r: 5 }
+  };
+  var ORDER = ["hospital", "clinic", "pharmacy", "dentist", "lab", "blood", "other"];
+
+  var places = [];
+  var active = {};
+  ORDER.forEach(function (k) { active[k] = true; });
+  var emergencyOnly = false;
+  var query = "";
+
+  // ---------- map ----------
+  var map = L.map("map", { zoomControl: true, preferCanvas: true }).setView([17.385, 78.4867], 11);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    maxZoom: 19,
+    subdomains: "abcd",
+    attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
+  }).addTo(map);
+
+  var cluster = L.markerClusterGroup({
+    chunkedLoading: true,
+    showCoverageOnHover: false,
+    maxClusterRadius: 48,
+    disableClusteringAtZoom: 17,
+    iconCreateFunction: function (c) {
+      var n = c.getChildCount();
+      var s = n < 100 ? 34 : n < 1000 ? 42 : 50;
+      return L.divIcon({ html: "<div class=\"mc\" style=\"width:" + s + "px;height:" + s + "px\">" + n + "</div>", className: "", iconSize: [s, s] });
+    }
+  });
+  map.addLayer(cluster);
+
+  // ---------- helpers ----------
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function setStatus(msg, opts) {
+    var el = $("status");
+    if (!msg) { el.hidden = true; return; }
+    el.hidden = false;
+    el.className = "status" + (opts && opts.err ? " err" : "");
+    el.querySelector(".spin").style.display = opts && opts.err ? "none" : "";
+    $("statusText").textContent = msg;
+  }
+
+  function classify(t) {
+    var a = t.amenity, h = t.healthcare, sp = t["healthcare:speciality"] || "";
+    if (a === "hospital" || h === "hospital") return "hospital";
+    if (a === "pharmacy" || h === "pharmacy") return "pharmacy";
+    if (a === "dentist" || h === "dentist") return "dentist";
+    if (h === "laboratory" || a === "laboratory" || sp.indexOf("diagnostic") > -1) return "lab";
+    if (h === "blood_donation" || h === "blood_bank" || a === "blood_donation") return "blood";
+    if (a === "clinic" || a === "doctors" || h === "clinic" || h === "doctor" || h === "centre") return "clinic";
+    return "other";
+  }
+
+  function toPlace(el) {
+    var t = el.tags || {};
+    var lat = el.lat != null ? el.lat : (el.center && el.center.lat);
+    var lon = el.lon != null ? el.lon : (el.center && el.center.lon);
+    if (lat == null || lon == null) return null;
+    var cat = classify(t);
+    var addr = t["addr:full"] || [t["addr:housenumber"], t["addr:street"], t["addr:suburb"] || t["addr:neighbourhood"], t["addr:city"], t["addr:postcode"]].filter(Boolean).join(", ");
+    var area = t["addr:suburb"] || t["addr:neighbourhood"] || t["addr:street"] || "";
+    var hours = t.opening_hours || "";
+    return {
+      id: el.type + el.id,
+      lat: lat, lon: lon, cat: cat,
+      name: t.name || t["name:en"] || t.operator || (CATS[cat].one + " (unnamed)"),
+      addr: addr, area: area,
+      phone: t.phone || t["contact:phone"] || "",
+      hours: hours,
+      web: t.website || t["contact:website"] || "",
+      spec: (t["healthcare:speciality"] || "").replace(/;/g, ", ").replace(/_/g, " "),
+      emerg: t.emergency === "yes" || hours === "24/7",
+      marker: null
+    };
+  }
+
+  function popupHtml(p) {
+    var c = CATS[p.cat];
+    var h = "<div class=\"pop\" style=\"--c:" + c.color + "\"><h3>" + esc(p.name) + "</h3>";
+    h += "<div class=\"ty\"><i></i>" + esc(c.one) + (p.spec ? " · " + esc(p.spec) : "") + (p.emerg ? " · Emergency / 24×7" : "") + "</div>";
+    if (p.addr) h += "<p>" + esc(p.addr) + "</p>";
+    if (p.hours) h += "<p><b>Hours:</b> " + esc(p.hours) + "</p>";
+    if (p.phone) {
+      var tel = String(p.phone).split(";")[0].replace(/[^\d+]/g, "");
+      h += "<p><b>Phone:</b> <a href=\"tel:" + esc(tel) + "\">" + esc(p.phone) + "</a></p>";
+    }
+    if (/^https?:\/\//i.test(p.web)) h += "<p><a href=\"" + esc(p.web) + "\" target=\"_blank\" rel=\"noopener\">Website</a></p>";
+    var q = encodeURIComponent(p.name + " " + p.lat + "," + p.lon);
+    h += "<div class=\"go\"><a href=\"https://www.google.com/maps/dir/?api=1&destination=" + p.lat + "," + p.lon + "\" target=\"_blank\" rel=\"noopener\">Directions</a>" +
+         "<a href=\"https://www.google.com/maps/search/?api=1&query=" + q + "\" target=\"_blank\" rel=\"noopener\">Open in Google Maps</a></div></div>";
+    return h;
+  }
+
+  function makeMarker(p) {
+    var c = CATS[p.cat];
+    var m = L.circleMarker([p.lat, p.lon], {
+      radius: c.r, color: "#fff", weight: 1.5, fillColor: c.color, fillOpacity: 0.95
+    });
+    m.bindPopup(function () { return popupHtml(p); }, { maxWidth: 300 });
+    m.bindTooltip(p.name, { direction: "top", offset: [0, -4] });
+    return m;
+  }
+
+  function passes(p) {
+    if (!active[p.cat]) return false;
+    if (emergencyOnly && !p.emerg) return false;
+    if (query) {
+      var hay = (p.name + " " + p.addr + " " + p.spec + " " + CATS[p.cat].one).toLowerCase();
+      if (hay.indexOf(query) === -1) return false;
+    }
+    return true;
+  }
+
+  // ---------- render ----------
+  var visible = [];
+  function applyFilters() {
+    visible = places.filter(passes);
+    cluster.clearLayers();
+    cluster.addLayers(visible.map(function (p) { return p.marker || (p.marker = makeMarker(p)); }));
+    updateList();
+  }
+
+  function distSq(p, c) { var dx = p.lat - c.lat, dy = (p.lon - c.lng) * 0.96; return dx * dx + dy * dy; }
+
+  function updateList() {
+    var b = map.getBounds(), c = map.getCenter();
+    var inView = visible.filter(function (p) { return b.contains([p.lat, p.lon]); });
+    inView.sort(function (a, z) {
+      return distSq(a, c) - distSq(z, c);
+    });
+    $("inview").textContent = inView.length.toLocaleString() + " in view" + (inView.length > 40 ? " (showing 40)" : "");
+    var ul = $("list");
+    ul.innerHTML = "";
+    if (!inView.length) {
+      ul.innerHTML = "<li class=\"empty\">" + (places.length ? "Nothing matches in this part of the map. Zoom out or show more types." : "Waiting for data…") + "</li>";
+      return;
+    }
+    var frag = document.createDocumentFragment();
+    inView.slice(0, 40).forEach(function (p) {
+      var li = document.createElement("li");
+      var btn = document.createElement("button");
+      btn.className = "item";
+      btn.style.setProperty("--c", CATS[p.cat].color);
+      btn.innerHTML = "<div class=\"t\"><i></i><span>" + esc(p.name) + "</span>" + (p.emerg ? "<span class=\"badge\">24×7</span>" : "") + "</div>" +
+        "<div class=\"m\">" + esc(CATS[p.cat].one) + (p.area ? " · " + esc(p.area) : "") + "</div>";
+      btn.addEventListener("click", function () {
+        var m = p.marker || (p.marker = makeMarker(p));
+        map.setView([p.lat, p.lon], Math.max(map.getZoom(), 16));
+        cluster.zoomToShowLayer(m, function () { m.openPopup(); });
+      });
+      li.appendChild(btn);
+      frag.appendChild(li);
+    });
+    ul.appendChild(frag);
+  }
+
+  function buildChips() {
+    var counts = {};
+    places.forEach(function (p) { counts[p.cat] = (counts[p.cat] || 0) + 1; });
+    var box = $("chips");
+    box.innerHTML = "";
+    ORDER.forEach(function (k) {
+      var b = document.createElement("button");
+      b.className = "chip";
+      b.style.setProperty("--c", CATS[k].color);
+      b.setAttribute("aria-pressed", active[k] ? "true" : "false");
+      b.innerHTML = "<span class=\"dot\"></span><span>" + CATS[k].label + "</span><span class=\"n\">" + (counts[k] || 0).toLocaleString() + "</span>";
+      b.addEventListener("click", function () {
+        active[k] = !active[k];
+        b.setAttribute("aria-pressed", active[k] ? "true" : "false");
+        applyFilters();
+      });
+      box.appendChild(b);
+    });
+    var e = document.createElement("button");
+    e.className = "chip wide";
+    e.style.setProperty("--c", "#9B1C1C");
+    e.setAttribute("aria-pressed", emergencyOnly ? "true" : "false");
+    e.innerHTML = "<span class=\"dot\"></span><span>Only emergency / open 24×7</span>";
+    e.addEventListener("click", function () {
+      emergencyOnly = !emergencyOnly;
+      e.setAttribute("aria-pressed", emergencyOnly ? "true" : "false");
+      applyFilters();
+    });
+    // the emergency chip should read as "off" by default without looking disabled
+    e.style.opacity = "1";
+    box.appendChild(e);
+  }
+
+  // ---------- data ----------
+  function idb() {
+    return new Promise(function (res, rej) {
+      var r = indexedDB.open("hyd-health", 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore("kv"); };
+      r.onsuccess = function () { res(r.result); };
+      r.onerror = function () { rej(r.error); };
+    });
+  }
+  function cacheGet() {
+    return idb().then(function (db) {
+      return new Promise(function (res) {
+        var q = db.transaction("kv").objectStore("kv").get(CACHE_KEY);
+        q.onsuccess = function () { res(q.result || null); };
+        q.onerror = function () { res(null); };
+      });
+    }).catch(function () { return null; });
+  }
+  function cacheSet(val) {
+    return idb().then(function (db) {
+      db.transaction("kv", "readwrite").objectStore("kv").put(val, CACHE_KEY);
+    }).catch(function () {});
+  }
+
+  var QUERY = "[out:json][timeout:120][maxsize:268435456];(" +
+    "nwr[\"amenity\"~\"^(hospital|clinic|doctors|dentist|pharmacy|blood_donation)$\"](" + BBOX + ");" +
+    "nwr[\"healthcare\"](" + BBOX + ");" +
+    ");out center tags;";
+
+  function fetchFrom(i) {
+    if (i >= ENDPOINTS.length) return Promise.reject(new Error("All servers busy"));
+    setStatus("Loading healthcare places from OpenStreetMap… (server " + (i + 1) + " of " + ENDPOINTS.length + ")");
+    var ctl = new AbortController();
+    var timer = setTimeout(function () { ctl.abort(); }, 130000);
+    return fetch(ENDPOINTS[i], {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "data=" + encodeURIComponent(QUERY),
+      signal: ctl.signal
+    }).then(function (r) {
+      clearTimeout(timer);
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (j) {
+      if (!j.elements || !j.elements.length) throw new Error("Empty result");
+      return j.elements;
+    }).catch(function () {
+      clearTimeout(timer);
+      return fetchFrom(i + 1);
+    });
+  }
+
+  function ingest(elements) {
+    var seen = {};
+    places = [];
+    elements.forEach(function (el) {
+      var p = toPlace(el);
+      if (p && !seen[p.id]) { seen[p.id] = 1; places.push(p); }
+    });
+    $("sub").textContent = places.length.toLocaleString() + " places mapped across Greater Hyderabad.";
+    buildChips();
+    applyFilters();
+  }
+
+  function load(force) {
+    setStatus("Loading healthcare places from OpenStreetMap…");
+    var start = force ? Promise.resolve(null) : cacheGet();
+    start.then(function (cached) {
+      if (cached && Date.now() - cached.t < CACHE_TTL) {
+        ingest(cached.data);
+        setStatus("");
+        return;
+      }
+      return fetchFrom(0).then(function (els) {
+        ingest(els);
+        cacheSet({ t: Date.now(), data: els });
+        setStatus("");
+      }).catch(function () {
+        if (cached) { ingest(cached.data); setStatus("Showing saved data (couldn’t reach the server).", { err: true }); setTimeout(function () { setStatus(""); }, 5000); }
+        else setStatus("Couldn’t load map data. Check your internet connection and press Refresh data.", { err: true });
+      });
+    });
+  }
+
+  // ---------- events ----------
+  var t;
+  $("q").addEventListener("input", function (e) {
+    clearTimeout(t);
+    var v = e.target.value.trim().toLowerCase();
+    t = setTimeout(function () { query = v; applyFilters(); }, 200);
+  });
+  $("all").addEventListener("click", function () {
+    ORDER.forEach(function (k) { active[k] = true; });
+    emergencyOnly = false;
+    buildChips();
+    applyFilters();
+  });
+  $("refresh").addEventListener("click", function () { load(true); });
+  $("locate").addEventListener("click", function () {
+    setStatus("Finding your location…");
+    map.locate({ setView: true, maxZoom: 15, enableHighAccuracy: true });
+  });
+  var me;
+  map.on("locationfound", function (e) {
+    setStatus("");
+    if (me) map.removeLayer(me);
+    me = L.circleMarker(e.latlng, { radius: 9, color: "#fff", weight: 3, fillColor: "#1B6EF3", fillOpacity: 1 }).addTo(map).bindTooltip("You are here");
+  });
+  map.on("locationerror", function () {
+    setStatus("Couldn’t get your location. Allow location access in your browser and try again.", { err: true });
+    setTimeout(function () { setStatus(""); }, 5000);
+  });
+  var mv;
+  map.on("moveend", function () { clearTimeout(mv); mv = setTimeout(updateList, 120); });
+
+  buildChips();
+  load(false);
+})();
+</script>
+</body>
+</html>

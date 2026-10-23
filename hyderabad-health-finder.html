@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hyderabad Health Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F3F7F8; --card:#FFFFFF; --ink:#0E2A33; --soft:#587079; --line:#DCE6E9; --brand:#0E7C86; --brand-ink:#FFFFFF; --mark:#FFF1BF;
+    --gov:#2563C9; --pvt:#0F8A6B; --cln:#C2670A; --pha:#3C8D0D; --bld:#C0213F; --ivc:#7A3FC0; --phy:#0B7F8C; --nrs:#A33E8F; --lab:#4E5BD9;
+    --shadow:0 12px 32px rgba(8,80,90,.13);
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#0A1418; --card:#12222A; --ink:#E6F1F3; --soft:#94AAB1; --line:#223A42; --brand:#3CC3CF; --brand-ink:#06242A; --mark:#4A4116;
+      --gov:#6FA3FF; --pvt:#3FD0A8; --cln:#F0A04B; --pha:#7FD14B; --bld:#FF6B85; --ivc:#B58CFF; --phy:#4FD0DB; --nrs:#E37FCB; --lab:#8E9BFF;
+      --shadow:0 12px 32px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#0A1418; --card:#12222A; --ink:#E6F1F3; --soft:#94AAB1; --line:#223A42; --brand:#3CC3CF; --brand-ink:#06242A; --mark:#4A4116;
+    --gov:#6FA3FF; --pvt:#3FD0A8; --cln:#F0A04B; --pha:#7FD14B; --bld:#FF6B85; --ivc:#B58CFF; --phy:#4FD0DB; --nrs:#E37FCB; --lab:#8E9BFF;
+    --shadow:0 12px 32px rgba(0,0,0,.5);
+  }
+  html { scroll-padding-top:env(safe-area-inset-top,0px); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; line-height:1.45; -webkit-font-smoothing:antialiased; }
+  button, input, select { font:inherit; color:inherit; }
+  :focus-visible { outline:3px solid #F2A43A; outline-offset:2px; }
+  a { color:inherit; }
+
+  /* hero */
+  .hero {
+    color:#fff; padding:40px 20px 110px; position:relative; overflow:hidden;
+    background:
+      radial-gradient(800px 380px at 88% -10%, rgba(255,255,255,.20), transparent 62%),
+      radial-gradient(560px 300px at 0% 115%, rgba(242,164,58,.28), transparent 60%),
+      linear-gradient(135deg,#07434C 0%,#0E7C86 55%,#2BA89B 100%);
+  }
+  .wrap { max-width:1040px; margin:0 auto; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.01em; font-size:.95rem; opacity:.95; }
+  .logo { width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,.18); display:grid; place-items:center; border:1px solid rgba(255,255,255,.35); }
+  .hero h1 { margin:22px 0 10px; font-size:clamp(1.9rem,5vw,3rem); line-height:1.08; letter-spacing:-.02em; font-weight:800; max-width:16em; }
+  .hero p { margin:0; max-width:40em; font-size:clamp(.98rem,2.2vw,1.12rem); opacity:.92; }
+  .pillrow { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+  .pill { padding:6px 12px; border-radius:99px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); font-size:.8rem; font-weight:600; }
+
+  /* search panel */
+  .panel {
+    position:relative; margin:-76px auto 0; background:var(--card); border-radius:22px; box-shadow:var(--shadow);
+    padding:20px; border:1px solid var(--line);
+  }
+  .searchrow { display:flex; gap:10px; }
+  .searchbox { position:relative; flex:1; min-width:0; }
+  .searchbox svg { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--soft); }
+  .searchbox input {
+    width:100%; padding:16px 16px 16px 48px; border-radius:14px; border:2px solid var(--line);
+    background:var(--bg); font-size:1.05rem; font-weight:500;
+  }
+  .searchbox input::placeholder { color:var(--soft); font-weight:400; }
+  .searchbox input:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 20%,transparent); }
+  .go { padding:0 28px; border:0; border-radius:14px; background:var(--brand); color:var(--brand-ink); font-weight:700; font-size:1rem; cursor:pointer; box-shadow:0 6px 16px color-mix(in srgb,var(--brand) 40%,transparent); }
+  .go:hover { filter:brightness(1.06); }
+
+  .selects { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:14px; }
+  .field label { display:block; font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--soft); margin:0 0 6px 2px; }
+  .sel { position:relative; }
+  .sel::after { content:""; position:absolute; right:16px; top:50%; width:8px; height:8px; border-right:2px solid var(--soft); border-bottom:2px solid var(--soft); transform:translateY(-70%) rotate(45deg); pointer-events:none; }
+  .sel select {
+    width:100%; appearance:none; -webkit-appearance:none; padding:13px 40px 13px 14px; border-radius:12px;
+    border:2px solid var(--line); background:var(--bg); font-weight:600; font-size:.95rem; cursor:pointer; text-overflow:ellipsis;
+  }
+  .sel select:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 20%,transparent); }
+  .sel select option, .sel select optgroup { color:#0E2A33; background:#fff; }
+
+  .tools { display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-top:14px; }
+  .check { display:flex; align-items:center; gap:8px; font-weight:600; font-size:.92rem; cursor:pointer; }
+  .check input { width:18px; height:18px; accent-color:var(--brand); }
+  .reset { margin-left:auto; background:none; border:0; color:var(--brand); font-weight:700; cursor:pointer; padding:6px 4px; text-decoration:underline; text-underline-offset:3px; }
+
+  .quick { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; align-items:center; }
+  .quick span { font-size:.78rem; font-weight:700; color:var(--soft); text-transform:uppercase; letter-spacing:.07em; margin-right:2px; }
+  .qchip { padding:7px 13px; border-radius:99px; border:1.5px solid var(--line); background:var(--card); cursor:pointer; font-weight:600; font-size:.85rem; }
+  .qchip:hover { border-color:var(--brand); color:var(--brand); }
+
+  /* tiles */
+  .sec { margin:30px auto 0; }
+  .sec h2 { margin:0 0 12px; font-size:1.05rem; font-weight:800; letter-spacing:-.01em; }
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+  .tile {
+    text-align:left; background:var(--card); border:1.5px solid var(--line); border-radius:16px; padding:14px 14px 14px 16px; cursor:pointer;
+    position:relative; overflow:hidden; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .tile::before { content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--c); }
+  .tile:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
+  .tile[aria-pressed="true"] { border-color:var(--c); background:color-mix(in srgb,var(--c) 10%,var(--card)); }
+  .tile b { display:block; font-size:1.7rem; line-height:1; letter-spacing:-.02em; color:var(--c); }
+  .tile span { display:block; margin-top:6px; font-size:.82rem; font-weight:600; color:var(--soft); }
+  @media (prefers-reduced-motion: reduce) { .tile { transition:none; } .tile:hover { transform:none; } }
+
+  .tests { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; }
+  .tcard { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 15px; display:flex; flex-direction:column; }
+  .tcard h4 { margin:0 0 6px; font-size:.98rem; font-weight:700; }
+  .tcard p { margin:3px 0; font-size:.83rem; color:var(--soft); }
+  .tcard p b { color:var(--ink); font-weight:700; }
+  .tcard button { margin-top:auto; align-self:flex-start; padding:7px 12px; border-radius:99px; border:1.5px solid var(--lab); background:transparent; color:var(--lab); font-weight:700; font-size:.82rem; cursor:pointer; margin-top:10px; }
+  .tcard button:hover { background:color-mix(in srgb,var(--lab) 12%,transparent); }
+  .tnote { margin:12px 0 0; font-size:.82rem; color:var(--soft); }
+  /* results */
+  .summary { margin:26px 0 6px; padding:14px 16px; border-radius:14px; background:var(--card); border:1px solid var(--line); font-size:.95rem; }
+  .summary b { font-weight:800; }
+  .grp { margin:26px 0 10px; display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+  .grp h3 { margin:0; font-size:1.12rem; font-weight:800; letter-spacing:-.01em; }
+  .grp span { font-size:.82rem; color:var(--soft); font-weight:600; white-space:nowrap; }
+  .list { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 16px; position:relative; overflow:hidden; display:flex; flex-direction:column; }
+  .card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--c); }
+  .top { display:flex; gap:10px; align-items:flex-start; justify-content:space-between; }
+  .card h4 { margin:0; font-size:1rem; line-height:1.3; font-weight:700; }
+  .badge { flex:none; font-size:.68rem; font-weight:800; letter-spacing:.03em; padding:4px 9px; border-radius:99px; color:#fff; background:var(--c); white-space:nowrap; }
+  :root[data-theme="dark"] .badge { color:#07161B; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .badge { color:#07161B; } }
+  .addr { margin:6px 0 0; color:var(--soft); font-size:.84rem; }
+  .depts { margin:10px 0 0; display:flex; flex-wrap:wrap; gap:6px; }
+  .d { font-size:.74rem; font-weight:600; padding:3px 9px; border-radius:99px; background:color-mix(in srgb,var(--soft) 13%,var(--card)); }
+  .d.hit { background:var(--mark); font-weight:800; }
+  .meta { margin-top:auto; padding-top:12px; display:flex; flex-wrap:wrap; gap:6px 14px; font-size:.86rem; align-items:center; }
+  .meta .hrs { color:var(--soft); font-weight:600; flex-basis:100%; }
+  .meta a { color:var(--brand); font-weight:700; text-decoration:none; }
+  .meta a:hover { text-decoration:underline; }
+  .note { margin:10px 0 0; padding:9px 11px; border-radius:10px; font-size:.8rem; color:var(--soft); background:color-mix(in srgb,var(--soft) 9%,var(--card)); }
+  .empty { margin-top:18px; padding:30px 22px; text-align:center; color:var(--soft); background:var(--card); border:1.5px dashed var(--line); border-radius:16px; }
+  .foot { margin:34px auto 40px; font-size:.8rem; color:var(--soft); max-width:60em; }
+
+  @media (max-width:820px) {
+    .selects { grid-template-columns:1fr; }
+    .list { grid-template-columns:1fr; }
+    .searchrow { flex-direction:column; }
+    .go { padding:15px; }
+    .hero { padding:30px 16px 104px; }
+    .panel { padding:16px; border-radius:18px; }
+    .wrap { padding:0 0; }
+    main.wrap { padding:0 16px; }
+    .hero .wrap { padding:0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </div>
+      Hyderabad Health Finder
+    </div>
+    <h1>Find the right care, anywhere in Hyderabad</h1>
+    <p>Hospitals, clinics, pharmacies, blood banks, dialysis, physiotherapy and nursing care. Search by disease or symptom, then narrow down by area and type.</p>
+    <div class="pillrow" id="heroPills"></div>
+  </div>
+</header>
+
+<main class="wrap" style="padding:0 20px">
+  <section class="panel" aria-label="Search and filters">
+    <form class="searchrow" role="search" onsubmit="return false">
+      <div class="searchbox">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Type a disease or symptom, for example kidney stone or fever" aria-label="Disease or symptom" autocomplete="off">
+      </div>
+      <button type="button" class="go" id="go">Search</button>
+    </form>
+
+    <div class="selects">
+      <div class="field">
+        <label for="selCond">Condition</label>
+        <div class="sel"><select id="selCond"></select></div>
+      </div>
+      <div class="field">
+        <label for="selArea">Area</label>
+        <div class="sel"><select id="selArea"></select></div>
+      </div>
+      <div class="field">
+        <label for="selType">Type of place</label>
+        <div class="sel"><select id="selType"></select></div>
+      </div>
+    </div>
+
+    <div class="tools">
+      <label class="check"><input type="checkbox" id="only24"> Open 24 hours only</label>
+      <button type="button" class="reset" id="reset">Reset all</button>
+    </div>
+
+    <div class="quick" id="quick"><span>Popular</span></div>
+  </section>
+
+  <section class="sec" aria-label="Browse by type">
+    <h2>Browse by type</h2>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section class="sec" aria-label="Blood tests in health checkups">
+    <h2>Blood tests in health checkups</h2>
+    <div class="tests" id="tests"></div>
+    <p class="tnote" id="pkgnote"></p>
+  </section>
+
+  <div class="summary" id="summary" aria-live="polite"></div>
+  <div id="out"></div>
+
+  <p class="foot">Departments are taken from Google Maps listings and patient reviews, and from each place’s well-known services, so please confirm the department and timings by phone before you travel. Hours and phone numbers are as listed on Google Maps or on the centre’s own website. This covers the main government hospitals and a sample of private hospitals, clinics, pharmacies, blood banks, dialysis, physiotherapy and nursing centres, not every one in the city. In an emergency dial 108 for an ambulance.</p>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var DEPT = {
+    car:"Cardiology (heart)", onc:"Cancer care", neu:"Neurology and spine", uro:"Kidney and urology", ort:"Orthopaedics (bones, joints)",
+    gas:"Gastro and liver", gyn:"Women’s health and maternity", ped:"Children’s care", eye:"Eye care", ent:"ENT (ear, nose, throat)",
+    men:"Mental health", inf:"Fever and infectious disease", che:"Chest and lung (TB, asthma)", end:"Diabetes and thyroid",
+    der:"Skin", sur:"General surgery", den:"Dental", tra:"Emergency and trauma", gen:"General medicine", uni:"Unani and AYUSH", phm:"Pharmacy (medicines)", bld:"Blood bank (blood, platelets)", ivc:"Infusion, IV and dialysis", phy:"Physiotherapy and rehab", nrs:"Residential nursing and rehab care", lab:"Blood tests, scans and health checkups"
+  };
+  var AREAS = ["Banjara Hills & Jubilee Hills","Hitec City, Gachibowli & Kondapur","Kukatpally & KPHB","Secunderabad & Begumpet","Ameerpet, Punjagutta & Somajiguda","Koti, Lakdikapul & Nampally","Malakpet & Old City","Mehdipatnam, Attapur & Golconda","LB Nagar & Dilsukhnagar","Uppal & Habsiguda"];
+
+  // name, sector (G or P), area index, department codes, address, phone, hours, lat, lon, Google place id
+  var D = [
+    ["Star Hospitals, Banjara Hills","P",0,"ort gen inf","Road No. 10, Gaffar Khan Colony, Banjara Hills, 500034","+91 1800 102 7827","Open 24 hours",17.41508,78.44776,"ChIJedOsFByXyzsRmRQv6FS6CWg"],
+    ["Renova Century Hospitals, Banjara Hills","P",0,"onc neu ent","Road No. 12, Bhola Nagar, Banjara Hills, 500028","+91 40 2333 3333","Open 24 hours",17.40731,78.44473,"ChIJY48N5niXyzsR4FAt6B1NidQ"],
+    ["TX Hospitals, Banjara Hills","P",0,"car ort neu gen","Road No. 12, Sri Ram Nagar Colony, Banjara Hills, 500028","+91 91445 14459","Open 24 hours",17.40777,78.44466,"ChIJnc_Ad_6XyzsRra12TaQv6P4"],
+    ["CARE Outpatient Centre, Banjara Hills","P",0,"ort end neu gas uro onc gen","Babu Khan Chambers, Road No. 10, Banjara Hills, 500034","+91 40 6810 6589","Open 24 hours",17.41426,78.44649,"ChIJTSCWqTCXyzsRZuV-k9fZY7M"],
+    ["CARE Hospitals, Banjara Hills","P",0,"car neu uro gas onc gen","Road No. 1, Prem Nagar, Banjara Hills, 500034","+91 40 6810 6589","Open 24 hours",17.41261,78.45024,"ChIJWfkf9S-XyzsRN2Yb1aN2UwU"],
+    ["Apollo Hospitals, Jubilee Hills","P",0,"car gas onc neu ort uro gen tra","Road No. 72, Film Nagar, Jubilee Hills, 500096","+91 40 6907 1200","Open 24 hours",17.41504,78.41253,"ChIJNyplNGaXyzsRv9XdgLqPd-s"],
+    ["L V Prasad Eye Institute","P",0,"eye","LV Prasad Marg, Park View Enclave, Banjara Hills, 500034","+91 80662 02020","7 AM to 5:30 PM, closed Sunday",17.42424,78.42753,"ChIJZTuXsSyRyzsRzi9lRCLt7A8"],
+    ["Basavatarakam Indo American Cancer Hospital","P",0,"onc","Road No. 10, Nandi Nagar, Banjara Hills, 500034","+91 40 2355 1235","Open 24 hours, closed Sunday",17.41711,78.43052,"ChIJ75DxqiuXyzsRJLy13SgtqRI"],
+    ["Rainbow Children’s Hospital, Banjara Hills","P",0,"ped eye","Road No. 2, Sri Nagar Colony, Banjara Hills, 500034","+91 80 6530 9001","Open 24 hours",17.42495,78.43208,"ChIJr6UeI0KRyzsRqCl-_ogANiw"],
+    ["Netra Eye & Multi Specialty Hospital","P",0,"eye ped","Opp. Akshara High School, Hyderabad, 500004","","9 AM to 5 PM, closed Sunday",17.4121,78.45345,"ChIJA6kZTBWQyzsRhb3WEe06eEo"],
+
+    ["Yashoda Hospitals, Hitec City","P",1,"car neu uro gas onc ort gyn gen tra","Survey No. 41/14, JNTU–Hitech City Main Rd, Kothaguda, 500081","+91 40 4567 4567","Open 24 hours",17.46231,78.38491,"ChIJqVt-932RyzsRoj3v3sUhcqQ"],
+    ["Medicover Hospitals, Hitech City","P",1,"car ort gen","Behind Cyber Towers, HUDA Techno Enclave, Hitec City, 500081","+91 40 6833 4455","Open 24 hours",17.44667,78.38013,"ChIJ1b_L7d2TyzsRcmghZhoAyVM"],
+    ["CARE Hospitals, Hitec City","P",1,"gas che ent car gen","Old Mumbai Hwy, Jayabheri Pine Valley, Hitec City, 500032","+91 40 6810 6589","Open 24 hours",17.43054,78.37224,"ChIJEwkxe_CTyzsRacNKcJGoAVs"],
+    ["PACE Hospitals, Hitec City","P",1,"gas ort end sur","Metro Pillar C1775, Hitech City Rd, HUDA Techno Enclave, 500081","+91 40 4848 6868","Open 24 hours",17.44691,78.38424,"ChIJozoJIGCRyzsRp0RU300kf-M"],
+    ["SIMS Sigma Hospitals, Madhapur","P",1,"gen gas inf","Behind Karachi Bakery, HUDA Techno Enclave, Madhapur, 500081","+91 88582 34345","Open 24 hours",17.44492,78.38542,"ChIJ_YXEGrmRyzsR2Oqm4GIz4Ro"],
+    ["Sree Manju Hospitals, Kondapur","P",1,"gen gyn ped sur","Raghavendra Colony, Kondapur, 500084","+91 90101 52772","Open 24 hours",17.46933,78.36093,"ChIJAZJb0oWTyzsRq31Upn2lkHs"],
+    ["Sri Sri Holistic Hospital, Kondapur","P",1,"onc ort gen sur","Kalajyothi Rd, next to Ryan International School, Kondapur, 500084","+91 92402 12343","Open 24 hours",17.46496,78.3432,"ChIJ1bE7BfOTyzsRtTNSN4TxyLs"],
+    ["Apollo Spectra Hospitals, Kondapur","P",1,"ort sur gen","Plot 1 & 6, Kothaguda X Road, Kondapur, 500084","+91 40 6914 6071","Open 24 hours",17.45969,78.36604,"ChIJd4DnIsmTyzsR0OYaOfPU738"],
+    ["AIG Hospitals, Gachibowli","P",1,"gas neu gen","Mindspace Rd, Gachibowli, 500032","+91 40 4244 4222","Open 24 hours",17.44327,78.36628,"ChIJZyT5_umTyzsR1xWsZCiId4s"],
+    ["Continental Hospitals, Nanakramguda","P",1,"gyn onc end neu car sur gen","Plot 3, Road No. 2, Financial District, Nanakramguda, 500032","+91 40 6700 0000","Open 24 hours",17.41753,78.33946,"ChIJofXk3n-UyzsRn6fj0rQJygI"],
+    ["AINU Hospital (kidney and urology), Hitec City","P",1,"uro","Kukatpally Housing Board Rd, opp. Butta Convention, Hitec City, 500081","+91 40 6797 6727","Open 24 hours",17.45829,78.38435,"ChIJ7d-BuiiTyzsRaX3PXNnlOac"],
+    ["K.K Eye & Child Health Care, Narsingi","P",1,"eye ped","P S Towers, Muppa Junction, Narsingi, 500089","+91 86887 46479","5:30 to 8:30 PM, closed Sunday",17.39519,78.3534,"ChIJ7_dxVX6VyzsRwCWgTwa5BLo"],
+
+    ["NextGen Hospitals, KPHB","P",2,"gen","421, Road No. 4, KPHB Phase 2, 500072","+91 93914 23050","Open 24 hours",17.48919,78.39611,"ChIJ-122XG6RyzsRqfWtNHl6W4o"],
+    ["My Health Hospitals, Kukatpally","P",2,"neu sur tra gen","MIG-212, Road No. 1, KPHB Phase 1, 500072","+91 91116 74111","Open 24 hours",17.49301,78.40207,"ChIJtwtGFuSRyzsRE42-2guzGGA"],
+    ["Sree Manju Hospitals, KPHB","P",2,"ort uro gen inf ped","KPHB 5th Phase, opp. Brand Factory, 500085","+91 77779 32772","Open 24 hours",17.483,78.39265,"ChIJpcQ89hmRyzsRcmBmaWI7c1k"],
+    ["Prathima Hospitals, KPHB","P",2,"neu gen","Plot 27, Street 1, Jal Vayu Vihar Rd, opp. Arjun Theatre, 500072","+91 73373 36600","Open 24 hours",17.49695,78.39763,"ChIJR7pFuu2RyzsRrFzkTzEpUj0"],
+    ["Sankhya Hospitals, KPHB","P",2,"ped ort ent gen sur","Beside BSNL Office Road, KPHB Phase 3, 500085","+91 40 6704 4444","Open 24 hours",17.48396,78.39343,"ChIJB1J_o4-RyzsRoExJFeS9wXE"],
+    ["Dr Aloka’s Eye Care, Kukatpally","P",2,"eye ped","Anishka Tower, near Nexus Mall, KPHB Phase 6, 500085","+91 74164 27503","9 AM to 6 PM, closed Sunday",17.48565,78.38782,"ChIJgWktKqOXyzsRryWguPnW6y4"],
+
+    ["KIMS Sunshine Hospitals, Begumpet","P",3,"onc gyn eye ort car neu gen","Metro Pillar C1327, Prakash Nagar, Begumpet, 500003","+91 40 4455 0000","Open 24 hours",17.44384,78.47183,"ChIJfzkOHxCayzsRNQIyTxhTJMc"],
+    ["Wellness Hospitals, Begumpet","P",3,"car gen","7-1-21, Railway Station Rd, Leelanagar, Begumpet, 500016","+91 95595 51955","Open 24 hours",17.43793,78.45665,"ChIJf-aA_-qRyzsRG3p73nACftQ"],
+    ["Oxycare Multi Speciality Hospitals, Begumpet","P",3,"gen","3rd Floor, Durga Towers, Rasoolpura, Begumpet, 500003","+91 90002 07666","Open 24 hours",17.44339,78.47541,"ChIJvxSymv2RyzsRrMDbzIOpVHM"],
+    ["KIMS Hospitals, Secunderabad","P",3,"car uro gyn neu onc gen","1-8-31/1, Minister Rd, Krishna Nagar Colony, Secunderabad, 500003","+91 40 4488 5000","Open 24 hours",17.43722,78.48304,"ChIJnXfoTASayzsRKx1qMbKZ0OM"],
+    ["Gandhi Hospital, Musheerabad","G",3,"gen tra inf","Musheerabad, Secunderabad, 500003","","Open 24 hours",17.42281,78.5042,"ChIJY5KI-IyZyzsR_wcVyHslQiE"],
+
+    ["Vivekananda Hospital, Punjagutta","P",4,"uro gyn ort gen","6-3-871/A, Greenlands Rd, Punjagutta, 500016","+91 72079 04418","Open 24 hours",17.43126,78.45544,"ChIJnULSBbqQyzsRdKt6AaRkAoA"],
+    ["Aster Prime Hospital, Ameerpet","P",4,"gyn ort neu ped gen","Plot 4, HMDA Maitrivanam, Satyam Theatre Rd, Ameerpet, 500038","+91 40 4959 4959","Open 24 hours",17.43762,78.44596,"ChIJKa_xGMWQyzsRmO9XzP-U5cw"],
+    ["Pristyn Care Zoi, Ameerpet","P",4,"sur gyn ped","7-1-71/A/1, Dharam Karan Rd, Ameerpet, 500016","+91 80 6542 3647","Open 24 hours",17.43962,78.45059,"ChIJUy3QWYCRyzsRf5JuR7KXOqE"],
+    ["Wellness Hospitals, Ameerpet","P",4,"uro ort neu gyn gen","7-1-27/2, Leelanagar, Ameerpet, 500016","+91 95595 51955","Open 24 hours",17.43653,78.45271,"ChIJRbGZC8mQyzsRqCD0ezog324"],
+    ["Medi Star Hospitals, Ameerpet","P",4,"tra uro gyn ort neu gen","8-3-214/2, Srinivasa Nagar West, Ameerpet, 500038","+91 92481 12284","Open 24 hours",17.43842,78.44256,"ChIJy6qOasWQyzsR95AmCGwwLSs"],
+    ["Apollo Spectra Hospitals, Ameerpet","P",4,"gas car neu sur","7-1-57/B&C, Shyam Karan Rd, Ameerpet, 500016","+91 40 2378 2378","Open 24 hours",17.43766,78.45261,"ChIJybvx_7eQyzsRHmJan45kJHw"],
+    ["Yashoda Hospitals, Somajiguda","P",4,"car uro che ort onc gen tra","6-3-905, Raj Bhavan Rd, Somajiguda, 500082","+91 40 4567 4567","Open 24 hours",17.42446,78.45666,"ChIJjT5TbLOXyzsRUoU5Nhmwzzo"],
+    ["AINU Hospital (kidney and urology), Somajiguda","P",4,"uro","Irram Manzil Colony, Somajiguda, 500082","+91 40 6731 3131","Open 24 hours",17.41668,78.4536,"ChIJbW0-MkiXyzsRL5yiWFwqJY0"],
+    ["NIMS (Nizam’s Institute of Medical Sciences)","G",4,"neu car uro end der gen","Punjagutta Market, Punjagutta, 500082","+91 40 2348 9000","Open 24 hours",17.42251,78.45408,"ChIJ-5dSMDSXyzsRFl4QsYlQ6HQ"],
+    ["Government General and Chest Hospital, Erragadda","G",4,"che inf der ort car gen","Kalyan Nagar Phase 1, Sunder Nagar, 500038","","Open 24 hours",17.44627,78.43614,"ChIJq0l5092QyzsRLjL3XoCAA0c"],
+    ["Institute of Mental Health, Erragadda","G",4,"men","Erragadda Main Rd, Vikaspuri, Erragadda, 500038","","Hours not listed",17.45003,78.43585,"ChIJfWdJE02RyzsR9LV4eAuMeCk"],
+
+    ["District Hospital, King Koti","G",5,"gyn eye den gen","3-5-773, Hyderguda, King Koti Rd, 500001","+91 80085 53878","Open 24 hours",17.39326,78.48248,"ChIJ11GMDNqZyzsR3_fmCfzQpe4"],
+    ["Nampally Government Hospital","G",5,"gen uni","Nampally Market, Bazar Ghat, Nampally, 500001","","Open 24 hours",17.39227,78.46329,"ChIJAQAAcG6XyzsRnCjlEiUhlvM"],
+    ["Government Fever Hospital, Nallakunta","G",5,"inf gen","2-1-395, New Nallakunta, 500044","","Open 24 hours",17.39615,78.5025,"ChIJ0dcC2U-ZyzsRTuzO4JGeFvQ"],
+    ["Niloufer Hospital (children’s), Red Hills","G",5,"ped gen","Niloufer Hospital Rd, Red Hills, Lakdikapul, 500004","+91 40 2331 4095","Open 24 hours",17.39932,78.46034,"ChIJ5_8f_GiXyzsReva_amitVPo"],
+    ["MNJ Institute of Oncology and Regional Cancer Centre","G",5,"onc","Red Hills, Lakdikapul, 500004","+91 40 2331 8422","Open 24 hours",17.39853,78.46248,"ChIJU42Q2A-XyzsRQlmphVzS_qk"],
+    ["Government Maternity Hospital, Sultan Bazar, Koti","G",5,"gyn","Opp. Women’s College, Sultan Bazar, Koti, 500001","+91 40 2465 3422","Open 24 hours",17.38609,78.48725,"ChIJubhRjc2ZyzsR7K03_mZCiho"],
+    ["Government ENT Hospital, Koti","G",5,"ent","Bank St, Troop Bazaar, Koti, 500001","+91 40 2474 0245","8:30 to 11:30 AM, closed Sunday",17.3851,78.48219,"ChIJf7V0882ZyzsR9CwOkYHkA8w"],
+
+    ["Smt. Bhagwan Devi Hospital, Char Kaman","P",6,"ort gen","Mama Jamila Phatak Ln, Char Kaman, Ghansi Bazar, 500002","+91 40 2456 6490","Open 24 hours",17.36433,78.47333,"ChIJq6qqJoqXyzsRAEb3YLcZwbw"],
+    ["Indo-US Multi Speciality Hospital, Malakpet","P",6,"gen sur gyn","16-2 661/3, Jamia Masjid St, Judges Colony, New Malakpet, 500036","+91 40 6901 9000","Open 24 hours",17.37272,78.50067,"ChIJU5b6WEiYyzsRYWLSPUmlDuM"],
+    ["HKC Hospital (Hyderabad Kidney Centre), Malakpet","P",6,"uro ort gen","16-2-674/11, Judges Colony, New Malakpet, 500036","+91 83097 71005","Open 24 hours",17.37163,78.50049,"ChIJa2Z9IUaYyzsRHkK3g6VPqzg"],
+    ["CARE Hospitals, Malakpet","P",6,"gyn gen sur","Metro Pillar 1393, Old Kamal Theater Complex, Chaderghat Rd, 500024","+91 40 6810 6589","Open 24 hours",17.37696,78.49041,"ChIJA08S9C2YyzsRu3zI0LJRZ_4"],
+    ["Renova Bibi Cancer Hospital, Malakpet","P",6,"onc","16-3-991/1/C, Govt Printing Press Rd, Malakpet, 500036","+91 70138 61155","Open 24 hours",17.37024,78.50063,"ChIJw-MCKzSYyzsRevt1vARMnRw"],
+    ["Yashoda Hospitals, Malakpet","P",6,"car gen","Nalgonda X Roads, near New Market Metro, Malakpet, 500036","+91 40 6723 2308","9 AM to 6 PM",17.37446,78.4997,"ChIJ028XHROZyzsRixd6mcKdbGI"],
+    ["Osmania General Hospital, Afzalgunj","G",6,"gen tra neu","Afzalgunj Rd, Begum Bazar, Afzal Gunj, 500012","","Open 24 hours",17.3731,78.47383,"ChIJ71GXQ9iXyzsRpG5Whyolw6I"],
+    ["Government Nizamia General Hospital (Unani), Charminar","G",6,"uni gen","Bibi Bazar Rd, opp. Mecca Masjid, Moghalpura, 500002","","9 AM to 12 PM",17.36062,78.47472,"ChIJbfwilyCYyzsRztsxclM6rxM"],
+
+    ["Zoi Hospitals, Attapur","P",7,"end gyn ent gen ort","Pillar 145, Attapur, Rambagh Colony, 500048","+91 40 4720 1201","Open 24 hours",17.36298,78.42843,"ChIJm_n83UyWyzsROVosDlUPyoY"],
+    ["Mythri Hospital, Mehdipatnam","P",7,"onc sur gen","Opp. Pillar 83, PVNR Expressway, Gudi Malkapur Rd, Mehdipatnam, 500008","+91 79979 96030","Open 24 hours",17.38367,78.42925,"ChIJlbH5Bv6WyzsRRcvC2jqNJl0"],
+    ["LIMS ABS Neuro & Multispeciality Hospital, Attapur","P",7,"neu ort gen","Opp. Pillar 151, Attapur, Rambagh Colony, 500048","+91 79979 99107","Open 24 hours",17.36126,78.42823,"ChIJg1vn8CaXyzsRRdzNohJciD8"],
+    ["Sarojini Devi Eye Hospital, Mehdipatnam","G",7,"eye","Mehdipatnam Rd, Humayun Nagar, 500006","+91 40 2331 7274","8 AM to 3 PM, closed Sunday",17.39892,78.44367,"ChIJLZ-IABeXyzsRokKG9DyuExk"],
+    ["Area Hospital, Golconda","G",7,"gen ort den ped","9-10-440, Fort Rd, Golconda, 500008","","9 AM to 1 PM, closed Sunday",17.3851,78.40272,"ChIJ0ww8NYyWyzsRf3OHpITXfQg"],
+
+    ["Lakshmi Health Care Hospital, Vanasthalipuram","P",8,"gyn ort gen","C-84, MIG Phase 1, Vanasthalipuram, 500070","+91 96180 90301","Open 24 hours",17.33206,78.57323,"ChIJjXmmxeShyzsRX5qWe5eGL3w"],
+    ["Pranahitha Hospitals, Dilsukhnagar","P",8,"ort gen","13-3-10/B, Hanuman Nagar, Chaitanyapuri, 500060","+91 80088 01192","Open 24 hours",17.36952,78.53041,"ChIJ4YvT1OmZyzsRDciCoqPw5SA"],
+    ["Prasidh Hospitals, LB Nagar","P",8,"gyn gen","Plot 21, Sahara Rd, Indira Nagar, 500068","+91 82970 45678","Open 24 hours",17.33909,78.57195,"ChIJYxscMYafyzsROK17YrhfYA4"],
+    ["Himalaya Hospitals, LB Nagar","P",8,"gen","5-856/29/1, Engineers Colony, Jahangir Nagar Colony, 500074","+91 78425 55108","Open 24 hours",17.34074,78.55854,"ChIJJSkrL4mZyzsRES_F7WKjbeM"],
+    ["Agastya Hospitals, LB Nagar","P",8,"ort sur tra gen","Nagarjuna Sagar Rd, Jahangir Nagar Colony, 500074","+91 40 6510 8108","Open 24 hours",17.33792,78.55014,"ChIJw24sRwCjyzsRWlEXBwUFh_s"],
+    ["AINU Hospital (kidney and urology), Dilsukhnagar","P",8,"uro","16-11-741/C/C/15, Indira Nagar Rd, Gaddiannaram, 500060","+91 40 6797 6747","Open 24 hours",17.36937,78.52099,"ChIJCX_fjbaZyzsRKLYPGC0ymRA"],
+
+    ["Sri Abhaya Hospitals, Uppal","P",9,"gen gyn tra neu","Registration Office Ln, Vijayapuri Colony, Uppal, 500039","+91 90595 55202","Open 24 hours",17.40088,78.56328,"ChIJlTMHbACZyzsRA9q01C3CL0k"],
+    ["Shree Pooja Hospital, Nacharam","P",9,"gyn gen","Street 1, Bapuji Nagar, HMT Nagar, Nacharam, 500076","+91 91000 12555","Open 24 hours",17.423,78.547,"ChIJ8XbuF-aZyzsRKMmHKCuC-7k"],
+    ["Siris Hospital, Habsiguda","P",9,"gen sur","4-78/6, Captain Veera Raja Reddy Marg, V V Nagar, Habsiguda, 500007","+91 40 2717 2764","10 AM to 9 PM (Sunday to 1 PM)",17.40974,78.54408,"ChIJT6UbPkCZyzsRLAKdQGENkYs"],
+    ["TX Hospitals, Uppal","P",9,"ent gen tra","2-6-71, Bharat Nagar Colony, Beerappagadda, Uppal, 500039","+91 91445 14459","Open 24 hours",17.40235,78.56696,"ChIJz8A6KxyfyzsRHYrqF7OTICE"],
+    ["Shree Healthcare Multi Specialty Hospital, Uppal","P",9,"ort gen","3-214/156, opp. Nalla Cheruvu, Shanti Nagar, Uppal, 500039","+91 63093 53535","Open 24 hours",17.401,78.57966,"ChIJq8_8bbWfyzsRSWx6f0QTb08"],
+
+    ["Secunderabad Hospital, Begumpet","P",3,"gyn gen","62/B, 1-10-60/1, Chikoti Gardens, Old Patigadda, Begumpet, 500016","+91 91000 78049","Open 24 hours",17.4442,78.46548,"ChIJkT2IAgaayzsR3E8f6PWMeaw"],
+    ["Lakshmi Hospital & Research Centre, Himayatnagar","P",5,"neu ort","3-6-191/1/1, Urdu Galli, Himayatnagar, 500029","+91 93907 16980","9 AM to 5 PM, closed Sunday",17.40017,78.48405,"ChIJbaonDEeZyzsR2vBK0gCThVs"],
+    ["Alpha Hospital, Moghalpura","P",6,"gyn ped gen","23-1-955, near MCH Swimming Pool, Moghalpura, 500002","+91 80744 14618","Open 24 hours",17.35866,78.47805,"ChIJYbt2IfaXyzsRZs53YdCJo8E"],
+
+    ["Ashraya Clinic, Banjara Hills","C",0,"sur end","302, EAPL Ascent, near Taj Deccan, Irram Manzil Colony, Banjara Hills, 500034","+91 99129 57918","9 AM to 1 PM (shorter Mon, Tue, Thu), closed Sunday",17.41705,78.45191,"ChIJLXFqAHeXyzsR3GOXSE-0hzE"],
+    ["Dr Paul’s Clinic (diabetes), Banjara Hills","C",0,"end gen","8-2-672/S201, 2nd floor, opp. Karachi Bakery, Banjara Hills Rd No. 1, 500034","+91 89773 12298","8 AM to 7 PM, closed Sunday",17.40991,78.44984,"ChIJbfFzwuuXyzsRskmYeaZeGZU"],
+    ["MAKS Care Polyclinic & Diagnostics, Banjara Hills","C",0,"uro gen","6, 3-181, Banjara Hills Rd No. 1, opp. Hanuman Temple, Prem Nagar, 500034","+91 63010 05868","Open 24 hours",17.41171,78.44985,"ChIJpaX9PUqXyzsROjV5xRxpX9U"],
+    ["Care Multi Speciality Clinic, Sri Nagar Colony","C",0,"gen","8-3-1101/1, Plot 105A, Srinagar Colony Main Rd, beside MCH Park, 500073","+91 40 2373 4449","7 AM to 8 PM (Sunday to 2 PM)",17.42992,78.44334,"ChIJRxUkyM2QyzsRo-CwfN_D-cg"],
+    ["Go Clinics, Jubilee Hills","C",0,"gen den","1198, Road No. 59, Jubilee Hills, 500033","+91 90691 52152","9 AM to 9 PM",17.4288,78.40954,"ChIJq-kX7ryRyzsRmGhds6R2k0c"],
+    ["Walk In Clinics, Banjara Hills","C",0,"gen der","8-2-601/J, 157, Road No. 10, Banjara Hills, 500034","+91 96185 96188","9 AM to 9 PM, closed Sunday",17.41563,78.44138,"ChIJL8RmIzCXyzsRH6y-mEmbr2A"],
+
+    ["IDEA Clinics, Kondapur","C",1,"gen ort","61B, 3rd St, near Burfighar sweetshop, Kondapur, 500084","+91 80081 66166","8 AM to 8 PM (Sunday to 2 PM)",17.4604,78.35172,"ChIJrdUdVLGTyzsRf9WwF8A-dY8"],
+    ["Neo Asian Speciality Clinics, Kondapur","C",1,"den gen","Plot 107, High-Tension Line Rd, Kondapur, 500084","+91 79952 77737","8 AM to 9:30 PM",17.46981,78.35695,"ChIJk3NcquaTyzsRKWfazKnhAlc"],
+    ["Dr Jagadeesh’s Digiclinix, Kondapur","C",1,"gen inf","Plot 227, Sree Prabhupada Township, beside Ananya Supermarket, Kondapur, 500084","+91 79816 28512","Mon, Wed, Fri 9 AM to 9 PM",17.46784,78.34071,"ChIJa4IcQpyTyzsRiYnAGnb0FII"],
+    ["Ambicare Clinics, Kondapur","C",1,"gen","Sy. No. 6, Plot 10, Gachibowli–Miyapur Rd, Kondapur, 500084","+91 86888 78899","8 AM to 7 PM, closed Sunday",17.45335,78.36422,"ChIJ64NBrceTyzsRrPshq65MyRk"],
+    ["SatyaSree Clinics & Diagnostics, Kondapur","C",1,"gyn gen","Pearl Plaza, Botanical Garden Rd, beside Chirec School, Kondapur, 500084","+91 95153 44388","7 AM to 10 PM (Sunday to 1:30 PM)",17.46247,78.35074,"ChIJrZ-JcrKTyzsRfTAUJPBI77I"],
+    ["Harsha Clinics, Madhapur","C",1,"gen inf","Shop 1&2, Survey of India Society, Plot 337, Ayyappa Society, Madhapur, 500081","+91 79896 93477","9 AM to 11 PM",17.45505,78.39218,"ChIJtdfasPqRyzsRWEDK1lKYpTM"],
+
+    ["Sahara Clinics, KPHB","C",2,"men gen","MIG 260, Road No. 4, KPHB Phase 1, 500072","+91 99663 93122","9 AM to 4:30 PM and 5 to 8:30 PM, closed Sunday",17.49251,78.39777,"ChIJpwB_zZKRyzsRnTN7iR-T-3I"],
+    ["Niche Clinics, Kukatpally","C",2,"gen che gyn end","Plot 26, Medical Society, Chaitanya Nagar, Vivekananda Nagar, 500072","+91 98882 54444","7 AM to 1 PM and 5 to 9 PM (Sunday to 12 PM)",17.49114,78.41365,"ChIJA3YoFKaRyzsRZoPFZwuLuYU"],
+    ["Marwellus Clinics and Diagnostics Center, KPHB","C",2,"ped den gen","KPHB 5th Phase Rd, 500085","+91 91548 65260","7 AM to 9 PM, closed Sunday",17.48042,78.39401,"ChIJ9_NsROqRyzsRZiP7-99V1Oo"],
+
+    ["Atlas Health Clinic, Begumpet","C",3,"gen","1-8-463/2, Prakash Nagar, Begumpet, 500016","+91 94949 50458","9 AM to 10 PM",17.44277,78.46998,"ChIJX4HyM6iRyzsR301FyTeZ0Dw"],
+    ["Amicus Speciality Clinics, Begumpet","C",3,"sur gas","3rd Floor, Durga Towers, Rasoolpura Rd, Patigadda, Begumpet, 500003","+91 73869 57715","Open 24 hours",17.4433,78.47544,"ChIJRaIZF7qbyzsRkY3_u0QqIgw"],
+    ["Sree Deethya Clinic, Begumpet","C",3,"gen","8/3RT, opp. old airport, Prakash Nagar, Begumpet, 500016","+91 95737 30444","6 AM to 9 PM, closed Sunday",17.44391,78.47063,"ChIJdal3_faRyzsR7_1-uqboJvg"],
+
+    ["Panjagutta Polyclinic","C",4,"gen","Kantishikara Apartment, opp. Model House, Durga Nagar Colony, Punjagutta, 500082","","10:30 AM to 4:30 PM, closed Sunday",17.42482,78.45438,"ChIJox12iEqXyzsRo46a6RS2Z4g"],
+    ["Jaya Clinic, Ameerpet","C",4,"gen inf","6-3-788/3, Ameerpet Rd, Punjagutta Officers Colony, 500082","+91 90599 30965","10 AM to 1 PM and 6 to 9 PM, closed Sunday",17.43173,78.44938,"ChIJMZZ6dZ6RyzsRTYeEHRl7I70"],
+    ["Genesis Clinics, Ameerpet","C",4,"gyn","Plot 1 & 3, H.No 58, Srinivasa Nagar West, Ameerpet, 500038","+91 91009 30819","11 AM to 9 PM, closed Sunday",17.43932,78.44177,"ChIJ0W_uL8WQyzsRdqjQW0c-5vs"],
+    ["Sree Clinic, Ameerpet","C",4,"gyn","Flat 103, Star GBR PRK Enclave, Dharam Karan Rd, Ameerpet, 500016","+91 98483 65838","11 AM to 1 PM, closed Sunday",17.43677,78.45016,"ChIJLReZZciQyzsRr2On1B9BqjE"],
+    ["Vayastyag Wellness Clinic, Punjagutta","C",4,"der ort","6-3-354/13, A1, Hindi Nagar, Dwarakapuri, Punjagutta, 500082","+91 95055 91590","10 AM to 5 PM, closed Tuesday",17.42537,78.45183,"ChIJkXUanHyXyzsRKSyOo98nR0w"],
+
+    ["AK Medical Clinic, Himayatnagar","C",5,"gen end","Flat 216, 2nd floor, above Almond House, opp. Brand Factory, Himayatnagar, 500029","+91 77027 87870","3 to 7 PM (Sunday 10 AM to 12 PM)",17.40107,78.48584,"ChIJmZt736uXyzsRwmVVIisoNXA"],
+    ["Dr Prahalad Health Care Clinic (sugar clinic), Himayatnagar","C",5,"end gen","3-6-515/1, Street No. 6, Himayatnagar, 500029","+91 93966 00606","9 AM to 10:30 PM, closed Sunday",17.40273,78.4845,"ChIJMbrfEd2ZyzsRDBGlcSQOjf0"],
+    ["Dr Anirudh’s Ideal Clinics, Himayatnagar","C",5,"gen inf","3-6-240/A, Himayat Nagar Rd, opp. McDonald’s, 500029","+91 95811 70509","12:30 to 3:30 PM, closed Sunday",17.40048,78.48695,"ChIJ-URkFPKZyzsRZtuf6HnZ4q0"],
+    ["Dr Sreenivas, General & Family Physician (fever clinic), Himayatnagar","C",5,"gen inf","Unit 103, first floor, Himayatnagar, 500029","+91 73823 07999","9 AM to 9 PM, closed Sunday",17.40226,78.48432,"ChIJW7EKU9yZyzsRhGGeqL4dlsw"],
+
+    ["Hayati Healthcare Clinics, Old Malakpet","C",6,"uni gen","Focus Institute, Wahed Nagar, Old Malakpet, 500036","+91 63005 94862","10 AM to 8 PM, closed Sunday",17.38265,78.50231,"ChIJJcIrKU6ZyzsRcCSXv5paRa8"],
+    ["Hyder Unani Clinic, Charminar","C",6,"uni gen","Chowk Maidan Khan, 23-1-25, Charminar Rd, opp. BSNL Office, Moghalpura, 500002","+91 70759 14785","8 AM to 10 PM",17.36081,78.47579,"ChIJE_5M_vqZyzsRdNeuh_SI6z4"],
+    ["All Care Diagnostics and Polyclinics, Moghalpura","C",6,"gen end","Afif Plaza, Fire Station Rd, Charminar Rd, Moghalpura, 500002","+91 93464 26630","8 AM to 9 PM (Sunday to 2 PM)",17.35956,78.47491,"ChIJ62Nr47CXyzsRNbBkYjCrn0U"],
+    ["Dr Luqmaan’s Children’s Clinic, Chaderghat","C",6,"ped","16-8-730/3, near Muslim Maternity and Children’s Hospital, Azampura, Chaderghat, 500024","+91 76010 92007","11 AM to 3 PM and 7 to 11 PM",17.37487,78.49049,"ChIJezy4-yKZyzsROdlsAAulg3E"],
+
+    ["Family Care Clinic, Gudimalkapur","C",7,"gen ped","Amba Theatre Lane, opp. M P Garden Function Hall, Gudimalkapur, 500006","+91 40 4615 0356","10 AM to 4 PM, closed Sunday",17.39238,78.44202,"ChIJC-N6wy2XyzsRYQHZJeBCDLM"],
+    ["Life Prime Clinics, Tolichowki","C",7,"end gen","9-4, 62/30/1, opp. Masjid E, MCH Colony, Nizam Colony, Toli Chowki, 500008","+91 99598 05309","6 AM to 10 PM, closed Sunday",17.39964,78.41958,"ChIJnYQY6-eWyzsRDdzAQkAf5QI"],
+    ["Safe Clinic, Attapur","C",7,"gen men","Road No. 11, Netaji Nagar Colony, Attapur, 500008","+91 89198 24873","9 AM to 9 PM, closed Sunday",17.37907,78.42758,"ChIJSyyX41GXyzsRtoW8M4FQebo"],
+    ["Medilab Polyclinic, Mehdipatnam","C",7,"der gen","12-2-823/A/9, opp. Pillar 19, PVR Flyover, St Anns Rd, Gudimalkapur, 500006","+91 98853 73616","Tue 8 AM to 2:30 PM, Wed and Thu 8 AM to 1 PM",17.39428,78.43794,"ChIJ8wI5tBuXyzsRWLg5y1WegPc"],
+    ["Health Inn Clinic, Tolichowki","C",7,"gas gyn gen","Above Orange Honda Showroom, Daulat Gulshan Colony, Surya Nagar, Toli Chowki, 500008","+91 96188 30303","9 AM to 2 PM and 5:30 to 7:30 PM, closed Sunday",17.4002,78.41364,"ChIJFRnz5OmWyzsRRrEJtnEu_gk"],
+    ["Haramain Clinic, Tolichowki","C",7,"gen","Street 4, 7 Tombs Rd, beside post office, Surya Nagar, Toli Chowki, 500008","+91 99599 60925","7:30 AM to 10 PM, closed Sunday",17.39901,78.41202,"ChIJj_u1kyCXyzsRO_3mAdSN5GI"],
+
+    ["SR Clinics, Dilsukhnagar","C",8,"der sur","VV Nagar Rd, near Indian Bank, Kamala Nagar, VR Colony, Chaitanyapuri, 500060","+91 92463 47729","9 AM to 9 PM, closed Sunday",17.36766,78.53064,"ChIJI18S1eaYyzsRf9w2Q6jQ4_s"],
+    ["Dr A. Prakasham Clinic, Dilsukhnagar","C",8,"gen","1st Floor, Chaitanyapuri Main Rd, opp. Sri Lakshmi Medical, 500060","+91 97001 68944","Open 24 hours (as listed)",17.36886,78.53171,"ChIJUb2c1_GYyzsR6saTkZpaB_4"],
+    ["Spiritual Homeopathy, Dilsukhnagar","C",8,"uni end gyn","Durga Nagar Rd, AP State Housing Board, Krishna Nagar, 500060","+91 98041 76176","Open 24 hours (as listed)",17.36892,78.5262,"ChIJW8FxHsLAPGgRTVgMTJchzCE"],
+    ["Sugar & Heart Clinic, LB Nagar","C",8,"end car","11-14-336, Sri Nagar Colony, Siris Rd, Snehapuri Colony, LB Nagar, 500074","+91 90001 77625","7 AM to 9 PM, closed Sunday",17.35241,78.54885,"ChIJhcz-3wmZyzsRf1__nsjArjs"],
+
+    ["Metrocare Clinics, Habsiguda","C",9,"end gen","1-4-56/1/FF, Captain Veera Raja Reddy Marg, SS Nagar, Habsiguda, 500007","+91 81069 77774","9 to 11:30 AM and 6:30 to 8:30 PM, closed Sunday",17.41272,78.54506,"ChIJLTzAk0GZyzsRdfHabBr0u_M"],
+    ["Habsiguda Multi Speciality Clinic","C",9,"men ort der gen","Amma Pharmacy, Street 8, opp. Union Bank, Shobana Nagar, Habsiguda, 500007","+91 85009 51961","7:30 AM to 9:30 PM (Sunday to 12 PM)",17.40686,78.54397,"ChIJoyPKzPyZyzsRPuGy5NkpI54"],
+    ["Veda Speciality Clinics, Uppal","C",9,"end ped gen","SBH Colony Main Rd, Durga Matha Temple Lane, Prashanth Nagar, Uppal, 500039","+91 91004 16418","8 AM to 9:30 PM",17.4083,78.55789,"ChIJfcGGuDeZyzsRFALdb5-gDi4"],
+    ["Prabha Clinic, Uppal","C",9,"gyn ped gen","Prashanth Nagar, Uppal, 500039","+91 70751 88319","11 AM to 2 PM and 7 to 9:30 PM, closed Sunday",17.40792,78.55669,"ChIJv_wV2zeZyzsRWx78-GIlJbs"],
+    ["Swathi Clinic, Habsiguda","C",9,"end gen","Captain Veera Raja Reddy Marg, opp. Spencer’s, Ravindra Nagar, Habsiguda, 500007","+91 99482 93863","10 AM to 2 PM and 6:30 to 9 PM",17.4085,78.54387,"ChIJYdk3BECZyzsR2Ajg87kRz_Y"],
+    ["Deeksha Clinic, Habsiguda","C",9,"ort gen end","Captain Veera Reddy Marg, Street 8, opp. Indian Statistical Institute, Shobana Nagar, Habsiguda, 500007","+91 81799 52136","11 AM to 2 PM and 6 to 9 PM, closed Sunday",17.40517,78.54394,"ChIJtYHEp-6ZyzsRIb9u-aeW2C0"],
+
+    ["Dr Gada Lakshmi Meghana, general physician, Moosapet","C",2,"gen","Sun Trinity building, Green Hills Rd, above Pizza Hut, Anjaneya Nagar, Moosapet, 500018","+91 81426 66108","Mon to Fri 4 to 9:30 PM, Sat 2 to 9:30 PM, Sun 10 AM to 1 PM",17.46918,78.41624,"ChIJpTGoJeiRyzsR-yQiHNbhio4"],
+    ["Dr Haricharan Modem, general physician and diabetologist, Moosapet","C",2,"gen end inf","4th Floor, Apex Clinics, ARD Magnum, above Vijetha Super Market, Green Hills Rd, Moosapet, 500018","+91 89777 31900","6 to 9 PM, closed Sunday",17.46867,78.41421,"ChIJA0qeQ9iRyzsRiNWmvMoSAcA"],
+    ["Vasavi Clinic, Balaji Nagar","C",2,"gen gyn end","H.No 15-21-1, Balaji Nagar, Kukatpally, 500072","+91 88974 99337","5 to 9 PM daily",17.48478,78.4071,"ChIJXddzqk2RyzsRohXQfQC5Z78"],
+    ["Sri Balaji Clinic, Pragathi Nagar","C",2,"gen","Shop 1, near Tulasi Nagar Community Hall, Pragathi Nagar, Kukatpally, 500072","+91 90007 81166","9:30 AM to 12:30 PM and 4:30 to 10:30 PM daily",17.4802,78.4171,"ChIJf1q6RuWRyzsRhZfu6bcg868"],
+    ["Sri Sri Holistic Hospitals, Nizampet","P",2,"gen inf ent ort car","1-2, Nizampet Main Rd, Jai Bharat Nagar, Nizampet, 500085","+91 92402 12343","Open 24 hours",17.50223,78.3889,"ChIJ_RgwCwmayzsR6f1T_pO1YHo"],
+    ["LandMark Hospitals, Hydernagar","P",2,"ort sur gen","Metro Station, Balaji Nagar Main Rd, near JNTU Rd, Hydernagar, 500085","+91 40 4545 9999","Open 24 hours",17.49916,78.38803,"ChIJ0QGkkfaRyzsRsVARIl1O7T0"],
+    ["Nithya Clinics, Nizampet","C",2,"gen","2nd Floor, Nizampet Main Rd, above Union Bank, beside Sanghamitra School, Hyder Nagar, 500085","+91 91210 09346","5 to 9 PM, closed Sunday",17.50333,78.38795,"ChIJYf7CZfeRyzsRITcewvbokY4"],
+    ["Apollo Clinic, Nizampet","C",2,"gen","Bhavya’s Anandam, 239, Nizampet Main Rd, E Block, 500090","+91 1800 103 1010","7 AM to 9 PM (Sunday to 4 PM)",17.51174,78.38461,"ChIJj2TcE_aRyzsRZkc-O8WEVcY"],
+    ["Sri Sri Clinic (skin and general), Nizampet","C",2,"der gen","H No. 3, 147/31, Balaji Nagar, Venkatraya Nagar, Nizampet, 500090","+91 90308 08494","7 AM to 10:30 PM",17.5158,78.38163,"ChIJ-8M5F6ONyzsRSO8Ms-RIOjE"],
+    ["N.V. Poly Clinic, Nizampet","C",2,"gen","1-1-22, near Ramalayam, Hyder Nagar, Nizampet, 500085","+91 76710 64569","6:30 AM to 10 PM, closed Sunday",17.50129,78.38221,"ChIJzSAu2_GTyzsREy1Tuh9o1sU"],
+    ["K K Reddy Hospital, KPHB","P",2,"che gen","Devi Nilayam, MIG-278, Road No. 4, near Eswar Eye Hospital, KPHB Phase 1, 500072","+91 40 4013 1011","Open 24 hours",17.49171,78.39737,"ChIJwdfHMu2RyzsRlwljWB7zZ0E"],
+    ["Amrita ENT Head & Neck Hospital, KPHB","C",2,"ent onc ped","HIG 423, KPHB Phase 6, 500085","+91 70322 55931","9 AM to 8 PM, closed Tuesday (Sunday to 12 PM)",17.48917,78.3916,"ChIJ9WF2y46RyzsRWHAe0KGkNCk"],
+    ["Sravani Hospitals, KPHB","P",2,"sur gas gen","MIG 337/1, Road No. 4, main road, near KPHB, Phase 1, 500072","+91 91335 01555","Open 24 hours",17.4944,78.39853,"ChIJSXeoaZCRyzsRoPzjAOHFHto"],
+    ["Ravi Hospital, KPHB","P",2,"uro gen","MIG-549, Road No. 1, KPHB Phase 2, 500072","+91 92480 05150","Open 24 hours",17.48429,78.39848,"ChIJK9sKUYCRyzsRHogo2ssN41c"],
+    ["Padmaja Hospital, KPHB","P",2,"ort uro gen","MIG-144, Road No. 1, KPHB Phase 2, 500072","+91 72888 03555","Open 24 hours",17.48689,78.39945,"ChIJf8uU4fmRyzsRzy6nqrVbCiM"],
+    ["Sri Sri Holistic Hospitals, Kukatpally (KPHB Phase 1)","P",2,"car gyn gen","MIG 113 & 114, Road No. 1, KPHB Phase 1, 500072","+91 92402 12343","Open 24 hours",17.48862,78.40051,"ChIJQRBzkpORyzsRPDmu8nSXayA"],
+    ["Prasad Hospital (children and multi-specialty), KPHB","P",2,"ped inf che gen","MIG-204, Road No. 1, opp. Hotel Sitara Grand, KPHB Phase 1, 500072","+91 40 2315 2315","Open 24 hours",17.49205,78.40162,"ChIJH-Qcp5SRyzsR1_VA4ftft2s"],
+    ["Sree Amma Clinic (home visits), Kukatpally","C",2,"gen inf","Moturi Purna Chandra Bhavan, HMT Line, Kukatpally, 500085","","Open 24 hours (as listed)",17.50275,78.39653,"ChIJqwT3rDmRyzsRtak6xYrl6eM"],
+    ["Aswini Diabetic, Cardiac, Family Clinics, Kukatpally","C",2,"end car gen","S2 & G14, Pragathi Enclave, Bhagya Nagar Colony, Kukatpally, 500072","+91 80193 63636","10 AM to 2 PM and 6 to 10 PM (Sunday 10 to 2)",17.49521,78.40278,"ChIJubxqbeuRyzsR51sMObExJ24"],
+    ["Vijaya Clinic, KPHB (reviews say it may have closed)","C",2,"gen inf","KPHB Phase 3, near temple bus stop, 500072","","10 to 12:30 and 6 to 9, closed Sunday",17.48732,78.39605,"ChIJd6pGBJKRyzsRa8aHP0sjiUY"],
+    ["Dr Nithya’s General & Diabetic Centre, KPHB","C",2,"gen end inf","2nd Floor, MIG 335, Road No. 4, above Bhadra Diagnostics, 500072","+91 78428 22557","6 to 9 PM (Sunday 11 AM to 1 PM)",17.49408,78.39831,"ChIJyziA6KiRyzsR8VBos-W4A3s"],
+    ["Dr Finy’s Clinic, KPHB Phase 9","C",2,"gen inf der","Plot 498, Shop 5, Gokul Plots, KPHB Phase 9, 500085","+91 98850 00720","10 to 1:30 and 6 to 9 (Sunday 12 to 2)",17.48879,78.38062,"ChIJz_r0pyGSyzsReCgSCSHJDx0"],
+    ["Shree Rukmini Clinic, KPHB","C",2,"gen inf","KPHB 5th Phase, Kukatpally, 500085","+91 94400 38040","10 AM to 9 PM daily",17.48108,78.39114,"ChIJ1cMtXI-RyzsRYKFDHNyAhtw"],
+    ["Dr Markandeya, general physician and diabetologist, KPHB","C",2,"gen end","2nd Floor, Gahan Health Care, AVM Towers, Jal Vayu Vihar, 500085","+91 75697 65039","5 to 8 PM, closed Sunday",17.49632,78.39711,"ChIJgTw7u9iRyzsRMcZj1iVHX5M"],
+    ["Sri Rama Clinic (Dr Madanmohan Mane), KPHB","C",2,"gen end","Road No. 4, KPHB Phase 1, Remedy Hospital Ln, 500072","+91 80 4696 1837","5:30 AM to 11 PM",17.49235,78.39751,"ChIJedsY8buRyzsRvczp-i0k7DE"],
+    ["Dr Vikram’s Medving Clinic, Jal Vayu Vihar","C",2,"gen end inf","Door 2, 258c/1, opp. Raptor Cult Gym, Addagutta Society, Jal Vayu Vihar, 500085","+91 95051 54895","7 AM to 11 PM",17.50052,78.39594,"ChIJIzGQ4r2TyzsRm5Dd3sYvfX8"],
+    ["Dr Nithin K, internal medicine, KPHB Phase 1","C",2,"gen inf","MIG 204, Road No. 1, opp. Hotel Sitara Grand, KPHB Phase 1, 500072","+91 91007 70088","Mon to Sat (listed as 24 hours)",17.49214,78.40167,"ChIJRwYJDf6RyzsRyDYsdEq9M-Q"],
+    ["Dr Seetha Katta, general physician (Omni Hospitals), Balaji Nagar","C",2,"gen end","Omni Hospitals, Mumbai Hwy, opp. Big Bazaar, Balaji Nagar, 500072","","Mon to Sat (listed as 24 hours)",17.48527,78.4113,"ChIJzQhUgseRyzsROEeZXJW9qNo"],
+    ["Dr Sadhna Sharma, general physician (fever and diabetes), Marwellus Clinic","C",2,"gen inf end","Marwellus Clinic, opp. ICICI Bank, KPHB 5th Phase, 500085","+91 91548 65260","5:30 AM to 11 PM",17.48042,78.39401,"ChIJkQ789OiRyzsRwpslLQFBK4o"],
+
+    ["Apollo Home Healthcare physicians (Dr B Suneel, Dr Asma Anjum, Dr Sarah Bailur, Dr G Samatha, Dr Moumita Paul), Banjara Hills","C",0,"gen inf end","Apollo Home Healthcare, Gouri Shankar Nagar Colony, Banjara Hills, 500034","+91 80 4006 2162","5:30 AM to 11 PM",17.41457,78.43828,"ChIJ024r3-qXyzsRaYVJeoXJB84"],
+    ["Dr V K Bhargava, general physician (fever and diabetes), Apollo Jubilee Hills","C",0,"gen inf end","Apollo Hospitals, Road No. 72, Film Nagar, Jubilee Hills, 500096","+91 40 6907 1200","5:30 AM to 11 PM",17.4151,78.4124,"ChIJrfse43mXyzsRWwynok9wYUQ"],
+    ["Dr Pranith Popuri, general physician (fever and diabetes), Mamta Clinic","C",0,"gen inf end","8-2-268, Mamta Clinic, Srinagar Colony Main Rd, MLA Colony, 500096","+91 80 4006 2162","6:30 AM to 11 PM",17.4161,78.41809,"ChIJv6JbSbeXyzsRAaCwXbWM_5Q"],
+
+    ["Fever Clinics (Dr Santosh), Kondapur","C",1,"gen inf der","Ground Floor, Sri Mytri Square, opp. Sarath City Capital Mall, Kondapur, 500084","+91 75699 62770","9 AM to 8:30 PM daily",17.45733,78.36567,"ChIJ3_nbz_GTyzsR_w65oka-7Yc"],
+    ["Dr Geeta Devi, fever specialist, Health Valley Hospitals, Kondapur","C",1,"gen inf che","Health Valley Hospitals, beside NISUM, opp. Aparna Towers, Khanamet Rd, Kondapur, 500084","+91 90008 77738","Open 24 hours (as listed)",17.46444,78.36822,"ChIJ7Zpg8f6TyzsRQ-Lo2FneH84"],
+    ["Dr Somnath Gupta, general medicine, Yashoda Hitec City","C",1,"gen end","Yashoda Hospitals, JNTU Rd, Hitec City, 500084","+91 99669 11130","10 AM to 6 PM, closed Sunday",17.46207,78.38452,"ChIJ_YEFIGCRyzsRZYxG8z2d4EA"],
+    ["Dr Krishna Daram, general physician, Khajaguda","C",1,"gen inf che","Flat 201 & 202, Siri Sampada Arcade III, behind Union Bank, Madhura Nagar Colony, Gachibowli, 500104","+91 80 6274 7759","6 to 9 PM, closed Sunday",17.4197,78.37499,"ChIJd7eGWiKVyzsRNPk072oWCVI"],
+    ["Dr Vinay Kumar, general physician, Medicover Out Patient Center","C",1,"gen end","Medicover Out Patient Center, HUDA Techno Enclave, Hitec City, 500081","+91 63032 74374","10 AM to 4 PM, closed Sunday",17.44659,78.3782,"ChIJUSg6He-TyzsRBBTgIU_QpPI"],
+    ["Yashoda general medicine OP (fever, diabetes, hypertension), Hitec City","C",1,"gen inf end","OP, JNTU, Hitech City Main Rd, Kothaguda, 500084","+91 40 6723 2308","9 AM to 6 PM daily",17.46264,78.38408,"ChIJS6HiFW2TyzsRWwZ2UnMM0QI"],
+
+    ["ALIF Clinic (general physician), East Marredpally","C",3,"gen","10/4, A/3531, beside Dho Sher Ki Dargah, Addagutta, East Marredpally, 500026","","5:30 to 10:30 PM (Sunday 10 AM to 2 PM)",17.44289,78.51652,"ChIJxUaZajKayzsRpdDsZuREsao"],
+    ["Dr Kamalesh A, general medicine (fever, diabetes), Yashoda Secunderabad","C",3,"gen inf end","Room 136, OP 4, Alexander Rd, Kummari Guda, Shivaji Nagar, 500003","+91 40 6723 2357","9 AM to 5 PM, closed Sunday",17.44248,78.49712,"ChIJlziRaQybyzsRM-HN6Owlg04"],
+    ["Dr Prem Sagar Clinic (family physician), Ramgopalpet","C",3,"gen","H.No 1-8-54/A/1, PG Road, Ramgopalpet, 500003","+91 90636 07512","Mon to Sat (listed as 24 hours), Sunday 8 AM to 2 PM",17.43786,78.48304,"ChIJ26XVTsMMNYIRn7_7fC_lO8M"],
+    ["Dr Bhattacharjee, general physician, Apollo Secunderabad","C",3,"gen inf end","Apollo Hospitals, Pollicetty Towers, St John’s Rd, Regimental Bazaar, 500003","+91 40 6907 1299","5:30 AM to 11 PM",17.4399,78.5047,"ChIJc0iHJaubyzsRIGj7fW_2qh4"],
+    ["Dr Vighnesh Y, general physician, Yashoda Secunderabad","C",3,"gen end","Room 135, Alexander Rd, Kummari Guda, 500003","+91 40 6723 2355","9 AM to 5 PM, closed Sunday",17.44229,78.49719,"ChIJP0Zv2MebyzsRv8927dmTcqA"],
+
+    ["Royal Health Clinic, Ameerpet","C",4,"gen inf","Vengal Rao Nagar, Mothi Nagar, Ameerpet, Sanjeeva Reddy Nagar, 500038","+91 94949 14008","9:30 AM to 10:30 PM daily",17.44161,78.43751,"ChIJf3yiCxKRyzsRBVafg0-3SFM"],
+    ["Dr M V Rao, general physician, Yashoda Somajiguda","C",4,"gen end","Room 238, Yashoda Hospital, Raj Bhavan Rd, Somajiguda, 500082","+91 99086 00008","10 AM to 4 PM, closed Sunday",17.42451,78.45668,"ChIJ-4H2jriXyzsRorY4pcCQwos"],
+    ["Dr Vijay Kumar Agarwal, general physician (fever and infection), Yashoda Somajiguda","C",4,"gen inf end","Yashoda Hospitals, Raj Bhavan Rd, Somajiguda, 500082","+91 40 6723 2355","9 AM to 5:30 PM, closed Sunday",17.42469,78.4567,"ChIJvd1g4HKXyzsRj-EV1y66Dm0"],
+
+    ["Dr B Krupan Kumar, general physician, Apollo Hyderguda","C",5,"gen inf end","Apollo Hospitals, Hyderguda–Basheerbagh Rd, King Koti, 500029","+91 95501 22666","9 AM to 5 PM, closed Sunday",17.39944,78.47933,"ChIJE50fZpiZyzsRC7Y3LwFJw5Q"],
+    ["Swasa Hospital (lung care), Narayanguda","P",5,"che gen","Himayatnagar, Narayanguda, 500029","+91 96767 60000","Open 24 hours (Sunday 9 AM to 3:30 PM)",17.39903,78.49281,"ChIJOTrNRFWZyzsRDE9PQLK5_bE"],
+
+    ["Mirza Clinic (Dr Mirza Nimmat Baig), Chaderghat","C",6,"gen end","CIB Quarters, 16-7-268, Shaheed Hyder Ali Rd, Chaderghat, Malakpet, 500024","+91 90107 83751","7 AM to 11 PM (Sunday to 2 PM)",17.3751,78.49318,"ChIJo3l-uzaYyzsRC4T5rJ04j8s"],
+    ["Dr Syed Mustafa Ashraf, general physician, CARE Malakpet","C",6,"gen inf end","CARE Hospitals, Chaderghat Rd, Malakpet, 500024","+91 40 6810 6585","10 AM to 4 PM, closed Sunday",17.37689,78.49059,"ChIJ_yB4-v6ZyzsRnm6kA8fcY7c"],
+    ["Dr Mohammed Hashim, general physician, CARE Malakpet","C",6,"gen","CARE Hospitals, Chaderghat Rd, Malakpet, 500024","+91 40 6810 6585","11 AM to 4 PM, closed Sunday",17.37689,78.49059,"ChIJCZiP2hCZyzsRP6omIYKlhho"],
+    ["Dr Ranga Santosh Kumar, general physician (fever, diabetes), Malakpet","C",6,"gen inf end","Yashoda Hospital Rd, Jamal Colony, Malakpet, 500036","+91 87904 52204","9 AM to 5 PM, closed Sunday",17.37485,78.50031,"ChIJh66meQCZyzsRx8kZKc5A_U0"],
+    ["City Clinic, Moghalpura","C",6,"gen inf","Beside Akbar Function Hall, Murad Mahal Colony, Moghalpura, 500002","+91 99490 17227","3 to 10 PM, closed Sunday",17.35575,78.47887,"ChIJm016RseZyzsRgMqhg_GnMHA"],
+    ["Healvibe Clinic (Dr Khalid), Engine Bowli","C",6,"end gen","1st Floor, Nabeel Function Plaza, Engine Bowli, Aliabad, 500053","+91 73861 39313","7 AM to 10 PM, closed Sunday",17.33914,78.46821,"ChIJxa85PwCXyzsR4pS1O8zmxLo"],
+
+    ["Dr Ranjan Samantray, general physician and diabetologist, Mehdipatnam","C",7,"gen end","Pillar 83, 2nd floor, Maruthi Nagar Rd, above DBS Bank, Balaji Nagar, Mehdipatnam, 500006","+91 77804 48089","6:30 AM to 9 PM daily",17.38285,78.42948,"ChIJMVVC_2WXyzsRdkPGjH3iK9c"],
+    ["Dr Syeda Fatima Begum, general physician, Langar Houz","C",7,"gen","9-2-504, beside Majestic Hospital, Langar Houz, 500008","+91 94945 53007","8:30 to 9:30 AM and 6 to 9 PM, closed Sunday",17.38,78.42109,"ChIJw7uQ0TCXyzsRdBez-gH3mkw"],
+    ["Dr Suhail’s Clinic, Attapur","C",7,"gen inf end","Golden Tower, Rajendra Nagar Rd, opp. Pillar 213, Happy Homes Colony, Attapur, 500048","+91 63037 52891","10 AM to 8 PM, closed Sunday",17.34646,78.41562,"ChIJLejJABuXyzsRtBypzwA2dfI"],
+    ["S.R. Clinic (general physician and pulmonology), CBIT Colony","C",7,"gen che end","4-3-119/5/4/1/C/1, CBIT Colony, Kantha Reddy Nagar, 500048","+91 93474 65118","6 to 9 PM, closed Sunday",17.36986,78.43023,"ChIJObWjLvGXyzsRbfPtJ2UyIWo"],
+    ["Dr S. Mahalakshmi, general physician, Gudimalkapur","C",7,"gen inf","Trends Unity, Santosh Nagar, Gudimalkapur, 500006","+91 91107 62810","11 AM to 1 PM and 6 to 8:40 PM (Sunday 11 to 1)",17.39368,78.43817,"ChIJ8SOGfhqXyzsRNcIrYPEr9bE"],
+
+    ["Dr E. Priyatham Reddy, general physician, Advaya Hospitals, LB Nagar","C",8,"gen end","Advaya Hospitals, Nagarjuna Sagar Ring Rd, beside Sprint Diagnostics, Mohan Nagar, LB Nagar, 500074","+91 91543 61171","10 AM to 8 PM (Sunday 11 to 2)",17.34383,78.54875,"ChIJt_VzvUmZyzsR7ZdN4DNHkG0"],
+    ["Dr G. Laxmi Priya, SLV Healthcare Clinic, Vanasthalipuram","C",8,"gen end","Dwarakamai Nagar Colony, Vanasthalipuram, 500070","+91 86882 85112","Open 24 hours (as listed)",17.32952,78.58362,"ChIJNZLz-ruhyzsRe9C8hSo06bM"],
+    ["Lathika Poly Clinic, Vanasthalipuram","C",8,"gen end","Shop 1, Sri Balaji Nagar, Mansoorabad Rd, near Sahara Estates, LB Nagar, 500068","+91 95818 19232","7 AM to 9:30 PM daily",17.34565,78.56875,"ChIJbZgP-mqhyzsRjswHsnkcm7o"],
+    ["Dr Pavani Goutham, AYC Clinic, Mansoorabad","C",8,"gen inf end","AYC Clinic, opp. Balaji Oil Mill, Vinayaka Nagar Colony, Mansoorabad, 500068","+91 80 4006 2162","8:30 AM to 6 PM daily",17.3528,78.5586,"ChIJten1LXuZyzsRr09IOitOS_w"],
+    ["Dr Deshmukh Clinic (children and general), NGO Colony","C",8,"gen ped inf","NGO Colony, Vanasthalipuram, 500070","+91 98868 40589","8:30 to 10:30 AM, 11:30 to 1:30, 8 to 10 PM (Sunday 9 to 1:30)",17.32715,78.56517,"ChIJp-ufTx2iyzsReBXS3fnWNwU"],
+    ["Sriyansh Clinic (general physician and pulmonologist), Vanasthalipuram","C",8,"gen che","C-182, MIG, near Ganesh Temple Rd, HIG Phase 2, Vanasthalipuram, 500070","+91 73370 67878","9 AM to 9:30 PM (Sunday 10 to 1)",17.33041,78.56894,"ChIJDwv6sHmhyzsRP6nKSOitxMU"],
+    ["Jeevan Sai Hospitals, Vanasthalipuram","P",8,"gen end tra den","Plot 26, Golden Tobacco Colony, Prashanth Nagar, Vanasthalipuram, 500070","+91 90632 67174","Open 24 hours",17.33469,78.56929,"ChIJN9NI0fuhyzsRNtj9OUIMkSo"],
+
+    ["Dr Ravi Kiran, general physician and diabetologist, Uppal","C",9,"gen end","NH163, Nalla Cheruvu Rd, Shanti Nagar, Uppal, 500039","+91 70135 16394","Mon to Sat (listed as 24 hours)",17.40163,78.57786,"ChIJSUQ6ixufyzsRO3La0pILYbM"],
+    ["Dr J Mani Reddy, physician and diabetologist, Sri Abhaya Hospital, Uppal","C",9,"gen end","Sri Abhaya Hospital, Laxmareddy Colony, old registration office lane, 500039","+91 90595 55201","Open 24 hours (as listed)",17.40089,78.56328,"ChIJ6VV_Qa6fyzsRs5zKlEEhJ_I"],
+    ["Sri Venkateshwara Poly Clinic, Beerappagadda","C",9,"gyn gen","H.No 2, Jai Sri Ram Nilayam, 9-172, near Ramalayam Rd, Beerappagadda, Uppal, 500039","+91 63001 90044","Open 24 hours",17.40225,78.56435,"ChIJ40Fe-EuZyzsR4tWBi73DMH8"],
+    ["Dr Sadhana V, general physician (fever and diabetes), Boduppal","C",9,"gen inf end","Street 9, Plot 295, Boduppal Colony Rd, opp. SR Digi School, Boduppal, 500039","+91 80 4696 1837","6:30 AM to 11 PM daily",17.42281,78.56725,"ChIJ214Slg2XyzsRjHbMmxLunS8"],
+    ["Dr N. Geetha Sree, physician, Uppal","C",9,"gen inf","Pillar 28, 1st Floor, Uppal Cheruvu Katta Main Rd, beside HP Petrol Pump, 500039","+91 90000 89954","Open 24 hours (as listed)",17.40185,78.5762,"ChIJMXO6C_KfyzsRxY1URhl9Ppg"],
+    ["Dr Jayanth Clinic (physician), Habsiguda","C",9,"gen","P&T Colony, Street 1, Kakateeya Nagar, Habsiguda, 500007","+91 98494 87596","10 AM to 10 PM daily",17.4165,78.53768,"ChIJaQ8L_ymayzsR5BQ0FTL2Tn8"],
+
+    ["Anviah Hospital, Gachibowli","P",1,"gen ent onc","Plot 184, DLF Rd, Chhota Anjaiah Nagar, Gachibowli, 500032","+91 92814 48102","Open 24 hours",17.44825,78.36059,"ChIJl3rWZTyTyzsRNmIjO6RGapY"],
+
+    ["Activelife Physiotherapy & Chiro Laser Osteopathy, KPHB","F",2,"phy ort","1st Floor, Plot C/16, above Karur Vysya Bank, KPHB Phase 1, 500072","+91 98491 81716","7 AM to 10 PM daily",17.48755,78.39998,"ChIJz2XJglyRyzsRxct4btSdFs4"],
+    ["Revive Physiotherapy & Rehabilitation Centre, KPHB 5th Phase","F",2,"phy ort neu","First Floor, S.R Meridian, Plot 11, KPHB 5th Phase Rd, opp. SR Bakery, 500085","+91 98859 82698","9 AM to 2 PM and 5 to 9 PM (Sunday 8 AM to 2 PM)",17.48127,78.39375,"ChIJ6wkjkZORyzsR3p64HwBEO6I"],
+    ["KPHB Physiotherapy Clinic","F",2,"phy ort","MIG-860, Road No. 1, opp. Trinity Lutheran Church, KPHB Phase 2, 500072","+91 98852 08622","9 AM to 1 PM and 4 to 9 PM (Sunday 9 to 1)",17.48378,78.39532,"ChIJFTcJL-2RyzsRf-EFSM11bFw"],
+    ["Reborn Physiocare, KPHB Phase 2","F",2,"phy ort neu","MIG 528, Road No. 1, KPHB Phase 2, 500072","+91 96422 21996","10 AM to 10 PM daily",17.4868,78.39946,"ChIJhV6bvajzyzsRbJ4QRcntWMU"],
+    ["Ashoka Rehab International Physiotherapy Centre, KPHB","F",2,"phy ort","Phase 3, MIG 497, Road No. 4, KPHB, 500072","+91 97033 35108","9 AM to 10 PM, closed Sunday",17.48895,78.39589,"ChIJ4bg5DxWRyzsR8Wetv028xVY"],
+    ["Physiotattva Physiotherapy Clinic, Kukatpally","F",2,"phy ort neu ped","No. 216, next to Bank of Baroda, KPHB Phase 1, 500072","+91 89510 47001","6 AM to 9 PM daily",17.49125,78.39907,"ChIJDWCgGN-TyzsRV8G4U-QwaR0"],
+    ["PhysioFit Chiropractic and Physiotherapy Centre, Banjara Hills","F",0,"phy ort","Imran Plaza, 3rd Floor, Road No. 2, Srinagar Colony Main Rd, Banjara Hills, 500034","+91 77999 94850","12 to 6 PM Mon to Fri, closed Sat and Sun",17.42416,78.42855,"ChIJ1V9OdQCXyzsRNp-txq_LjJM"],
+    ["Physiotattva Physiotherapy Clinic, Jubilee Hills","F",0,"phy ort","8-2-269/3, Plot 101, Road No. 9, Park View Enclave, Jubilee Hills, 500034","+91 89510 47001","6 AM to 9 PM daily",17.42679,78.42083,"ChIJmyTwBRWXyzsRRf95yp4ow80"],
+    ["Dr Sirish Physiotherapy Centre, Banjara Hills","F",0,"phy ort","2/624, Ground Floor, Road No. 10, Gaffar Khan Colony, Banjara Hills, 500034","+91 99661 93413","Open 24 hours (as listed)",17.41573,78.44494,"ChIJY37IXpeZyzsRFTW8F2_OwNc"],
+    ["Ucchvas Rehabilitation Center (stroke and post-surgery rehab), Banjara Hills","F",0,"phy neu ort","564A-37, MLA Colony, Lotus Pond Rd, Road No. 12, Banjara Hills, 500034","+91 40 6710 7107","Open 24 hours",17.41432,78.42171,"ChIJOYgNqMmXyzsRiIskxLNjPlU"],
+    ["BirthRight by Rainbow Hospitals physiotherapy (women and postpartum), Banjara Hills","F",0,"phy gyn","Room 41, Road No. 2, near Park Hyatt, Srinagar Colony, Banjara Hills, 500034","+91 80 6530 9001","9 AM to 7 PM daily",17.42496,78.43206,"ChIJZz9Ziq6RyzsR0AtZoCet5h4"],
+    ["Ashoka Rehab International Physiotherapy Centre, Punjagutta","F",4,"phy ort","3rd Floor, Osman Plaza, 6-3-352, Nagarjuna Circle Rd, Mothi Nagar, Dwarakapuri, 500082","+91 99663 62696","9 AM to 10 PM, closed Sunday",17.42565,78.44975,"ChIJ71mP3paXyzsRNZNMC5q1yUQ"],
+    ["Aruna Physiotherapy & Rehab Clinic, Kondapur","F",1,"phy ort","Signal towards Police Battalion, Hanuman Nagar, Kondapur, 500084","+91 96668 50129","10 AM to 10 PM daily",17.46356,78.36575,"ChIJDfdKEgCTyzsR_Khgvk2WFm4"],
+    ["Myo Physio Care, Gachibowli","F",1,"phy ort neu","1st floor, Plot 46, near My Home Vihanga, Financial District, Gachibowli, 500046","+91 91824 92347","8 AM to 10 PM (Sunday 9 to 6)",17.42839,78.33272,"ChIJHzpzIvSTyzsRmVmUDUcTRQw"],
+    ["Core Clinical Physiotherapy and Fitness, Kondapur","F",1,"phy ort","3rd St, Sri Ram Nagar Block C, Kondapur, 500084","+91 80084 56655","9 AM to 9 PM (Sat 10 to 8), closed Sunday",17.45892,78.35076,"ChIJS7FsgrGTyzsRYZ2OrlrYwXvg"],
+    ["Matrix Physio Clinic, Kondapur","F",1,"phy ort","Plot 109B, beside GEM Motors Service Center, Raghavendra Colony, Kondapur, 500084","+91 99663 68686","10 AM to 2 PM and 5 to 9 PM",17.4699,78.35937,"ChIJ49KiKKyTyzsRdXOS_nubX3M"],
+    ["Suryaa’s Physiotherapy and Pain Management Clinic, Madhapur","F",1,"phy ort neu","Pillar 1735, beside Big C Mobile Showroom, Megha Hills, Sri Sai Nagar, Madhapur, 500081","+91 97034 91663","9 AM to 9:30 PM (Sunday to 5)",17.44155,78.39046,"ChIJDR8piOqRyzsRuNhFhHpXEIc"],
+    ["PAL Physiotherapy & Sports Rehab, Madhapur","F",1,"phy ort","Plot 1-89/A/3/15, beside Siddarth Fitness gym, near Gowra Tulips, Madhapur, 500081","+91 86393 98229","7 AM to 9 PM daily",17.43969,78.3868,"ChIJB2O-bCeRyzsR_wbGixWDVi0"],
+    ["Aadvik Physio Rehab Center, West Marredpally","F",3,"phy ort","10-2-58, Street 9, Aswini Colony, West Marredpally, 500026","+91 63037 25109","9 AM to 9 PM (Sunday 10 to 1)",17.44744,78.50564,"ChIJ6-KZ_eObyzsRmp0ZG6M6Srk"],
+    ["Siddhi Vinayaka Physiotherapy Clinic, West Marredpally","F",3,"phy ort","Shop 35 & 36, Santosh Ma Colony, opp. Durga Tiffin Centre, 500026","+91 90000 32020","9 AM to 1 PM and 4 to 9 PM, closed Sunday",17.45553,78.50742,"ChIJT-tTs0eayzsRBj9Nv2Df6DE"],
+    ["Flexitude Physio and Sports Science, West Marredpally","F",3,"phy ort","2nd floor, 10-2-274/4, Sardar Patel Rd, above Fortune Honda, 500026","+91 73068 85927","7 AM to 7 PM, closed Sunday",17.4427,78.50482,"ChIJydjaJRCbyzsR9wtONvuG1Xk"],
+    ["Legend Physiotherapy (Dr Sirish), Begumpet","F",3,"phy ort","46, PG Road, opp. Parsi Dharamsala, Sindhi Colony, Begumpet, 500003","+91 79977 46927","Open 24 hours (as listed)",17.44144,78.48209,"ChIJM_XmrPCZyzsRtSfxXX32I-Y"],
+    ["Divya’s Physiotherapy Wellness and Rehabilitation Centre, East Marredpally","F",3,"phy ort","10-3-17, Addagutta, East Marredpally, 500026","+91 99858 56800","9 AM to 9 PM (Thu to Sat split), closed Sunday",17.44534,78.51534,"ChIJF2epKdGbyzsRl6GQg5HpdSE"],
+    ["Cure Rehab, Begumpet","F",3,"phy neu ort","6-3-1216/120, Methodist Colony Lane, beside Varun Villa Apts, Begumpet, 500016","+91 93940 73336","Open 24 hours",17.43697,78.46261,"ChIJAQAAELGQyzsRoNmV_8CeAIU"],
+    ["Bharathi Physiotherapy and Rehabilitation Clinic, Dilsukhnagar","F",8,"phy ort","Shop 2, Bharadwaja Complex, Kanchi Residency, Sahithi Nagar, 500060","+91 97042 89310","9 AM to 10 PM daily",17.36339,78.52196,"ChIJ24vlt3CZyzsR_8Qx_8PnI_E"],
+    ["Hari Aum Physiotherapy and Pain Relief Clinic, Dilsukhnagar","F",8,"phy ort","Shop 10-1, P&T Colony, opp. Bangalore Iyengar Bakery, 500060","+91 88856 88893","9 AM to 9 PM daily",17.36366,78.5263,"ChIJ6TMOePSYyzsRZdCbD6LCstI"],
+    ["Legend Physiotherapy at Home, Gaddiannaram","F",8,"phy ort","16, Gaddiannaram Rd, behind Kamala Hospital, Dilsukhnagar, 500060","+91 79977 46927","Open 24 hours (as listed)",17.36566,78.52413,"ChIJu48paAWZyzsRX9CijT1Qemg"],
+    ["Physiotherapy clinic, Kothapet","F",8,"phy ort","Astalaxmi 2, Temple Rd North, Vasavi Colony, Kothapet, 500102","","Open 24 hours (as listed)",17.36714,78.54746,"ChIJ_TWVRACZyzsRZd9T0a8KQjM"],
+    ["HealnCare Physiotherapy Clinic, Dilsukhnagar","F",8,"phy ort","Shop 205, Sreeman Rama Tower, Chaitanyapuri Main Rd, 500060","+91 95152 31008","10:30 AM to 2 PM and 6 to 9 PM, closed Sunday",17.36902,78.53077,"ChIJH_Oml7-ZyzsRfBxcckbYglo"],
+    ["ROBO Physiotherapy Clinic, Dilsukhnagar","F",8,"phy ort","16-11-511/D/17, beside Shalivahana Hospital, Shalivahana Nagar, 500036","+91 96668 01418","9:30 AM to 1:30 PM and 5:30 to 10 PM daily",17.37244,78.52311,"ChIJjQr-4rKZyzsRY7e4yVBz26o"],
+    ["Sri Balaji Physio Care, Chikkadpally","F",5,"phy ort","Street 4, lane beside Nandhini Hotel, opp. Chandana Brothers parking, Chikkadpally, 500020","+91 95815 82123","9 AM to 10 PM (Sunday to 2)",17.4036,78.49498,"ChIJnfBftsGZyzsRYhjUT7ls6QM"],
+    ["Dr Sirish Physiotherapy, Himayatnagar","F",5,"phy ort","3-6-203, Himayat Nagar Rd, New SBH Colony, 500029","+91 99661 93413","Open 24 hours (as listed)",17.40701,78.48616,"ChIJ_WqyIWOZyzsRL5fLjkpc6o8"],
+    ["Lions Physio, Himayatnagar","F",5,"phy ort neu","#112, Tirumal Apartment, Skyline Theatre Lane, Street 19, Himayatnagar, 500029","+91 80995 58557","12 PM to 10 PM, closed Sunday",17.40297,78.48004,"ChIJf2qEGd6ZyzsRugMbd_aZGnk"],
+    ["Physio Health Cure, Khilwat","F",6,"phy ort","Opp. Khilwath Ground, below Zubaidi Fitness Gym, Mahboob Chowk, Khilwat, 500002","+91 86865 32371","12 PM to 10 PM, closed Sunday",17.35836,78.47035,"ChIJ768ziKuXyzsRI5yEElHVMhw"],
+    ["Al-Shifa Physiotherapy Clinic, Mehdipatnam","F",7,"phy ort","Saqlain Heights, 12-2-458/7, near Amba Theatre, Viswash Nagar, 500006","+91 99852 10849","4 to 9:30 PM, closed Sunday",17.39091,78.44142,"ChIJz-h0t06XyzsRH3zFb1BCMXU"],
+    ["Pioneer Physio Care, Mehdipatnam","F",7,"phy ort","402, MK Plaza, Khader Bagh Rd, above Sultan Restaurant, Mehdipatnam, 500008","+91 80086 67014","12 PM to 8 PM, closed Sunday",17.39048,78.42713,"ChIJOVVVFQmXyzsRhTjXDdUzrVM"],
+
+    ["Cancer Healer Center (day care and infusion), Banjara Hills","I",0,"onc ivc","ABK Olbee Plaza, 403, Road No. 1, opp. CARE Hospital, Banjara Hills, 500034","+91 87962 62357","9:30 AM to 7 PM daily",17.4126,78.44949,"ChIJl81gBleXyzsRFxXEm8tRRcI"],
+    ["NephroPlus Dialysis Clinic, Banjara Hills","I",0,"uro ivc","Survey No. 129, Road No. 12, above Renault showroom, Film Nagar, Banjara Hills, 500028","+91 79970 03111","Open 24 hours, closed Sunday",17.41034,78.43778,"ChIJz_6N4CiXyzsRSod5AaLcOII"],
+    ["AINU Kidney Dialysis Center, Somajiguda","I",4,"uro ivc","6-3-562/A, Irram Manzil Colony, Somajiguda, 500082","+91 40 6731 3131","Open 24 hours, closed Sunday",17.41669,78.45361,"ChIJPbmn_1uXyzsRto4ZMir5RAo"],
+    ["AINU Kidney Dialysis Center, Dilsukhnagar","I",8,"uro ivc","16-11-741/C/C/15, Indira Nagar Rd, Gaddiannaram, 500060","+91 40 6797 6747","Open 24 hours, closed Sunday",17.36949,78.52096,"ChIJsyztGc6ZyzsR8WCUeAWIeqg"],
+    ["Bhagwan Mahavir Dialysis Centre, King Koti","I",5,"uro ivc","King Koti, Hyderguda, 500001","","6 AM to 7 PM, closed Sunday",17.3932,78.48291,"ChIJS8lMd9qZyzsRZABfZYwmDKc"],
+    ["NephroPlus Dialysis Clinic, Chaderghat","I",6,"uro ivc","CARE Hospital building, Chaderghat Rd, Azampura, 500024","","Open 24 hours",17.37683,78.49058,"ChIJk-bPEuyZyzsRLNWVdt3IWpE"],
+    ["SAP Kidney Center (dialysis), Tolichowki","I",7,"uro ivc","Plot 144, Kakatiya Nagar, Salarjung Colony, Toli Chowki, 500008","+91 80752 88559","Open 24 hours",17.39383,78.42283,"ChIJRZs7MKuXyzsRhxUppq5-QK8"],
+    ["Pi Cancer Care Hospital (chemotherapy day care), Gachibowli","I",1,"onc ivc","RIVEA Vascular Institute, Plot 36 & 36A, DLF Rd, Chhota Anjaiah Nagar, Gachibowli, 500032","+91 87901 23852","9 AM to 6 PM, closed Sunday",17.44611,78.36132,"ChIJJ1mkZOKTyzsRSReG_cQo-Rg"],
+    ["CARE Cancer Institute (chemotherapy), Hitec City","I",1,"onc ivc","CARE Hospitals, Old Mumbai Hwy, near Cyberabad Police Commissionerate, Hitec City, 500032","+91 40 6810 6589","10 AM to 4 PM, closed Sunday",17.43052,78.37223,"ChIJi0J1M4aTyzsRiuXxPnh5e5w"],
+    ["Hyderabad Cancer Centre (St Mary’s), Balanagar","I",2,"onc ivc","Opp. IDPL Colony Road, Sowbhagya Nagar, Balanagar, 500037","+91 40 2307 7770","Hours not listed",17.4858,78.44937,"ChIJbYBeH0OQyzsRGO3g_t0pkSg"],
+    ["Global Home Care Nursing (home IV drip and nursing), Kachiguda","I",5,"ivc gen","Sai Nanditha Enclave, Veerappa Yadav Marg, Kutbi Guda, Kachiguda, 500027","+91 76808 03119","Open 24 hours",17.38854,78.49148,"ChIJLzOWxjOZyzsRqHaJi9Zci24"],
+
+    ["Life Voluntary Blood Bank, KPHB","B",2,"bld","Ishta Women’s Clinic, MIG 786, Road No. 1, KPHB Phase 2, 500072","+91 40 2305 9222","Open 24 hours",17.48517,78.39897,"ChIJS1TMqeyRyzsR3daarrEBVSw"],
+    ["Sri Anjaniputhra Blood Centre, IDA Kukatpally","B",2,"bld","5-5-35/154, 1st floor, Prashanti Nagar, IDA Kukatpally, 500072","+91 88853 89033","Open 24 hours",17.47757,78.42661,"ChIJd4A0W5OTyzsRLsUgW7jFP0A"],
+    ["Aayush Blood Bank, Vivekananda Nagar","B",2,"bld","Obul Reddy Complex, Road No. 2, Sumitra Nagar Colony, Vivekananda Nagar, 500072","+91 96761 37761","Open 24 hours",17.49226,78.40933,"ChIJ-zgvwEeRyzsRWwVCn3mH4sI"],
+    ["Aaraadhya Blood Center, KPHB","B",2,"bld","5th Floor, Road No. 4, above KFC, KPHB Phase 2, 500072","+91 97062 22999","Open 24 hours",17.48888,78.39607,"ChIJMWiboEmRyzsR_LHT5HmoOZI"],
+    ["Dr Ronald Ross Blood Bank, KPHB","B",2,"bld","3rd floor, Sai Plaza, Plot 36, KPHB Phase 1, 500085","+91 88862 23113","Open 24 hours",17.49884,78.38446,"ChIJk0jJG_aRyzsRy9ZyWfpWi3Y"],
+    ["PV Blood Centre, Himayatnagar","B",5,"bld","NVK Tower, AP State Housing Board, Himayatnagar, 500029","+91 93476 92277","Open 24 hours",17.39868,78.485,"ChIJGbEfwmWZyzsRzoDiCQcZgAY"],
+    ["Sanjeevini Blood Bank, Kavadiguda","B",5,"bld","Bhagyanagar Complex, RTC X Rd, Kavadiguda, 500020","+91 40 2766 7500","Open 24 hours",17.40794,78.49613,"ChIJxRJwXpWZyzsR8e1cXjaxLZs"],
+    ["Hyderabad Blood Bank, New Malakpet","B",6,"bld","Judges Colony, New Malakpet, 500036","+91 83415 55225","Open 24 hours",17.37157,78.50018,"ChIJ4wR1MheZyzsR6z5786hhcKo"],
+    ["Yashoda Blood Bank, Malakpet","B",6,"bld","Beside Yashoda Hospital, Malakpet, 500024","+91 40 4567 4567","Open 24 hours",17.37641,78.49492,"ChIJP8ojr0mYyzsRJX4u7iyuFxk"],
+    ["Sangam Blood Centre, LB Nagar","B",8,"bld","3rd floor, beside Vijaya Lakshmi Theatre, Sriram Nagar Lane, LB Nagar, 500074","+91 85001 08111","Open 24 hours",17.34313,78.55436,"ChIJUVNEgRmZyzsRvSfr7NNCHJU"],
+
+    ["Medigen Nizampet (branded generic pharmacy)","R",2,"phm","X Roads, opp. Sri Sri Holistic Hospitals, Jai Bharat Nagar, Nizampet, 500072","+91 77028 43977","9:30 AM to 10:30 PM daily",17.50125,78.38874,"ChIJz-g2A5iRyzsR8bgMLhzCoFo"],
+    ["Sai Mayuri Medical Hall, KPHB","R",2,"phm","Alluri Commercial Complex, NH 65, opp. KPHB Colony, Bhagya Nagar Colony, 500072","+91 99495 95060","9 AM to 11 PM, closed Sunday",17.49372,78.40283,"ChIJzersN-uRyzsRp4iB7tm80H0"],
+    ["Aster Pharmacy, KPHB 7th Phase","R",2,"phm","H.No 15-31-VII M-86, KPHB Phase 7, 500085","+91 8071 178 017","8 AM to 11 PM daily",17.47478,78.3858,"ChIJt4REUW6RyzsRbE1lwGnQObo"],
+    ["Apollo Pharmacy, Nizampet (Nagarjuna Homes)","R",2,"phm","No. 14 & 15, Nizampet Main Rd, Nagarjuna Homes, Nizampet, 500085","+91 79 4747 9282","7 AM to 11 PM daily",17.50484,78.38738,"ChIJ7RHH_g22yzsRSDPYkeydQLs"],
+    ["JANAGEN Generic & Surgical Pharmacy, KPHB Street 4","R",2,"phm","MIG-315, Malik Plaza, Remedy Hospital Ln, KPHB Phase 1, 500072","+91 91548 19747","Open 24 hours",17.49223,78.39734,"ChIJkbGqkG-RyzsRZcWT_RuRoXs"],
+    ["Apollo Pharmacy, Kukatpally","R",2,"phm","MIG-264, Remedy Hospital Ln, KPHB Phase 1, 500072","+91 79 4281 3651","Open 24 hours",17.49203,78.39732,"ChIJt35MYBiP2TsRti6a6qg69Q0"],
+    ["Wellness Pharmacy, KPHB","R",2,"phm","Ground floor, H.No 72/A, Road No. 1, KPHB Phase 1, 500072","+91 81421 18150","Open 24 hours",17.49028,78.40118,"ChIJweGkOXSRyzsRJfoTovoEqmc"],
+    ["Shree Siddhi Generic Medical, Kukatpally","R",2,"phm","Vivekananda Nagar Extension, Kukatpally, 500072","+91 90302 58055","Mostly 24 hours",17.49066,78.41376,"ChIJhTL2ny-RyzsRL23ZRhdVPm0"],
+    ["Remedy Pharmacy and Clinic, KPHB","R",2,"phm","Near Rainbow Vistas Phase 1, Kaithalapur, KPHB 8th Phase, 500085","+91 97036 11911","Open 24 hours",17.4679,78.40084,"ChIJ3ZI7YSmRyzsR39OquOeu3c8"],
+    ["Apollo Pharmacy, Banjara Hills Road 12","R",0,"phm","Road No. 12, near Mi Studio, Bhola Nagar, Banjara Hills, 500028","+91 79 4748 0043","Open 24 hours",17.40793,78.45009,"ChIJR-ylo2gvtDsRPLwNzoJRTQ8"],
+    ["Medicines & More, Banjara Hills","R",0,"phm","Bhaskar Plaza, Road No. 1, Prem Nagar, Banjara Hills, 500034","","Open 24 hours",17.41197,78.44995,"ChIJz3aETTiXyzsRKGLyNT9HT3g"],
+    ["Apollo Pharmacy, Anand Nagar, Banjara Hills","R",0,"phm","Venkatramana Colony Rd, Anand Nagar Colony, Banjara Hills, 500004","+91 79 4748 0042","Open 24 hours",17.41204,78.45375,"ChIJ_akfD3mYyzsR7Ad6uXfTGY0"],
+    ["Cloudnine Pharmacy, Banjara Hills","R",0,"phm","Cloudnine Hospital, Road No. 2, Banjara Hills, 500034","+91 99728 99728","Open 24 hours",17.42467,78.43316,"ChIJpdQh63CXyzsRAagQlMOf_nc"],
+    ["Ameerpet Drug Mart","R",4,"phm","Ameerpet Rd, opp. Value Zone building, Ameerpet, 500073","","Open 24 hours",17.43095,78.4485,"ChIJO2CHCQCRyzsRK0OaRjumtqI"],
+    ["JANAGEN Pharmacy, Kutbiguda","R",5,"phm","Laxminarayan Apartments, Kutbi Guda, Kachiguda, 500027","+91 90690 76868","Open 24 hours",17.38881,78.48996,"ChIJCRyzE7SZyzsRb9rUkfmzseE"],
+    ["JANAGEN Pharmacy, Kachiguda","R",5,"phm","Opp. CC Shroff Hospital, Barkatpura, Kachiguda, 500027","+91 90690 75858","Open 24 hours",17.3903,78.49645,"ChIJn4sY6XqZyzsRlZRJj92yq6c"],
+    ["Apollo Pharmacy, Kachiguda","R",5,"phm","Barkatpura Rd, opp. Sai Krishna Neuro Hospitals, Kachiguda, 500027","+91 79 4748 0005","Open 24 hours",17.38974,78.49591,"ChIJ8dUqWFf6tjsRa5lPjOW9ar0"],
+    ["Sri Padamavathi Pharmacy, Begumpet","R",3,"phm","Rasoolpura, Jagadish Nagar Colony, Begumpet, 500003","","Open 24 hours",17.4465,78.47609,"ChIJc48wTQCbyzsRlUIQ8qD8H9w"],
+    ["JANAGEN Pharmacy, East Marredpally","R",3,"phm","Select House, Adda Gutta, East Marredpally, 500026","+91 82473 98704","Open 24 hours",17.44884,78.50922,"ChIJu4L6GPCbyzsRdg6ZGje8EnA"],
+    ["Medicare Pharmacy, Gachibowli","R",1,"phm","Gachibowli–Miyapur Rd, opp. SBI Bank Road, Gachibowli, 500032","+91 97039 26021","9 AM to 2 AM daily",17.44042,78.36384,"ChIJlajFf7eTyzsRrpyOlZZoDzs"],
+    ["Apollo Pharmacy, Kothaguda","R",1,"phm","Apollo Medical Centre, Kothaguda X Road, Kondapur, 500084","+91 79 4748 0010","9 AM to 10 PM daily",17.45989,78.36592,"ChIJM9KsnSjQ0TsR8npXZP07oNM"],
+    ["Aster Pharmacy, Kondapur","R",1,"phm","No. 66, 40 Feet Road, Sri Ram Nagar, Kondapur, 500084","+91 8071 177 997","8 AM to 11 PM daily",17.46024,78.35137,"ChIJR9hdFICTyzsRIhqnAzYDlxg"],
+    ["Apollo Pharmacy, Masjid Banda, Kondapur","R",1,"phm","Beside Flow 24 Drive In, Masjid Banda, Kondapur, 500084","+91 79 4281 3452","7 AM to 11 PM daily",17.46643,78.33976,"ChIJSb4ByrWTyzsRu7FJBEy5whs"],
+    ["Apollo Pharmacy, Kondapur","R",1,"phm","Gachibowli–Miyapur Rd, near Chai Connection, Kondapur, 500084","+91 79 4747 9526","7 AM to 11 PM daily",17.46216,78.36688,"ChIJncd9bMuTyzsR5oj_pBq2bhw"],
+    ["JANAGEN Pharmacy, Dilsukhnagar","R",8,"phm","Old Post Office, Sai Baba Temple Lane, Dilsukhnagar, 500060","+91 90001 39775","Open 24 hours",17.36323,78.5262,"ChIJ9SK5SXmZyzsRHFOdkt4QQRU"],
+    ["Venki Pharmacy, Uppal","R",9,"phm","Laxma Reddy Colony Rd, Uppal, 500039","+91 79951 85011","Open 24 hours",17.39928,78.56306,"ChIJPxmGbACZyzsRnlU_H2WWENo"],
+    ["Med Mart Pharmacy, Uppal","R",9,"phm","Hyderabad–Janagam Hwy, Beerappagadda, Uppal, 500039","","Open 24 hours",17.40182,78.56237,"ChIJe1G3OwCZyzsRZc7ulGE_RFk"],
+    ["Sathwika Pharmacy and General, Uppal","R",9,"phm","Laxma Reddy Colony, Uppal, 500039","+91 94418 71706","Open 24 hours",17.39554,78.56658,"ChIJl1_1QnWfyzsR0jaGPMRO8os"],
+    ["JANAGEN Pharmacy, Boduppal","R",9,"phm","Opp. Abhaya Hospital, Bhavani Nagar, West Hanuman Nagar, Boduppal, 500092","+91 99892 48080","Open 24 hours",17.41582,78.58488,"ChIJdbko2oOfyzsReyjEn8lLBro"],
+    ["Kings Medical, Mehdipatnam","R",7,"phm","Beside Kings Restaurant, Santosh Nagar, Mehdipatnam, 500006","+91 74164 23873","Open 24 hours",17.39396,78.44223,"ChIJe6eT_S2XyzsRxmGzvR6JZNo"],
+    ["Medzo Pharmacy, Attapur","R",7,"phm","Satyanarayan Nagar, Gudimalkapur, Mehdipatnam, 500006","+91 88977 62921","Open 24 hours",17.38266,78.43053,"ChIJ6d8TQN2XyzsR7emJk2GFBQw"],
+    ["M. G. Pharma Planet, Old Malakpet","R",6,"phm","Water Tank Rd, APHB Colony, Old Malakpet, 500036","+91 91603 47907","Open 24 hours",17.38136,78.50125,"ChIJY-IJl_GZyzsRuUEgi3bjmlc"],
+    ["Apollo Pharmacy, Malakpet","R",6,"phm","Opp. Yashoda Hospitals, Judges Colony, Malakpet, 500036","+91 79 4748 0004","Open 24 hours",17.37369,78.50068,"ChIJu_PY2jaYyzsRoNlGNvQ1IZg"],
+    ["Orignal Plus Pharmacy, Moghalpura","R",6,"phm","Opp. Esra Hospital, Charminar Rd, Moghalpura, 500002","","Open 24 hours",17.35692,78.47503,"ChIJqXMJV_WXyzsRUoJyFVITtYs"],
+
+    ["Wellknox Medical Rehabilitation, Banjara Hills","N",0,"nrs phy","Block H, H. No. 8-2-603/V/9, Plot No. 9, Road No. 12, Banjara Hills, Hyderabad 500034","+91 91335 60111","Residential care: call for admission and visiting hours",0,0,"","Email info@wellknox.com. Confirm dialysis and IV services at this branch.","https://wellknox.com/contact"],
+    ["Wellknox Medical Rehabilitation, HITEC City and Kondapur","N",1,"nrs phy","Plot Nos. 3/A & 3/B, Shilparamam Road, opposite Google Office, Whitefields, HITEC City, Kondapur, Hyderabad 500081","+91 91335 60111","Residential care: call for admission and visiting hours",0,0,"","Email info@wellknox.com. Confirm dialysis and IV services at this branch.","https://wellknox.com/contact"],
+    ["Wellknox Medical Rehabilitation, Kukatpally","N",2,"nrs phy","Road No. 1, KPHB Colony, Phase 1, opposite Holistic Hospital, Kukatpally, Hyderabad 500072","+91 91335 60111","Residential care: call for admission and visiting hours",0,0,"","Email info@wellknox.com. Confirm dialysis and IV services at this branch.","https://wellknox.com/contact"],
+    ["Wellknox Medical Rehabilitation, LB Nagar","N",8,"nrs phy","H. No. 8-16/1, LB Nagar Main Road, beside Mody India Cars Pvt. Ltd., Aaditya Nagar, LB Nagar, Hyderabad 500074","+91 91335 60111","Residential care: call for admission and visiting hours",0,0,"","Email info@wellknox.com. Confirm dialysis and IV services at this branch.","https://wellknox.com/contact"],
+    ["Wellknox Medical Rehabilitation, Nanakramguda","N",1,"nrs phy","Plot No. 63, Jana Chaitanya Layout Road, Financial District, Nanakramguda, Hyderabad 500032","+91 91335 60111","Residential care: call for admission and visiting hours",0,0,"","Email info@wellknox.com. The contact page lists this location, but the homepage describes Financial District as launching in 2026, so confirm admissions.","https://wellknox.com/"],
+    ["Ucchvas Transitional Care, Banjara Hills","N",0,"nrs phy neu","564A-37, MLA Colony, Lotus Pond Road, Lane No. 12, Banjara Hills, Hyderabad 500096","+91 96666 71107","Residential care: call for admission and visiting hours",0,0,"","Other numbers: 040-67107107, 1800-419-7107. Confirm branch-specific dialysis, IV treatment and nursing arrangements.","https://www.ucchvas.in/contact-us/"],
+    ["Ucchvas Transitional Care, Gachibowli","N",1,"nrs phy neu","Door No. 2-50/2, Jayabheri Pine Valley Colony, near CARE Hospital, Gachibowli, Hyderabad 500032","+91 96666 71107","Residential care: call for admission and visiting hours",0,0,"","Other numbers: 040-67107108, 1800-419-7107. Confirm branch-specific dialysis, IV treatment and nursing arrangements.","https://www.ucchvas.in/contact-us/"],
+    ["Crystal Neuro Rehabilitation Centre, Dilsukhnagar","N",8,"nrs phy neu uro ivc","13-18-82, Chaitanyapuri Main Road, VR Colony, Pratap Nagar, Dilsukhnagar, Hyderabad 500060","+91 99669 61396","Residential care: call for admission and visiting hours",0,0,"","Advertises inpatient beds, 24-hour nursing, ICU and in-house haemodialysis. Confirm prescribed IV requirements.","https://www.crystalneurorehab.com/"],
+    ["HCAH SuVitas, Gachibowli","N",1,"nrs phy","Plot No. 38, Ground Floor, Lane 2 beside Radisson Hotel, Jayabheri Enclave, Gachibowli, Hyderabad 500032","079-65083244","Residential care: call for admission and visiting hours",0,0,"","Other number: 079-65083269. Email contact@suvitas.com. Inpatient transitional rehabilitation; confirm IV treatment and dialysis arrangements.","https://suvitas.com/contact-us/"],
+    ["HCAH SuVitas, Somajiguda","N",4,"nrs phy","6-3-1090/1/2/A, Somajiguda, Hyderabad","079-65083244","Residential care: call for admission and visiting hours",0,0,"","Other number: 079-65083269. Email contact@suvitas.com. Ask for the map pin, because the published PIN code appears inconsistent. Confirm IV and dialysis arrangements.","https://suvitas.com/contact-us/"],
+    ["Anantha Rehab Hospital, Begumpet","N",3,"nrs phy neu","Sy. No. 20/2, H. No. 1-10-44/2, Plot Nos. 1 & 3, Chikoti Garden, Begumpet, Hyderabad 500016","040-49715052","Residential care: call for admission and visiting hours",0,0,"","Other number: +91 98898 85052. Email info@anantharehab.com. Inpatient rehabilitation, transitional care and round-the-clock medical support advertised. Confirm IV and dialysis.","https://www.anantharehab.com/contact-us"],
+    ["Brinnova Rehabilitation Centre, Banjara Hills","N",0,"nrs phy","H. No. 8-2-686/7/10, Sy. No. 129, 48, Road No. 12, Banjara Hills, Hyderabad 500034 (as published)","+91 91005 55511","Residential care: call for admission and visiting hours",0,0,"","Other number: +91 91005 55522. Email info@brinnova.in. Residential transitional rehabilitation advertised. Confirm the exact map pin, IV and dialysis support.","https://www.brinnovacare.com/about.php"],
+    ["Brinnova Rehabilitation Centre, HITEC City","N",1,"nrs phy","2-91/78/RS, White Field Road, Whitefields, HITEC City, Hyderabad 500084","+91 91005 55511","Residential care: call for admission and visiting hours",0,0,"","Other number: +91 91005 55522. Email info@brinnova.in. Confirm residential nursing, IV treatment and dialysis support at this branch.","https://www.brinnovacare.com/about.php"],
+    ["KITES Senior Care, Banjara Hills and Srinagar Colony","N",0,"nrs phy gen","Plot No. 58, Srinagar Colony Main Road, Sagar Society, Sri Nagar Colony, Aurora Colony, Banjara Hills, Hyderabad 500073","+91 99800 67000","Residential care: call for admission and visiting hours",0,0,"","Email hello@kitesseniorcare.com. Senior post-hospital rehabilitation, nursing with medical oversight and palliative care. Confirm IV and dialysis.","https://kitesseniorcare.com/location-hyderabad/"],
+    ["Eira Integrated Care Center, Banjara Hills","N",0,"nrs phy gen","Plot No. 8-2-608/1/4&3, Farooqui Chambers, behind Tibarumal Jewellery, Gaffar Khan Colony, Road No. 10, Banjara Hills, Hyderabad 500034","+91 92811 55123","Residential care: call for admission and visiting hours",0,0,"","Email info@eiraicc.in. Rehabilitation, geriatric and palliative care with 24-hour nursing and medical support. Confirm IV and dialysis.","https://www.eiraicc.in/contact.php"],
+    ["Punarv Health, Narsingi","N",1,"nrs phy","Plot No. 20, adjacent to Allu Studios, Power Welfare Society, Narsingi, Hyderabad 500075","+91 63035 34325","Residential care: call for admission and visiting hours",0,0,"","Email punarv.hospital@gmail.com. Inpatient transitional care, doctor-guided nursing, monitoring and nutrition. Confirm IV and dialysis.","https://www.punarvhealth.com/"],
+    ["Care Convoy, Kamalapuri Colony","N",0,"nrs phy gen","Plot No. 31, Phase 1, Road No. 2, Kamalapuri Colony, Banjara Hills, Hyderabad 500073","+91 77995 55018","Residential care: call for admission and visiting hours",0,0,"","Email careconvoy56@gmail.com. Transitional care, medically supported assisted living and rehabilitation. Confirm nursing intensity, IV and dialysis.","https://careconvoy.in/assisted-living-in-banjara-hills/"],
+    ["Cure Multispeciality Rehab, Begumpet","N",3,"nrs phy neu","H. No. 6-3-1216/120, Methodist Colony, Begumpet, Hyderabad 500016","+91 93924 86771","Residential care: call for admission and visiting hours",0,0,"","Email curerehabphysiotherapy66@gmail.com. Inpatient rehabilitation and 24-hour ICU services advertised. Confirm IV and dialysis.","https://curerehab.in/locations/begumpet"],
+    ["ApoKOS Rehabilitation Hospital, Jubilee Hills","N",0,"nrs phy neu ort","Apollo Health City campus, near Apollo Hospital, Jubilee Hills, Hyderabad","+91 91333 39526","Residential care: call for admission and visiting hours",0,0,"","Email info@apokos.in. Specialised rehabilitation hospital. Request an inpatient package and confirm IV and dialysis arrangements.","https://apokosrehab.com/about-us/apokos/"],
+    ["NAVI Rehabilitation Centre at NHS Hospitals, West Marredpally","N",3,"nrs phy","3-9-244, opposite Punjab National Bank, West Marredpally, Secunderabad","+91 74167 04400","Residential care: call for admission and visiting hours",0,0,"","Hospital-based inpatient rehabilitation and transitional care wing. Ask for long-stay rates and the services you need.","https://nhshospitals.in/"],
+    ["Sahasra Physio Rehab, Mansoorabad and LB Nagar","N",8,"nrs phy","Plot No. 36, Ragala Enclave, Sahara Cross Roads, Mansoorabad, LB Nagar, Hyderabad 500068","+91 63632 42526","Residential care: call for admission and visiting hours",0,0,"","Other number: 040-35686723. Email saisahasraphysiotherapy@gmail.com. Inpatient rehabilitation and palliative or transitional care advertised. Confirm overnight medical cover, IV and dialysis.","https://sahasraphysiorehab.com/contact/"],
+    ["Tejus Rehabilitation Centre, Somajiguda","N",4,"nrs phy che","6-3-1100/1D, Tyagaraj Nagar, Greenlands Road, Somajiguda, Hyderabad","+91 95022 60802","Residential care: call for admission and visiting hours",0,0,"","Other number: +91 80197 45586. Email info@tejusrehabs.com. Transitional, respiratory, tracheostomy and palliative care advertised. Residential beds and 24-hour nursing need confirmation.","https://tejusrehabs.com/tejus-rehabilitation-centre-in-hyderabad/"],
+    ["ASA Healthcare, Banjara Hills","N",0,"nrs phy","H. No. 8-2-269/19, Road No. 2, Banjara Hills, Hyderabad 500034","+91 91000 22202","Residential care: call for admission and visiting hours",0,0,"","Email info@asahealthcare.in. Rehabilitation and round-the-clock rehabilitative nursing advertised. Current inpatient admission, IV and dialysis need confirmation.","https://asahealthcare.in/contact-us"],
+    ["Unicorpus Rehabilitation Centre, Pedda Amberpet","N",8,"nrs phy","Word and Deed India Campus, NH65, Laxmareddy Palem, Pedda Amberpet, Hayathnagar, Hyderabad 501505","+91 91007 33681","Residential care: call for admission and visiting hours",0,0,"","Other number: 040-29553681. On the eastern outskirts, shown here under the nearest area. Inpatient rehabilitation, post-surgery transitional and palliative care advertised. Confirm nursing intensity, IV and dialysis.","https://unicorpus.org/img/Rehab-Leaflet.pdf"],
+    ["Rehab City, Deshmukhi (outskirts)","N",9,"nrs phy","St. Mary’s Group of Institutions, Deshmuki Village, Deshmukhi, Telangana 508284","+91 72079 96776","Residential care: call for admission and visiting hours",0,0,"","Other number: +91 72079 20281. Email info@drbharathiraos.com. On the city outskirts, shown here under the nearest area. Inpatient rehabilitation and transitional care with 24-hour nursing advertised. Confirm IV treatment and dialysis.","https://rehabcity.org/contact"],
+
+    // added: outer-area hospitals and more pharmacies
+    ["Archana Hospital, Madinaguda","P",2,"gen ent ort car neu ped gyn uro","1-56/AH, NH 65, beside Reliance Digital, Madinaguda, Miyapur, 500049","+91 40 7107 1000","Open 24 hours",17.49603,78.33746,"ChIJN5og7YmSyzsRIcY6HKplt58"],
+    ["Medicover Hospitals, Chandanagar","P",2,"gen gyn onc neu ent sur","Door No 22, opp. Gandemma Temple, near BHEL Circle, Chanda Nagar, 502032","+91 40 6833 4455","Open 24 hours",17.49817,78.31441,"ChIJ8QGmspaSyzsR242IS5kdtmU"],
+    ["PRK Hospitals, Chanda Nagar","P",2,"gen sur gyn che","Sy No 360, NH 65, Gangaram, Chanda Nagar, 500050","+91 95587 86830","Open 24 hours",17.49469,78.3217,"ChIJe8SzVJGSyzsRkF71h5hFVp4"],
+    ["Preeti Hospital, Lingampally","P",2,"uro sur gen","2-82/1/2, BHEL Rd, near Lingampally Bus Stop, Chanda Nagar, 500019","+91 40 2303 8888","Open 24 hours",17.49424,78.31685,"ChIJ_7mCc8-TyzsR18aWmmX7h2U"],
+    ["Sidarth Hospitals, Madinaguda","P",2,"neu ort ped ent gen","Mythri Nagar, Hafeezpet, Madinaguda, Miyapur, 500049","+91 40 2020 2000","Open 24 hours",17.4942,78.34649,"ChIJ0TwtFkGTyzsRWTcVwARl5nE"],
+    ["Pranaam Hospitals, Madinaguda","P",2,"gen inf che gyn","1-56/6/40 & 41, Ramakrishna Nagar, Mythri Nagar, Miyapur, 500049","+91 77320 38844","Open 24 hours",17.4945,78.34275,"ChIJrYq2ZWGSyzsRSK3XHCMidpM"],
+    ["Sai Deepa Hospital, Chanda Nagar","P",2,"gen neu ort ent","Plot 387, SBI Rd, MIG Colony, HUDA Colony, Chanda Nagar, 500050","+91 70937 62716","Open 24 hours",17.49286,78.32791,"ChIJUTYdV2WTyzsR99S3QjH89e0"],
+    ["Vishnu Paramitha Women and Children’s Hospital, Chanda Nagar","P",2,"gyn ped","NH 65, Gouthami Nagar Colony, Chanda Nagar, 502032","+91 91547 75758","Open 24 hours",17.4954,78.32113,"ChIJa994H96TyzsRA8AWE13L_qA"],
+    ["Srikara Hospitals, Madinaguda","P",2,"ort gen","222, Phase 2, Mythri Nagar, Hafeezpet, Madinaguda, 500049","+91 40 4747 0000","Open 24 hours",17.49212,78.34805,"ChIJExt3sGeSyzsRdQ3hD3JiUDk"],
+    ["Pristyn Care Archana Super Speciality Hospital, Madinaguda","P",2,"sur gen","Maruti Sadan, beside Bharath Petrol Bunk, Ramakrishna Nagar, Hafeezpet, 500049","+91 80 6542 3723","Open 24 hours",17.49482,78.34108,"ChIJb23w60eTyzsRvSXF9AsQBCM"],
+    ["Wellness Hospitals, Kompally","P",3,"car gen","Plot 3 & 4, next to Ramalayam, Petbasheerabad, Kompally, 500067","+91 95595 51955","Open 24 hours",17.511,78.48028,"ChIJmSdijNybyzsROwpafc6QKdE"],
+    ["Sai Siddhartha Super Speciality Hospital, Kompally","P",3,"che uro ent gen","Ruby Block, Brundavan Colony, Kompally, 500100","+91 83339 88244","Open 24 hours",17.53121,78.48966,"ChIJSZcWmK6FyzsRikljilKK7gU"],
+    ["Renova Hospitals, Kompally","P",3,"ort gen sur","34/A, Medchal Rd, NCL Enclave South, Petbasheerabad, 500067","+91 91212 41005","Open 24 hours",17.51843,78.48218,"ChIJw68rRmabyzsRtMa27mbMiGQ"],
+    ["Arke Hospital, Kompally","P",3,"ort onc sur neu","1-155, Kompally Main Rd, opp. Cine Planet, Ruby Block, Bolarum, 500100","+91 95811 86111","Open 24 hours",17.52805,78.48609,"ChIJPXdbqQqFyzsRSFmgbOfP3mM"],
+    ["Ramya Hospitals, Old Bowenpally","P",3,"gyn gen","Plot 8, 9, 10, Main Road, Old Bowenpally Cross Rd, 500011","+91 90328 81544","Open 24 hours",17.47597,78.48369,"ChIJVVVVVYKayzsRBzBdh1OYAJo"],
+    ["VR Multi-Speciality Hospitals, Bowenpally","P",3,"gen","Plot 2A & 03, Ganesh Nagar Colony, Bowenpally, 500011","+91 40 2795 6999","Open 24 hours",17.46914,78.47782,"ChIJ9xYyJn-ayzsRZLwloyHt_p4"],
+    ["KIMS Hospitals, Kompally","P",3,"car ort gen","Plot 13, beside Raichandani Mall, Ruby Block, Brundavan Colony, Kompally, 500100","+91 40 4411 2345","Open 24 hours",17.53061,78.48823,"ChIJORcGQwCFyzsRoxiEk3iUwxY"],
+    ["Srikara Hospitals, Kompally","P",3,"neu ort","Sri Tirumala Kasani Residency, Medchal Rd, near Croma, Ruby Block, 500100","+91 80961 04104","Open 24 hours",17.53146,78.48762,"ChIJD8AYE0GFyzsRibLFWNeodrk"],
+    ["Roma Hospital, Kompally","P",3,"ort gen","DVR Grand, Cine Planet Lane, opp. KVR Function Hall, Ruby Block, 500100","+91 62093 33999","Open 24 hours",17.53213,78.48414,"ChIJk1j08E-FyzsRJeUCl9XyV-Q"],
+    ["Ankura Hospital for Women and Children, Kompally","P",3,"gyn ped","7A, NH 44, beside DPS, Petbasheerabad, Satyam Enclave, 500067","+91 90531 08108","Open 24 hours",17.52467,78.48285,"ChIJOUDTpFOFyzsROXW5d5RRqNM"],
+    ["S.R Amma Hospital, Shaikpet","P",7,"gen","8-1-68/A/4, Siddi Vinayak Nagar, Vinayak Nagar Colony, Shaikpet, 500104","+91 76740 23091","Open 24 hours",17.40101,78.39663,"ChIJU6jCOL2WyzsRiI2X-stKKNg"],
+    ["Rose Multispeciality Hospital, Tolichowki","P",7,"gyn ort gen","8-1-523/260, Sabza Colony, Brindavan Colony, Toli Chowki, 500008","+91 97035 24242","Open 24 hours",17.40334,78.40985,"ChIJXRJKwcGXyzsRLmGkoP_F5bY"],
+    ["Ahrar Multispeciality Hospital, Tolichowki","P",7,"gen","19/B, Surya Nagar, Toli Chowki, 500008","+91 40 6934 9970","Open 24 hours",17.40151,78.41225,"ChIJDfjsLGqXyzsRfST0aoDI_G8"],
+    ["Global Care Hospital, Tolichowki","P",7,"gen gyn","9-4-133/2, 7 Tombs Rd, Raghava Colony, Surya Nagar, Toli Chowki, 500008","+91 93815 03993","Open 24 hours",17.39895,78.40978,"ChIJK1cKVaCXyzsRzo_DscLy6Jg"],
+    ["Indo US Hospital, Tolichowki","P",7,"eye gyn gen","9-4-137/1, Samatha Colony, Arvind Nagar Colony, Toli Chowki, 500008","+91 40 2355 9999","Open 24 hours",17.39753,78.40402,"ChIJsXlfeZmXyzsRmgwcPvJCyCQ"],
+    ["Cloud 7 Hospitals and Diagnostic Centre, Shaikpet","P",7,"tra sur gen","Beside Aditya Empress Heights, Vivekananda Nagar, Shaikpet, 500104","+91 81437 40365","Open 24 hours",17.40543,78.40185,"ChIJlaCVO2OXyzsRG1CIwFWW5bk"],
+    ["Hayatt Hospital, Tolichowki","P",7,"gyn gen","7 Tombs Rd, beside Success School, Surya Nagar, Toli Chowki, 500008","+91 40 2356 0333","Open 24 hours",17.39874,78.41298,"ChIJ_xQ098GWyzsRfZWzrctfENc"],
+    ["Apple Multi Speciality Hospital, Tolichowki","P",7,"gen","7 Tombs Rd, Akbar Bagh, Surya Nagar, Toli Chowki, 500008","+91 40 2356 3400","Open 24 hours",17.39851,78.41434,"ChIJBa_-PQWXyzsRgn4bOacaa1M"],
+    ["MG Hospital (Muslim General Hospital), Tolichowki","P",7,"gas gyn ort sur gen","Daulat Gulshan Colony, Janaki Nagar Colony, Toli Chowki, 500008","+91 90304 72480","Open 24 hours",17.40029,78.41527,"ChIJSyJI2-mXyzsRN9fr-UgJCRc"],
+    ["Neo Axis Hospital, Tolichowki","P",7,"gen","7 Tombs Rd, beside Red Rose Mart, Raghava Colony, Toli Chowki, 500008","+91 90090 03772","Open 24 hours",17.39899,78.40979,"ChIJg6XGYdqXyzsR-LLSOnvv9Ew"],
+    ["Charminar Government Hospital","G",6,"gyn der gen","Falaknuma Rd, opposite Charminar, Khilwat, 500002","","Hours not listed",17.35524,78.47324,"ChIJm5MaboqXyzsRlBIBLYZVG4o"],
+    ["Prasad Hospitals, Nacharam","P",9,"gen gyn sur tra","44-617/12, behind Telephone Exchange, IDA, Nacharam, 500076","+91 88012 33333","Open 24 hours",17.43825,78.55516,"ChIJvdSxUfubyzsRr_MCzZRJFPo"],
+    ["Tulip Hospital, Nacharam","P",9,"gyn end sur gen","4-1-29/6, Nacharam-Mallapur Rd, Gokul Nagar, 500076","+91 94940 66565","Open 24 hours",17.42816,78.54494,"ChIJS5_KxViZyzsR6J5sE4-ki9I"],
+    ["Chandamama Hospital, Nacharam","P",9,"gyn","4-7, Nacharam-Mallapur Rd, behind More Super Market, Sri Sai Nagar, 500076","+91 95734 45474","Hours not listed",17.42748,78.55187,"ChIJW4fYJPybyzsRZ7L4Vgf1I2w"],
+    ["Shiva Hospital, Nacharam","P",9,"gen gyn ped","7-10/8, Raghavendra Nagar Rd, Sri Sai Nagar, 500076","+91 78420 70407","Open 24 hours",17.42677,78.55516,"ChIJW4fYJPybyzsR84Z2F2zBkZg"],
+    ["Ayu Health Hospitals (at Prasad), Nacharam","P",9,"gen der","44-617/12, IDA, behind Telephone Exchange, Nacharam, 500076","+91 80 6948 9584","Open 24 hours",17.43843,78.55523,"ChIJh_MTCmObyzsRciwkatMLBmU"],
+    ["Bapuji Hospital, Nacharam","P",9,"gyn gen","Street 2, Bapuji Nagar, MBD Complex, HMT Nagar, 500076","+91 91777 34265","6 AM to 12 midnight daily",17.42276,78.54694,"ChIJx4H591yZyzsRTPaVyn_BCN8"],
+    ["Vijaya Hospital, Nacharam","P",9,"sur gen","18/B, 4-7, Sri Sai Nagar, Raghavendra Nagar, Nacharam, 500076","+91 99899 35697","Open 24 hours",17.42811,78.55177,"ChIJA3Pf0fCZyzsRjgTpIEBCHkg"],
+    ["Nacharam ESI Hospital","G",9,"gen sur","Savarkar Nagar, Baba Nagar, Nacharam, 500076","","Hours not listed",17.43096,78.55328,"ChIJJ7bLbFiZyzsRuNxbJQLcEyI","ESI hospital for insured employees and their families."],
+    ["Padmavati Medical Center, Tarnaka","P",9,"car gen","12-13 67/2, Street 5, near Sanman Hotel, Sadashiva Nagar, Tarnaka, 500017","+91 40 2700 7111","Open 24 hours (Sunday 10 AM to 8 PM)",17.42621,78.53225,"ChIJ1-ObNmOZyzsRQ5wmVZG8h6I"],
+    ["My Health Hospital, Tarnaka","P",9,"neu gen","H.No 12-5, 30 WhiteHouse, Moula Ali Rd, South Lalaguda, Tarnaka, 500017","+91 91000 01201","Open 24 hours",17.42934,78.53342,"ChIJoYfMouOZyzsRbIOKn0UUORM"],
+    ["Delight Hospital, Narsingi","P",1,"ort ped gyn gen","H.No 3, 18/1/P/2, Alkapur Township, Puppalguda, Narsingi, 500089","+91 63095 69696","Open 24 hours",17.39572,78.36287,"ChIJWfh9YxmVyzsRm68ri0NN7FQ"],
+    ["Avasa Hospital, Manikonda","P",1,"gyn ped ort gen","1-1-48/B, Lanco Hills Rd, Sri Laxmi Nagar Colony, Manikonda, 500089","+91 70366 96332","Open 24 hours",17.40684,78.37371,"ChIJ1xn8rlmVyzsROdm2FCx3WrI"],
+    ["Star Multi-Speciality Hospitals, Nanakramguda","P",1,"car sur ent gen","Survey No. 74, Financial District, Nanakramguda, 500032","+91 1800 102 7827","Open 24 hours",17.419,78.35399,"ChIJ6yaD0FGVyzsRv05FHXTKH2I"],
+    ["Amvi Hospital, Puppalguda","P",1,"gyn sur","Hallmark Empyrean, Narsingi-Puppalaguda Main Rd, opp. Sloka School, Puppalguda, 500089","+91 91000 09669","Open 24 hours",17.39823,78.36526,"ChIJ0ey02iaVyzsR1Vup9iBcIFQ"],
+    ["Bhoomi Hospitals, Manikonda","P",1,"sur ort gen","Plot 44, 46 & 48, Puppalaguda-Manikonda, LIC Colony, 500089","+91 91007 77978","Open 24 hours",17.39977,78.37153,"ChIJSyLakkaVyzsRPAI7-18XC1E"],
+    ["Rex Super Speciality Hospital, Alkapur Township","P",1,"car gyn gen","Plot 99 & 100, A-Block, Sector 1, Alkapur Township, Puppalguda, 500089","+91 99080 35023","Open 24 hours",17.39421,78.37534,"ChIJGfGObnSVyzsRp_tY-YZMS2k"],
+    ["Pulse Hospital, Narsingi","P",1,"gyn gen","H.No 3-6, 1/7/1, Marwa Township, Narsingi, 500089","+91 90320 70268","Open 24 hours",17.38372,78.36389,"ChIJe8W5aZaVyzsR2OoVa20qOMY"],
+    ["Prasad Hospitals, Manikonda","P",1,"gyn ped ort gen","Marrichettu Road, opp. Paradise, Manikonda, 500089","+91 88850 23110","Open 24 hours",17.40669,78.38462,"ChIJywbK1beXyzsRufKDa-0S-1U"],
+    ["Andani Hospital for Women and Children, Narsingi","P",1,"gyn ped","Narsingi Heights, opp. Syndicate Bank, beside SR Model School, Narsingi, 500089","+91 95535 61370","Open 24 hours",17.38697,78.3595,"ChIJSwbuaUaUyzsR2-MYaBDath4"],
+    ["CARE Hospitals, Nampally","P",5,"car neu ort gen","Exhibition Grounds Rd, Chandra Vihar, Old Kattal Mandi, Nampally, 500001","+91 40 6810 6589","Open 24 hours",17.3857,78.47411,"ChIJR9O6EX6XyzsRIQ6d13hy6eU"],
+    ["Udai Omni Hospital (orthopaedics and trauma), Abids","P",5,"ort tra sur","5-9-92/A/1, Chapel Rd, near Fateh Maidan, Abids, 500001","+91 40 6629 2228","Open 24 hours",17.39693,78.47241,"ChIJIxhH92KXyzsRAYXn2uXqAs0"],
+    ["Aditya Hospital, Abids","P",5,"gen gyn","4-1-16, Tilak Rd, Bogulkunta, Abids, 500001","+91 40 4142 4344","Open 24 hours",17.39024,78.48122,"ChIJfa7mfmqayzsRsB9vPaC67CA"],
+    ["Aadya Hospital (Hyderabad Nursing Home), Basheerbagh","P",5,"gyn sur gen","5-9-29/40, opp. GHMC office, Hill Fort, Basheer Bagh, 500004","+91 40 2322 2344","Open 24 hours",17.40693,78.47613,"ChIJCQJsM-CZyzsRxzDPUE27bLM"],
+    ["Fernandez Hospital, Bogulkunta","P",5,"gyn ped","Prime Mansion, 4-1-1230, Abids Road, Bogulkunta, 500001","+91 1800 419 1397","Open 24 hours",17.39227,78.47943,"ChIJN6PyXdeZyzsRckYrTEGF71Q"],
+    ["Glenfield Mallareddy Brain Heart Hospital, Nampally","P",5,"car neu ort","5-9-91, Chapel Rd, Fateh Maidan, Nampally, 500001","+91 40 2323 2300","Open 24 hours",17.39728,78.4723,"ChIJAZHgwbKXyzsR0ZOLrBMzuhQ"],
+    ["Rama Hospital (women), Nampally","P",5,"gyn","Beside Kamat Hotel, Gadwal Compound, Nampally Station Rd, Abids, 500001","+91 40 6673 4111","9 AM to 8:30 PM, closed Sunday",17.39099,78.47117,"ChIJu4NawXyXyzsRGAbEu1cDRF0"],
+    ["Fernandez Hospital, Hyderguda","P",5,"gyn ped","3-6-282, Hyderguda-Basheerbagh Rd, Old MLA Quarters, Himayatnagar, 500029","+91 1800 419 1397","Open 24 hours",17.398,78.48306,"ChIJTZwbm9uZyzsR9R1l_5lGFsU"],
+    ["Apollo Hospitals, Hyderguda","P",5,"car gen ort neu gas","Plot 3-5-836 to 838, Hyderguda-Basheerbagh Rd, King Koti, 500029","+91 40 6907 1298","Open 24 hours",17.39934,78.47923,"ChIJse9bvrWZyzsR2p0v-0N7k1k"],
+    ["Tawakal Pharmacy, Banjara Hills","R",0,"phm","A/4, 8-2-163/75, Road No. 10, Singada Basti, Banjara Hills, 500034","+91 90527 80614","8 AM to 11:55 PM daily",17.41452,78.43766,"ChIJdZnYrjSXyzsRD6CpXFFqYDQ"],
+    ["JANAGEN Pharmacy, Panjagutta (near NIMS)","R",4,"phm","6-3-457/A, Pillar A1117, near NIMS Hospital, Irram Manzil Colony, Punjagutta, 500082","+91 79812 26998","Open 24 hours",17.42364,78.45398,"ChIJVaxQ86-XyzsRIm3vR4R5Lvg"],
+    ["Mor Chemists, Banjara Hills","R",0,"phm","Shop 1304, Road No. 12, near International Dental Care, Kaushik Society, Bhavani Nagar, 500034","+91 95734 87111","9:30 AM to 9:30 PM (Sunday to 7)",17.41323,78.42884,"ChIJEYIA99eWyzsRSSNEBKchBPU"],
+    ["Apollo Pharmacy, Singada Kunta, Banjara Hills","R",0,"phm","Door 10, Ground Floor, Hussain Allam, beside Alkareem Hotel, 500034","+91 79 4281 3373","7 AM to 11 PM daily",17.41612,78.43789,"ChIJsVJTDquXyzsRQWrQqrQxXkA"],
+    ["Saince Pharmacy, Banjara Hills","R",0,"phm","Road No. 10, IAS Officers Quarters, Zahara Nagar, 500034","+91 73370 44406","8 AM to 10 PM daily",17.41644,78.43797,"ChIJNbu15i-XyzsRKi2lvU6KiaQ"],
+    ["Apollo Pharmacy, Road 12 (NVR Square), Banjara Hills","R",0,"phm","B/2A, NVR Square, Road No. 12, opp. YES Bank, Anand Banjara Colony, 500028","+91 79 4284 5401","7 AM to 11 PM daily",17.41004,78.43782,"ChIJ_7H2nS-XyzsRPumBusdjsxM"],
+    ["HealthSy Pharmacy, Banjara Hills","R",0,"phm","Plot 8-2-309/7/3, Road No. 14, GS Nagar, Nandi Nagar, 500034","+91 72074 16868","10 AM to 7 PM daily",17.4216,78.43328,"ChIJT0skg6-XyzsRJLfXyz9LCfg"],
+    ["Health Pharmacy, Banjara Hills","R",0,"phm","Road No. 14, Nandi Nagar Rd, Venkateshwara Nagar, Aurora Colony, 500034","+91 88851 33391","7 AM to 11 PM daily",17.42722,78.43695,"ChIJO9Jjx_KRyzsRhhpZiQUiLyw"],
+    ["Sri Vasavi Medical Hall, Habsiguda","R",9,"phm","Near Whitus Hospitals, Habsiguda Main Rd, Nagendra Nagar, 500007","+91 98496 65224","8:30 AM to 11:30 PM daily",17.41866,78.54229,"ChIJEUytP2iZyzsRQoxU3dgBWOg"],
+    ["Pharma Hubb, Ramanthapur","R",9,"phm","11-63 NH163, Gokhale Nagar, Ramanthapur, 500013","+91 95814 73474","8 AM to 11 PM (Sunday to 10)",17.3975,78.53245,"ChIJ7zZ9b5yZyzsRzOr8AsLTHmM"],
+    ["Apollo Pharmacy, Tarnaka","R",9,"phm","12, 13/588, near Kamal Jewelry, Laxmi Starch Colony, Tarnaka, 500017","+91 79 4747 9989","7 AM to 11 PM daily",17.42596,78.54131,"ChIJ5SblIF_ktTsRUmwC2-HD_U0"],
+    ["Secunderabad Pharma, Regimental Bazaar","R",3,"phm","GF, Sarojini Bhavan, 9-1-95, Sarojini Devi Rd, near Medicover Hospital, 500003","+91 74160 69777","9 AM to 10 PM (Sunday 10 to 9)",17.4409,78.50375,"ChIJK6N82QObyzsR5wtdisd5Zpo"],
+    ["Apollo Pharmacy, Begumpet (Sardar Patel Rd)","R",3,"phm","P. No. 4, Sardar Patel Rd, opp. Wesley Degree College, Viman Nagar, Begumpet, 500003","+91 79 4748 0041","7 AM to 11 PM daily",17.44362,78.48147,"ChIJJQtg35CWyzsR0dXVv7-Uj7Q"],
+    ["Apollo Pharmacy, Uma Nagar, Begumpet","R",4,"phm","6/3/1219, Shop 6, Uma Nagar, Begumpet, 500016","+91 79 4281 3661","7 AM to 11 PM daily",17.4367,78.4584,"ChIJCQ5ZT2-RyzsRXtmAzFBZY3Q"],
+    ["Secunderabad Pharmacy, Kummari Guda","R",3,"phm","1-1-163, Urvasi Hotel building, Alexander Rd, Shivaji Nagar, 500003","+91 92473 74100","9 AM to 9 PM (Sunday 10 to 8)",17.44228,78.49623,"ChIJkedZTIabyzsRvUiSA90u3Xs"],
+    ["davaindia Generic Pharmacy, Tarnaka","R",9,"phm","13-483/C, D.No. 12, near Euro Kids School, Laxmi Starch Colony, Tarnaka, 500017","+91 78628 50554","9 AM to 10 PM daily",17.42818,78.53963,"ChIJS0LZl1iZyzsRlthKCdYxhk8"],
+    ["Raja Rajeshwari Medical & General Stores, Begumpet","R",3,"phm","Plot 4, Rasoolpura, Jagadish Nagar Colony, Gun Bazar, 500003","+91 40 6559 9259","9 AM to 11:30 PM daily",17.44522,78.4776,"ChIJEUFwSQqayzsRi1l2EnpSu6A"],
+    ["HM Pharmacy, New Malakpet","R",6,"phm","16-8-910/917 New Malakpet, near Malakpet Railway Station, Chanchalguda, 500024","+91 98666 13195","Hours not listed",17.37654,78.49583,"ChIJPyE93HWZyzsRts8wCEu1XVI"],
+    ["S K Medical and General Stores, Malakpet","R",6,"phm","Saleem Nagar Colony, Malakpet Extension, 500036","+91 98852 12272","9 AM to 11 PM daily",17.3747,78.51142,"ChIJfT4-sVGYyzsRdnLRcV646VA"],
+    ["Ronav Pharmacy, Moosarambagh","R",6,"phm","Opp. Vivekananda School, Moosarambagh, Teegala Guda, Dilsukhnagar, 500036","+91 81859 93465","11 AM to 11 PM, closed Sunday",17.37312,78.51495,"ChIJZy9ZAAGZyzsR0aJKx80tEaY"],
+    ["Midwin Medical & General Stores, Gaddiannaram","R",8,"phm","Shop 16-11-740/4/A/7, Gaddiannaram X Road, Dilsukhnagar, 500060","+91 98664 16475","9 AM to 10:30 PM daily",17.36849,78.51922,"ChIJY9aPjFiYyzsRpH-mWH8wxFY"],
+    ["Sanjeevini Pharmacy, Dilsukhnagar","R",8,"phm","Beside Rajadhani Theatre, Dilsukhnagar Main Rd, Durga Nagar, 500060","+91 40 2405 1677","9 AM to 11 PM daily",17.3687,78.52666,"ChIJEbUvKfGYyzsR-lhGYjrAgjU"],
+    ["Apollo Pharmacy, P&T Colony, Dilsukhnagar","R",8,"phm","14/65 P&T Colony, Pragathi Nagar, 500060","+91 79 4281 3386","7 AM to 11 PM daily",17.36305,78.52633,"ChIJQwAAMO2eyzsRQtNPz83W-uQ"],
+    ["Pharma Hubb, Chaderghat","R",6,"phm","16-6-33, Chaderghat Rd, Osmanpura Colony, Azampura, 500024","+91 98854 73474","10 AM to 11 PM (Sunday 10:30 to 5)",17.37755,78.4899,"ChIJic-2c52ZyzsRI1pXkdK-hnI"],
+    ["MedPlus, Saleem Nagar, Malakpet","R",6,"phm","D No 16/11/20/1/5, Saleem Nagar Colony, Malakpet Extension, 500036","+91 76600 27101","7 AM to 11 PM daily",17.3743,78.51128,"ChIJrxb9slGYyzsR-wYXxgLUd_U"],
+
+    // added: Ameerpet, Secunderabad and blood-bank round
+    ["MagnAid Hospitals, Yousufguda","P",4,"ort gen","8-3-224/B/5, Metro Pillar C1494, Yousufguda Main Rd, Engineers Colony, Yella Reddy Guda, 500038","+91 79939 99040","Open 24 hours",17.4363,78.43452,"ChIJc_J96X-RyzsRZ-PEQ_UDeJQ"],
+    ["St. Theresa’s Multi Specialty Hospital, Erragadda","P",4,"gen gyn ort","7-1-645/A, Erragadda Main Rd, opp. Rythu Bazar, BK Guda, Sanath Nagar, 500038","+91 40 2370 6485","Open 24 hours",17.45204,78.4383,"ChIJA2kj_OaQyzsRwdvM3sKlC1Y"],
+    ["Shishira Hospitals, Ameerpet","P",4,"onc gyn ped sur gen","8-3-903/A/1/3/3B, Siri Estates, Yellareddyguda, Ameerpet, 500073","+91 86092 92929","Open 24 hours",17.43192,78.44557,"ChIJe8yNCsqRyzsRRXDUqnxK3F8"],
+    ["Sowmya Children’s Hospital, Sanjeeva Reddy Nagar","P",4,"ped uro","Lane 23, behind Axis Bank, Sanjeeva Reddy Nagar, 500038","+91 40 3505 0505","Open 24 hours",17.44308,78.44383,"ChIJWRbBf8OQyzsRZtUsoDnjB7I"],
+    ["Raja Hospital, Yousufguda","P",4,"gyn gen","Yousufguda Main Rd, opp. State Home, Sai Sarathi Nagar, Yella Reddy Guda, 500073","+91 40 6602 5588","Open 24 hours",17.43667,78.43996,"ChIJH0BVCtCQyzsR6O8aHaBEquc"],
+    ["UCHC Ameerpet (urban community health centre)","G",4,"gen","Ameerpet, Hyderabad 500038","","Open 24 hours",17.44179,78.44817,"ChIJ1RMmMi-RyzsRcgTpD_Jqup4","Government urban community health centre, shown on Google as a hospital."],
+    ["J J Hospital, Sanjeeva Reddy Nagar","P",4,"gyn gen","Kalyan Nagar 57, behind TB Hospital, Kalyan Nagar Phase 1, Sanjeeva Reddy Nagar, 500038","+91 40 2370 4778","Open 24 hours",17.44494,78.43243,"ChIJWU15Ad-QyzsRx9Bvln4u83M"],
+    ["Dr Jagdish Singh, Sai Diabetic Clinic, Ameerpet","C",4,"end gen","Tirumala Towers, Dharam Karan Rd, Swathi Avenue, Ameerpet, 500016","+91 98480 51904","11 AM to 1 PM and 6 to 8 PM, closed Sunday",17.44229,78.45026,"ChIJ8QYEAbeRyzsRF2q7mSc0TB8"],
+    ["Dr P Kushal Reddy, general physician (Apollo Spectra), Ameerpet","C",4,"gen inf","Apollo Spectra, Shyam Karan Rd, Anand Bagh, Ameerpet, 500016","+91 80 4696 1837","5:30 AM to 11 PM",17.43793,78.45261,"ChIJYRs1PY2RyzsR2xDnLYUrggA"],
+    ["Dr Kommalapati Srujana, general medicine, Ameerpet","C",4,"gen","Murthy Mansion, 3-214/2, HMDA Maitrivanam, Srinivasa Nagar West, 500038","+91 99894 96666","10 AM to 2 PM and 6 to 8 PM, closed Sunday",17.43844,78.44255,"ChIJD-w9tmaXyzsRF89D-kIC0I4"],
+    ["KL Health Centre Clinic, Ameerpet","C",4,"gen ort","7-1-215 C/1, Ameerpet-Balkampet Main Rd, near SBI, 500016","+91 40 2955 8181","9 AM to 12:30 PM and 4 to 8 PM, closed Sunday",17.44309,78.44878,"ChIJBwJ7BuWRyzsRY-X33XCnJj0"],
+    ["Dr Kavita Rani Sattur, general physician (Apollo Spectra), Ameerpet","C",4,"gen end","Apollo Spectra, Shyam Karan Rd, Anand Bagh, Ameerpet, 500016","+91 80 4696 1837","5:30 AM to 11 PM",17.43793,78.45261,"ChIJzeA48H6RyzsROis_wLe8bII"],
+    ["Aster Preventive & Wellness Health Centre, Ameerpet","C",4,"gen","HMDA Maitrivanam, Plot 4, Satyam Theatre Rd, Srinivasa Nagar, 500038","+91 79 4281 0193","Open 24 hours",17.43746,78.44637,"ChIJwSUmG7qRyzsRpVNG4-nxmGM"],
+    ["LK Hospital, Malkajgiri","P",3,"ort neu gen inf","4-159 & 4-172, Maruthi Nagar, Malkajgiri, 500047","+91 90597 72200","Open 24 hours",17.45149,78.53542,"ChIJeR50A8ebyzsRLu8qqVJkeZ8"],
+    ["ADR Hospitals, Anandbagh, Malkajgiri","P",3,"ort gyn gen","15/A/24, E Anandbagh Main Rd, Vishnupuri Colony, 500047","+91 76590 47155","Open 24 hours",17.45827,78.5379,"ChIJUc7JdcmbyzsRNs0K8x9Q0fY"],
+    ["Sudha Hospital, Safilguda","P",3,"gyn gen","Neredumettu West, Ananth Nagar Colony, Safilguda, 500056","+91 40 2722 3031","Open 24 hours",17.46589,78.53899,"ChIJmaKARqGbyzsRbjSa9o-kaxE"],
+    ["Geetha Multi Speciality Hospital, West Marredpally","P",3,"ort ent gen","Stt No. 4, opp. SBI, Nehru Nagar Colony, 500026","+91 91004 11272","Open 24 hours",17.44704,78.50826,"ChIJAQAAAD-ayzsRREK6JAGob6c"],
+    ["Lions Patny Hospital, West Marredpally","P",3,"gen ped","204, Road No. 7, West Marredpally Road Check Post, opp. PNB, 500026","+91 40 6632 7111","Open 24 hours",17.45037,78.50343,"ChIJ86agMz-ayzsR98CAEp2OuUU"],
+    ["Shenoy Multi-Speciality Hospitals, East Marredpally","P",3,"ent gyn gen","10, 3-4, Entrenchment Rd, opp. Playground, 500026","+91 40 4151 9999","Open 24 hours",17.44779,78.50895,"ChIJM5-L4zmayzsRMwJIbcuJAow"],
+    ["Dr N Narayan Rao’s Secunderabad Nursing Home, West Marredpally","P",3,"gen sur","10-2-256, Aswini Colony, 500026","+91 40 4006 1181","Open 24 hours",17.44564,78.50505,"ChIJvS0W47ybyzsRwVOZ8Nznr5o"],
+    ["Lotus Cure Hospital, Alwal","P",3,"uro gen","B No. 56, opp. Rythu Bazar, beside SBI Bank, GV Reddy Colony, Alwal, 500010","+91 96962 28228","Open 24 hours",17.50636,78.51689,"ChIJJ9aB5VmayzsRFiygLvVcloY"],
+    ["Malkajgiri Area Hospital","G",3,"gyn eye gen","Geetha Nagar, Malkajgiri, 500047","+91 92465 43662","Hours not listed",17.45114,78.53378,"ChIJ58ZwsWqbyzsRQ57sc10_9po"],
+    ["Devansh Clinic, Rasoolpura, Begumpet","C",3,"gen","1-13-39, Rasoolpura, Balamrai, Begumpet, 500003","+91 70750 76684","7 AM to 2 PM and 5 to 11 PM daily",17.44651,78.48441,"ChIJf5ykDgCbyzsR_KSssmLL428"],
+    ["Sri Sai Gayatri Medical Health & Care, East Marredpally","C",3,"gen","Shop 1, 10-1-544, Entrenchment Rd, Nehru Nagar Colony, 500026","","5:30 AM to 10:30 PM daily",17.44965,78.50931,"ChIJD1KCktmbyzsRmXbUnLjNPvI"],
+    ["Venkatasai Health Clinic, West Marredpally","C",3,"gen end","Plot 46, beside IOB ATM, Sarvasukhi Colony, 500026","+91 99636 11127","9 AM to 3 PM (Sunday to 12)",17.44648,78.50161,"ChIJ80zmtoibyzsRneVxRFZwnkc"],
+    ["Dr Parthasarathy Soundararajan, general physician (Navodaya Hospitals), Paradise","C",3,"gen inf end","Navodaya Hospitals, Paradise Circle, PG Road, Ramgopalpet, 500003","+91 80 4696 1837","7 AM to 10 PM (Sunday 9 to 5)",17.4417,78.4839,"ChIJa2dpgJObyzsR292Y-pFQqdM"],
+    ["Dr Loy Camoens, physician and diabetologist, Marredpally","C",3,"gen end","E Marredpally Rd, opp. Jai Mahankali Amma Temple, West Marredpally, 500026","+91 40 6453 7322","9:30 to 11:30 AM and 2:30 to 6:30 PM, closed Sunday",17.45054,78.51001,"ChIJ____vzCayzsRduUSoTPAgS4"],
+    ["Prakash Clinic, Warasiguda","C",5,"gen","Parsigutta, Warasiguda, Padmarao Nagar, 500061","","11 AM to 2 PM daily",17.41577,78.5108,"ChIJBdIvAcyZyzsRxG7oeDsE0Yk"],
+    ["Dr Praveen Kumar Kulkarni, senior physician (KIMS), Secunderabad","C",3,"gen end che","2nd floor, Cabin 30, KIMS Hospitals, Minister Rd, 500003","","8 AM to 6 PM, closed Sunday",17.43688,78.48308,"ChIJbyCGuVWbyzsRPanCZcO-8cw"],
+    ["Gene Blood Bank, Punjagutta","B",4,"bld","Kanthisikara Complex, beside FMS Dental Clinic, opp. Model House, Durga Nagar Colony, Punjagutta, 500082","+91 40 2341 1658","Open 24 hours",17.42487,78.45467,"ChIJw7IW3UqXyzsRoNOLE6fykMg"],
+    ["Deccan’s Blood Centre, Ameerpet","B",4,"bld","Shop 1, 7-1-53, Bapu Bhavan, Dharam Karan Rd, beside GHMC Ground, 500016","+91 77805 26307","Open 24 hours",17.43707,78.45042,"ChIJQfmf4jmRyzsRXz3JVuwgBdA"],
+    ["NTR Memorial Trust Blood Centre, Banjara Hills","B",0,"bld","NTR Trust Bhavan, Road No. 2, Park View Enclave, 500034","+91 40 4857 7888","Open 24 hours",17.42388,78.42576,"ChIJ0-xP46TRQxERIOZp6f7CGFk"],
+    ["Blood Bank, NIMS, Punjagutta","B",4,"bld","6-3-343, Road No. 1, Punjagutta Market, 500034","+91 40 2348 9722","Hours not listed",17.42041,78.44876,"ChIJ-yrAJTSXyzsR4If6BU0SGEY","Blood bank inside the government hospital NIMS."],
+    ["Star Hospitals Blood Bank, Banjara Hills","B",0,"bld","8-2-596, Road No. 10, Gaffar Khan Colony, 500034","+91 40 4477 7777","Open 24 hours",17.41581,78.44546,"ChIJIZsNvSaXyzsRvwWZKwFNNas"],
+    ["NIGL Blood Centre, Banjara Hills","B",0,"bld","MLA Colony, Road No. 12, opp. Omega Hospital, 500028","","Open 24 hours",17.41348,78.42442,"ChIJ40IbY_iXyzsRrfUYA9-9eyY"],
+    ["Rudhira Voluntary Blood Bank, Himayatnagar","B",5,"bld","1st Floor, Anasuya Complex, 3-6-10/A, Liberty Rd, Chandra Nagar, 500029","+91 91602 20222","Open 24 hours",17.40586,78.47827,"ChIJ2bRcF-eZyzsRE_VoGcM5njw"],
+    ["H.A.R.D Society Blood Bank, Red Hills","B",5,"bld","11-5-263/3, Red Hills Rd, Lakdikapul, 500004","+91 99124 95585","Open 24 hours",17.39616,78.46316,"ChIJK8ZQXW-XyzsRiTSYDNU8tpU"],
+    ["Janani Cancer & Thalassemia Voluntary Blood Centre, Red Hills","B",5,"bld","Shop 1, Red Hills, Lakdikapul, 500004","+91 89854 93939","Open 24 hours",17.40148,78.4625,"ChIJfeiMaWiXyzsR6CTiEvFwH9I","Listed on Google as a non-profit blood centre."],
+    ["Rudhira Blood Centre, Tarnaka","B",9,"bld","Street 1, Pavani Anasuya Towers, 13-197, opp. HUDA Complex Rd, Tarnaka, 500017","","Open 24 hours",17.42507,78.53575,"ChIJ9d--_YiZyzsR0-zBkVBh4kM"],
+    ["Sree Nidhi Voluntary Blood Centre, Karkhana","B",3,"bld","P&T Colony, Karkhana, Secunderabad, 500015","+91 40 3174 8285","Open 24 hours",17.45978,78.50033,"ChIJRcXe6qSbyzsRkNCTWrICISA"],
+    ["Vivekananda Blood Bank, Gudimalkapur","B",7,"bld","H.No 12-2-790/153, PV Narasimha Rao Expy, Ayodhya Nagar Colony, 500006","+91 98661 60317","Open 24 hours",17.39454,78.43529,"ChIJuYYNfg-XyzsRLCR7lKqdHKQ"],
+    ["Janani Voluntary Blood Center, Kompally","B",3,"bld","D.No 8, NCL Colony Rd, Petbasheerabad, Kompally, 500067","+91 76809 98222","Open 24 hours",17.5185,78.4831,"ChIJVfZ-PACbyzsRa9klSEnb4pA"],
+    ["RBM Blood Centre, Boduppal","B",9,"bld","Hanuman Nagar Colony, Boduppal, 500092","","Open 24 hours",17.41848,78.58356,"ChIJbwCCZACfyzsRhfksL0nxlJA"],
+    ["Radnya Blood Centre, Suchitra","B",3,"bld","3rd floor, Venkateshwara Enclave, beside Priyadarshini Hotel, Suchitra, 500067","+91 99515 00067","Open 24 hours",17.50003,78.47432,"ChIJA4fy4IGRyzsR2ukLX_7jo9k"],
+    ["PACE Hospitals Blood Centre, Hitec City","B",1,"bld","4th Floor, PACE Hospitals, Kedar Cyber Towers, near HITEC City Metro, 500081","+91 40 4848 6868","9 AM to 7 PM, closed Sunday",17.44689,78.38423,"ChIJ6VcWtliRyzsRe-CbySevmvo"],
+    ["New Life Blood Bank, Gowliguda","B",6,"bld","22-1-1083, 1st floor, Abid Ali Khan Lion Eye Hospital, Darul Shifa, Gowliguda, 500024","+91 40 2457 5757","Open 24 hours",17.37495,78.48441,"ChIJ48_LcC6YyzsRE2or3S4Ktok"],
+    ["Abhaya Blood Centre, Chintalkunta, LB Nagar","B",8,"bld","5-5-722, 3rd floor, Chintalkunta, LB Nagar, 500074","+91 99896 15498","Open 24 hours",17.34035,78.56249,"ChIJW__hu4aZyzsRi5DzsesxOx0"],
+    ["Navjeevan Blood Center and Blood Bank, Dilsukhnagar","B",8,"bld","D.No 18, 77, VR Colony, Kamala Nagar, 500060","+91 88855 97760","Open 24 hours",17.36741,78.53079,"ChIJVZrhPtaZyzsR187rNyG26HU"],
+    ["MGMH Blood Bank (Government Modern Maternity Hospital), Puranapul","B",6,"bld","Gul Bagh, Puranapool, 500064","+91 40 2452 3641","Hours not listed",17.36835,78.46781,"ChIJ9ZpLYY-XyzsRfOIQ5D-_7HA","Blood bank of a government maternity hospital."],
+    ["Rakshitha Voluntary Blood Bank, Putlibowli","B",6,"bld","5-1-931, 1st Floor, Maharani Jhansi Rd, opp. Pattar-Ki-Masjid, Putlibowli, 500001","","Open 24 hours",17.38229,78.48195,"ChIJ8a5fqdSZyzsRsf3PXY7xDtw"],
+    ["Hyderabad Blood Centre, New Malakpet","B",6,"bld","Paltan Rd, Judges Colony, New Malakpet, 500036","","Hours not listed",17.37159,78.50019,"ChIJRdHHZUiYyzsRqh2K8TGE-LY"],
+    ["Bhanji Kherji Blood Bank, Koti","B",5,"bld","Troop Bazaar, Koti, 500001","+91 40 2474 5243","Hours not listed",17.38529,78.48012,"ChIJYz-9EtSZyzsR2-3gtuuhrro"],
+    ["Olive Blood Bank, Gudimalkapur","B",7,"bld","Nanal Nagar X Rd, Rethibowli, Gudimalkapur, 500006","","Open 24 hours",17.39361,78.42708,"ChIJ7d3er22XyzsR3e1YZL-Aosc"],
+    ["Narayanguda Blood Bank (Institute of Preventive Medicine)","B",2,"bld inf","Institute of Preventive Medicine, Lingampally, Kachiguda, 500027","+91 40 2956 9047","Open 24 hours",17.39388,78.49028,"ChIJVVVVYs-ZyzsR4u2jDVJQHYo","Run by the Institute of Preventive Medicine. Reviews also mention an anti-rabies vaccination centre and HIV testing and counselling."],
+    ["Adithya Hospital Blood Bank, Koti","B",5,"bld","4-3-154/3, HVS Road, beside Pragati College, Ramkoti, 500001","+91 40 2476 3565","Open 24 hours",17.38821,78.48138,"ChIJ-RgESdGZyzsRgZEz01IAO9Q"],
+    ["Premier Blood Bank, Gudimalkapur","B",7,"bld","Nanal Nagar Rd, Rethibowli, Gudimalkapur, 500006","+91 72070 32552","Open 24 hours",17.39439,78.42724,"ChIJB2qTM-KWyzsRypL_RHsKV2c"],
+    ["Sri Vijaya Hospital Blood Bank, Mehdipatnam","B",7,"bld","12-2-830/9, Hill Colony Rd, Alapathi Nagar, 500006","+91 94933 66199","Open 24 hours",17.38927,78.4423,"ChIJl_oxdwCXyzsRgESmWrFfDOg"],
+    ["MediSYS Pharmacy, Punjagutta","R",4,"phm","Metro Pillar 1108, opp. Police Station, near cross roads, Durga Nagar Colony, Punjagutta, 500082","+91 77999 23501","Open 24 hours",17.4258,78.45322,"ChIJa57CGHSXyzsRs4SaLfxD-zM"],
+    ["Medsers Pharmacy, Ameerpet","R",4,"phm","Metro Pillar 1442, 6-3-846, opp. Shish Mahal, Ameerpet Officers Colony, 500016","+91 77025 21818","Open 24 hours",17.43449,78.44918,"ChIJsyTyJXqRyzsRRBNQPUbMcns"],
+    ["Apollo Pharmacy, Punjagutta","R",4,"phm","Gokul Tower, 6-3-666, opp. Model House, Matha Nagar, Punjagutta, 500082","+91 79 4747 9981","Open 24 hours",17.42404,78.45418,"ChIJEScdQb_7szsR4F46KqiOZZs"],
+    ["SF Pharmacy, Yousufguda","R",4,"phm","D.No 8-3, 228, 1288, Jawahar Nagar Rd, Rahmat Nagar, Yousufguda, 500045","+91 94933 30329","9 AM to 1 AM daily",17.44202,78.42792,"ChIJ5w6tdqaRyzsRWL5l5UwZrGA"],
+    ["Aadyan Pharmacy, Sanjeeva Reddy Nagar","R",4,"phm","Sarala Apartment, 258/3RT, Sanjeeva Reddy Nagar, 500038","+91 98663 51434","8 AM to 1 AM daily",17.44224,78.44418,"ChIJlXPV4YKRyzsR7DO9MyiITms"],
+    ["Sree Chaitra Medical and General Stores, Ameerpet","R",4,"phm","Srinagar Colony Main Rd, Pratap Nagar, Ameerpet, 500082","+91 77022 10076","Hours not listed",17.42958,78.44834,"ChIJw68klsuQyzsRAAAAcFItv3w"],
+    ["Sree Sai Medical & General Store, Ameerpet","R",4,"phm","3SRT, Ameerpet Rd, Ameerpet Officers Colony, 500016","+91 99088 14019","7 AM to 10 PM daily",17.43384,78.44884,"ChIJc-pYGsmQyzsRV4JL-x_qA3s"],
+    ["Royal Pharmacy and General Store, Asif Nagar","R",7,"phm","10-2-346/6, Asif Nagar Rd, beside Ameena Palace Function Hall, 500006","+91 63025 08935","Open 24 hours (Sunday 10 AM to 12 AM)",17.38937,78.45442,"ChIJczUEODmXyzsR9MWAgLxleU0"],
+
+    // added: diagnostic labs and small pharmacies
+    ["Tenet Diagnostics, Banjara Hills","L",0,"lab","8-2-269/4/B, Road No. 2, beside Rainbow Children’s Hospital, Banjara Hills, 500034","+91 40 4016 0999","7 AM to 10 PM (Sunday to 5 PM)",17.42505,78.4323,"ChIJ23q-K9WQyzsR33pglpUNVNM","Full-body health checkups and PET-CT are mentioned in reviews."],
+    ["MedPlus Diagnostics, Banjara Hills (Road 12)","L",0,"lab","4th Floor, above Himalaya Book World, Anushka Pride, Road No. 12, Bhola Nagar, 500028","+91 93910 12581","6:30 AM to 10 PM (Sunday to 5 PM)",17.40749,78.44267,"ChIJb9dk1VGXyzsRivSYIdiDaOY"],
+    ["Sprint Diagnostics, Jubilee Hills","L",0,"lab","Plot 8-2, Check Post, Road No. 36, Jubilee Hills, 500033","+91 40 6906 6767","7 AM to 11 PM daily",17.42703,78.41473,"ChIJ9UkgsxORyzsR9juUPo1DRzo"],
+    ["Megsan Diagnostics, Banjara Hills","L",0,"lab","Ashoka Capitol, Road No. 2, Park View Enclave, 500034","+91 91213 77123","7 AM to 10 PM (Sunday to 5 PM)",17.42462,78.42258,"ChIJSwo3dD2RyzsRhTmOP-xMpMQ"],
+    ["Vijaya Diagnostic Centre, Film Nagar","L",0,"lab","Road 92, Journalist Colony B Block, Film Nagar, Jubilee Hills, 500096","+91 92402 22222","6:30 AM to 9 PM (Sunday to 1 PM)",17.41761,78.4139,"ChIJOb80r86WyzsRLMZ__U0-IjE"],
+    ["DoctorC (home blood tests), Banjara Hills","L",0,"lab","8-2-269/22, Navodaya Colony Rd, Sagar Society, Sri Nagar Colony, 500034","+91 40 4917 1515","7 AM to 10 PM daily",17.42831,78.43136,"ChIJ4RxBLbWWyzsRLKB28zbIAHY","Home sample collection service."],
+    ["Pearls Health Care Diagnostics, Banjara Hills","L",0,"lab","Shop 6, Banjara Bhavan Complex, Road No. 1, opp. HDFC Bank, Mithila Nagar, 500034","+91 79897 68498","Open 24 hours (as listed)",17.40868,78.45046,"ChIJRbAFDhiXyzsRHLyuQlaiHW0"],
+    ["MedPlus Diagnostics, Srinagar Colony","L",0,"lab","Plot 105, Srinagar Colony Main Rd, near ICICI Bank, 500073","+91 93910 12614","7 AM to 9 PM daily",17.42999,78.4342,"ChIJpWtEIM-RyzsR5nFgg7Rurbc"],
+    ["GVK Diagnostics, Jubilee Hills","L",0,"lab","Plot 65, Road No. 1, adj. Metro Pillar C1585, Park View Enclave, 500033","+91 40 2777 2888","7 AM to 9 PM (Sunday to 4 PM)",17.42947,78.41842,"ChIJCzLsZgCRyzsRkF-HHUwtmgs"],
+    ["Lucid Medical Diagnostics, Banjara Hills","L",0,"lab","Plot 18, Rao and Raju Colony, BNR Colony, Venkat Nagar, 500034","+91 91330 78886","6:30 AM to 10 PM (Sunday to 5 PM)",17.42348,78.42904,"ChIJg_u_xCiXyzsR4lZWblhNY7o"],
+    ["Focus Diagnostics, KPHB Phase 1 (MIG-157)","L",2,"lab","H.No 157, MIG-I, KPHB Phase 1, 500072","+91 91213 77123","Open 24 hours",17.48821,78.39986,"ChIJKUMRoKSRyzsRrbth071hl4I"],
+    ["Aarthi Scans & Labs, KPHB","L",2,"lab","MIG-148, Road No. 1, near Padmaja Hospital, KPHB Phase 2, 500072","+91 76699 76699","Open 24 hours",17.48732,78.39959,"ChIJp59m3GWRyzsRQk5JN03e-8A"],
+    ["Focus Diagnostics, KPHB (Yathi Towers)","L",2,"lab","156, Yathi Towers, MIG, Road No. 1, near Prime Hospital, KPHB Phase 1, 500072","+91 40 2315 4489","Open 24 hours",17.48834,78.39987,"ChIJCbEdwJORyzsRmyUuTi7W684"],
+    ["Vijaya Diagnostic Centre, Kukatpally","L",2,"lab","Phase 1, No. 4, opp. Remedy Hospital Lane, KPHB Phase 1, 500072","+91 92402 22222","6:30 AM to 11 PM (Sunday 7 AM to 9 PM)",17.49449,78.39879,"ChIJOe8H6uyRyzsRrEY2gtUw5wY"],
+    ["Orange Health Labs, KPHB 9th Phase","L",2,"lab","1-140, 9th Phase Rd, VNR Residency, Hafeezpet, 500085","+91 70753 77676","6:30 AM to 9:30 PM daily",17.48922,78.38065,"ChIJn3qxfkKTyzsRF9HnZI2ry70"],
+    ["Vijaya Diagnostic Centre, KPHB Phase 6","L",2,"lab","Lane beside The Forum Sujana Mall, below Bank of India, KPHB Phase 6, 500085","+91 92402 22222","7 AM to 9 PM (Sunday to 1 PM)",17.48693,78.38527,"ChIJbfcJERWRyzsR4fkxtHY-kDk"],
+    ["MedPlus Diagnostics, Kukatpally","L",2,"lab","Beside South India Shopping Mall, Gayatri Nagar, Vivekananda Nagar, 500072","+91 93910 14447","7 AM to 12 midnight (Sunday to 5 PM)",17.49244,78.4055,"ChIJIw1d-qqRyzsRKSnO9Hosk08"],
+    ["Aditya Diagnostics and Research Laboratories, KPHB","L",2,"lab","No. 256 & 258, Vignesh Nursing Home, Road No. 4, KPHB Phase 1, 500072","+91 98488 34451","7 AM to 9 PM (Sunday to 2 PM)",17.49286,78.39796,"ChIJC61Hz5KRyzsRbkjR2o6ckZw"],
+    ["MedQuest Diagnostics Center, Kukatpally","L",2,"lab","15-24-338, Lane 4, Road No. 4, KPHB Phase 1, 500072","+91 40 4884 9999","7 AM to 10 PM daily",17.49447,78.39853,"ChIJ18wCuZSRyzsRkObrTYyiQOY"],
+    ["Orange Health Labs, Vivekananda Nagar","L",2,"lab","H No 3, Plot 455, Road No. 2, beside Sai Keerthi Children’s Hospital, Vivekananda Nagar, 500072","+91 89777 21914","7 AM to 9 PM daily",17.4959,78.41273,"ChIJ3VTovdCRyzsRC69BOjtc7VI"],
+    ["Lupin Diagnostics, East Marredpally","L",3,"lab","10-3-152/6, Entrenchment Rd, East Nehru Nagar, 500026","+91 74001 69631","7 AM to 9 PM daily",17.44412,78.50749,"ChIJ-0fEyTabyzsRsQp7chVDAEc"],
+    ["Yashoda health check-up centre, Secunderabad","L",3,"lab","Ground Floor, Alexander Rd, Kummari Guda, Shivaji Nagar, 500003","+91 80 6590 6191","9 AM to 5 PM, closed Sunday",17.44229,78.49723,"ChIJTzIC2PibyzsRoaa8mUZ6hr4","Full-body health checkups with blood tests, MRI and CT, run by Yashoda Hospitals."],
+    ["Vijaya Diagnostic Centre, S.D. Road","L",3,"lab","4th Floor, 9-1-77, Sarojini Devi Rd, opp. Kotak Mahindra Bank, Regimental Bazaar, 500003","+91 92402 22222","6:30 AM to 10 PM (Sunday 7 AM to 4 PM)",17.44153,78.50135,"ChIJVVVVFRyayzsRIUBubPife5c"],
+    ["Pulse Clinics and Diagnostics, West Marredpally","L",3,"lab","Plot 28, Shriraghava Garden Rd, near PNB, opp. NHS Hospital, Suman Housing Colony, 500026","+91 92913 65437","7 AM to 10 PM (Sunday to 4 PM)",17.45041,78.50306,"ChIJmfmGPCGbyzsRtvbMb1r3g7g","Free home sample collection is mentioned in reviews."],
+    ["Vijaya Diagnostic Centre, Paradise (P.G. Road)","L",3,"lab","1-7-79/A & B, Legend Crystal, P.G. Road, HDFC Bank Lane, behind Sunshine Hospital, 500003","+91 92402 22222","7 AM to 9 PM (Sunday to 1 PM)",17.44104,78.48597,"ChIJJ1ejLhCayzsRp3YMDi8ro20"],
+    ["SDRC (Secunderabad Diagnostic and Research Centre), Paradise","L",3,"lab","Jade Arcade, 101, MG Rd, next to Dadu’s, Kalasiguda, 500003","+91 98490 25601","7 AM to 9 PM (Sunday to 1 PM)",17.44131,78.48825,"ChIJsSrutxCayzsRW2uvLpaVjPA"],
+    ["Apollo Diagnostics, Tarnaka","L",9,"lab","H.No 12, 13-677/65, Street 1, near Bank of Baroda, Kimtee Colony, Gokul Nagar, 500017","+91 40 6946 7076","6:30 AM to 1 PM and 4:30 to 7:30 PM (Sunday to 1 PM)",17.42867,78.54008,"ChIJI_LNqGGZyzsRTZ-A_NrTGjk","Home sample collection is offered."],
+    ["Vijaya Diagnostic Centre, Karkhana","L",3,"lab","Ground Floor, Plot 22, opp. G Pulla Reddy Sweets, Janakapuri, Karkhana, 500009","+91 92402 22222","7 AM to 9 PM (Sunday to 4 PM)",17.45857,78.49982,"ChIJy2iaJEKayzsRI6fPT7ccNZY"],
+    ["Apollo Diagnostics, Padmarao Nagar","L",3,"lab","Main Park, 6-1-132/1, near Union Bank, Swatantra Colony, Padmarao Nagar, 500020","+91 93924 01814","7 AM to 8 PM (Sunday to 2 PM)",17.42538,78.50777,"ChIJR0Aa56CZyzsRV3RMe0SdWh0"],
+    ["Life Care Medical Diagnostics, Old Bowenpally","L",3,"lab","Upstairs, Raghavendra Medical, 8-5-99/3, near Arabian Bakers, Mallikarjuna Nagar, 500011","+91 73821 90777","Open 24 hours",17.47651,78.48089,"ChIJr-p3n4mbyzsR6aYKOC8yLLw","Home sample collection is mentioned in reviews."],
+    ["Yashoda health check-up centre, Hitec City","L",1,"lab","Survey No. 41/14, JNTU–Hitech City Main Rd, Kothaguda, 500084","+91 80 6590 6191","9 AM to 5 PM, closed Sunday",17.46223,78.38447,"ChIJp_QYyreRyzsRwU_VhYGobDs"],
+    ["Vijaya Diagnostic Centre, Madhapur","L",1,"lab","Sy No 66 & 67, Plot 6, Hitech City Rd, Jubilee Enclave, 500081","+91 92402 22222","7 AM to 9 PM (Sunday to 1 PM)",17.45651,78.37587,"ChIJn0dON9-TyzsRMxrlA_XdDXc"],
+    ["Healthians Lab, Madhapur","L",1,"lab","Ground Floor, Krishan Height, 100 Feet Rd, near YSR Statue, Ayyappa Society, 500081","+91 99988 80005","Open 24 hours (as listed)",17.45188,78.39428,"ChIJM-qAwDCRyzsR44P7x7LWzHw"],
+    ["Apollo Diagnostics, Madhapur (VIP Hills)","L",1,"lab","Hitech City Rd, VIP Hills, Silicon Valley, 500081","+91 40 4444 2424","7 AM to 7 PM daily",17.44567,78.38589,"ChIJZ_4ax6hjUjoRbSLAb0ioDk8"],
+    ["Apollo Diagnostics, Madhapur (second branch)","L",1,"lab","C9XR+2R8, Hitech City Rd, VIP Hills, Silicon Valley, 500081","+91 40 4444 2424","7 AM to 7 PM daily",17.44754,78.39207,"ChIJfxIoYEqZyzsRAd13898DmeM"],
+    ["Vijaya Diagnostic Centre, Kondapur (HT Line)","L",1,"lab","Plot 185-C & 186-C, Seshadri Marg, opp. Heritage Fresh, Kondapur, 500084","+91 92402 22222","7 AM to 9 PM (Sunday to 1 PM)",17.46958,78.36243,"ChIJnw2hEnuTyzsRYOBwf2cMJ1Y"],
+    ["Vijaya Diagnostic Centre, Gachibowli","L",1,"lab","Ground Floor, Casa Decor, Plot 25 & 42, Gachibowli Rd, beside Preston Prime Mall, 500032","+91 92402 22222","7 AM to 9 PM (Sunday to 1 PM)",17.4303,78.37395,"ChIJbSudhnSTyzsROKtu2gDQtJo"],
+    ["Nova Diagnostics and Clinics, Kondapur","L",1,"lab","Plot 21/B, High-Tension Line Rd, Kondapur, 500084","+91 98850 33266","7 AM to 9 PM (Wed and Thu from 9 AM), closed Sunday",17.47019,78.36435,"ChIJY9YcjaiTyzsROIlLrHCh_QI"],
+    ["Aarthi Scans & Labs, Kondapur","L",1,"lab","Survey No 55/E, Solitaire Plaza, Kondapur, 500084","+91 76699 76699","Open 24 hours",17.46734,78.3673,"ChIJ6z2nL6eTyzsRK0ppOrXhcF0"],
+    ["MedQuest Diagnostics, Gachibowli","L",1,"lab","Ground Floor, Plot 7 & 8, Gachibowli Rd, Lumbini Avenue, 500032","+91 40 4884 9999","6 AM to 10 PM daily",17.43015,78.3741,"ChIJX6eNYPqTyzsRs4tmOUY5LxA"],
+    ["Likhitha’s Diagnostics & Speciality Lab, Dilsukhnagar","L",8,"lab","13-3, 12/A, Hanuman Nagar, Narayan Puri Colony, Chaitanyapuri, 500060","+91 40 2400 0000","Open 24 hours (Sunday 6 AM to 9 PM)",17.36969,78.53048,"ChIJvUG2u56ZyzsRikZXZgmEdZY"],
+    ["Aarthi Scans & Labs, Dilsukhnagar","L",8,"lab","Nikhil Hospital, Maruti Complex, Gaddiannaram Rd, 500060","+91 88866 11491","Open 24 hours",17.36793,78.5202,"ChIJgXzhhxWZyzsR-RLE-CPF_UQ"],
+    ["Sathya Diagnostic Centre, Dilsukhnagar","L",8,"lab","Metro Pillar 1552, Rajadhani Theatre Complex, Krishna Nagar, 500060","+91 63022 45421","Open 24 hours",17.3695,78.5293,"ChIJNR_oBf6ZyzsRlrfzFojFPtQ"],
+    ["Konark Diagnostic Centre, Gaddiannaram","L",8,"lab","314, Gaddiannaram Rd, Revenue Board Colony, New Malakpet, 500036","+91 40 2406 5397","Open 24 hours",17.36858,78.51874,"ChIJaSThL_aYyzsRPDfi5z_bhpQ"],
+    ["Vijaya Diagnostic Centre, Dilsukhnagar","L",8,"lab","A1516, 16-11-741/C, Dilsukh Nagar Main Rd, beside Lawrence & Mayo Opticals, Indira Nagar, 500060","+91 92402 22222","6 AM to 11 PM (Sunday to 10 PM)",17.36901,78.52033,"ChIJR4-JfliYyzsRbS64_vah9wM"],
+    ["MedPlus Diagnostics, Dilsukhnagar","L",8,"lab","1st & 4th Floor, SS Towers, Metro Pillar 1560, VR Colony, Chaitanyapuri, 500060","+91 93910 12226","6:30 AM to 10 PM (Sunday to 5 PM)",17.36809,78.53162,"ChIJ58UYP4KZyzsRpIyEnWAXZ_w"],
+    ["Shine Diagnostics & Speciality Lab, Dilsukhnagar","L",8,"lab","4-68, beside Rajadhani Theatre Lane, Krishna Nagar, 500060","+91 77804 52678","Open 24 hours",17.36932,78.52782,"ChIJHTlZ4PCYyzsRs_yr_eKu2Zo","Home visit sample collection is mentioned in reviews."],
+    ["Lucid Medical Diagnostics, Moosarambagh","L",8,"lab","16-11-770, Moosarambagh signal, SBI Bank lane, East Prasanth Nagar, 500036","+91 40 4419 4444","6:30 AM to 10 PM (Sunday 7 AM to 4 PM)",17.36998,78.51597,"ChIJbWMT8MaZyzsRTYDNH-ooLTw"],
+    ["MedQuest Diagnostics, LB Nagar","L",8,"lab","Hyderabad–Suryapet Hwy, Gunti Jangaiah Nagar, LB Nagar, 500074","+91 40 4884 9999","Open 24 hours",17.34489,78.55245,"ChIJH2KK0KWYyzsRyup6mNgVzdA"],
+    ["Apollo Diagnostics, P&T Colony, Dilsukhnagar","L",8,"lab","11-15, near More Super Market, P&T Colony, Kodandaram Nagar, 500060","+91 90002 02035","6:30 AM to 8:30 PM (Sunday to 3 PM)",17.36147,78.5261,"ChIJXz815beZyzsR_YyfZnhcSkg","Free home collection is mentioned in reviews."],
+    ["14M Diagnostic Centre, Darulshifa","L",6,"lab","Chaman, Komatwadi Rd, Noorkhan Bazaar, Darulshifa, 500024","+91 99126 22569","Open 24 hours",17.37122,78.48723,"ChIJK8h-L-GZyzsRQTeuHcJ8lqc","Home sampling service is mentioned in reviews."],
+    ["Redcliffe Labs, Rahman’s Diagnostics, New Malakpet","L",6,"lab","16-2-147, X Road, Paltan, Anand Nagar, 500036","+91 89199 40822","Open 24 hours",17.37129,78.50291,"ChIJi87L1yiZyzsRouTgzLYYsOQ"],
+    ["Accurate Diagnostics, Tolichowki","L",7,"lab","Hakimpet Rd, Janaki Nagar Colony, Toli Chowki, 500008","+91 96407 77131","Open 24 hours",17.40002,78.41636,"ChIJbzRGJeiWyzsR3UcNcZ4gbGU","Home sample collection is mentioned in reviews."],
+    ["Vision Diagnostic Centre, Moghalpura","L",6,"lab","23-1-693/1, beside fire station, Moghalpura, 500002","+91 76598 31062","8 AM to 11 PM (Sunday to 8 PM)",17.35941,78.47641,"ChIJaVVVFSCYyzsR2n7c2YG8ois","Free home sample collection is advertised."],
+    ["Check Life Diagnostic, Khilwat","L",6,"lab","20-4-526 4/b, Himmathpura, Khilwat, 500002","+91 90000 06051","8 AM to 10 PM (Sunday to 8 PM)",17.35722,78.46967,"ChIJGUZPGYWXyzsRKINBHCN3hEI"],
+    ["Vijaya Diagnostic Centre, Mehdipatnam","L",7,"lab","12-2-823/A/4/2/A, Ground Floor, Kanti Nagar Rd, opp. Pillar 18, Santosh Nagar, Gudimalkapur, 500006","+91 92402 22222","7 AM to 9 PM (Sunday to 1 PM)",17.39455,78.43847,"ChIJ2XdD6tOXyzsRuk_nNXXchLs"],
+    ["Vijaya Diagnostic Centre, Shah Ali Banda","L",6,"lab","601/1 to 615/1, opp. Allah Masjid, Charminar Rd X-Roads, 500002","+91 92402 22222","7 AM to 9 PM (Sunday to 4 PM)",17.35515,78.47345,"ChIJ6QGBswyXyzsRub266H_nc0U"],
+    ["Diagnostic centre with home collection, Malakpet","L",6,"lab","Shop 4, beside Sree Vani Hospital, Saleem Nagar Colony, Malakpet Extension, 500036","+91 63000 11315","6:30 AM to 1 PM and 5 to 9 PM (Sunday to 1 PM)",17.37464,78.51136,"ChIJcXhSdrmZyzsR_2gUzf7XKao"],
+    ["Vijaya Diagnostic Centre, Himayatnagar","L",5,"lab","3-6-16 & 17, Street 19, opp. Lane to Tanishq, Chandra Nagar, 500029","+91 92402 22222","6:30 AM to 11 PM (Sunday to 10 PM)",17.40416,78.47988,"ChIJ2bRcF-eZyzsRaK9-jGHoSZc"],
+    ["Sathya Diagnostic Centre, Himayatnagar","L",5,"lab","Satya Towers, 3-6-142, Himayat Nagar Rd, 500029","+91 40 2322 6705","7 AM to 10:10 PM (Sunday open 24 hours)",17.40274,78.48271,"ChIJla6Ku92ZyzsRRusz5R_lkfw"],
+    ["S.L. Pharma Medical Shop and Surgicals, KPHB","R",2,"phm","Shop 1, SR Towers, 259, Remedy Hospital Ln, KPHB Phase 1, 500072","+91 90007 30304","8 AM to 11 PM daily",17.49278,78.39791,"ChIJC61Hz5KRyzsRQLGksnx148s","Also stocks surgical items."],
+    ["Sanjeevani Generic Medical Store, KPHB","R",2,"phm","H.No 2-22-1/16/10/NR, Shop 10, near Sai Baba Temple, Venkat Nagar, Bhagya Nagar Colony, 500072","+91 97003 71376","10 AM to 10 PM daily",17.49387,78.40309,"ChIJRRT9PsGRyzsRwH4mfSRAtCs"],
+    ["Bharat Vikas Generic Medical Shop, KPHB","R",2,"phm","Annapurna Nilayam, Remedy Hospital Ln, KPHB Phase 1, 500072","+91 90007 33186","10 AM to 8:30 PM, closed Sunday",17.48883,78.39649,"ChIJ9-X3bpKRyzsRC2ExQu_LGWQ","Reviews say medicines for cancer, heart, kidney and liver conditions are not stocked here."],
+    ["MedPlus, KPHB 6th Phase","R",2,"phm","PN 386, GF, Sy No 1009, Sri Sai Srinivasa Enclave, KPHB Phase 6, 500085","+91 76600 27150","7 AM to 11 PM daily",17.48787,78.39028,"ChIJtWT4dIyRyzsRBbCsY9ZBzW8"],
+    ["Sri Bhargav Medical & General Stores, KPHB","R",2,"phm","Shops 11 & 12, Alluri Trade Centre, KPHB, Bhagya Nagar Colony, 500072","+91 95155 85069","8 AM to 11 PM daily",17.49335,78.40386,"ChIJJUGXtO6RyzsR0sF-p1_9UT8"],
+    ["Global Medicals, KPHB","R",2,"phm","MIG-I-23, Road No. 1, KPHB Phase 1, 500072","+91 92462 97659","8 AM to 11:30 PM daily",17.4919,78.40191,"ChIJQW6-pJSRyzsRLJHAFRHFkAg"],
+    ["MedPlus, Moosapet (Balanagar)","R",2,"phm","Opp. IDPL Railway Siding, Moosapet, 500018","+91 84990 45672","9 AM to 7 PM, closed Sunday",17.47199,78.42894,"ChIJeeb4CAiRyzsRoOxSmm2rKGA"],
+    ["Srinivasa Medical Store, HMT Nagar","R",9,"phm","HMT Nagar, Nacharam, MBD Complex, 500076","","Open 24 hours",17.42353,78.54755,"ChIJAQAAUFuZyzsRHTLCNt3Scls"],
+    ["Suman Medical & General Stores, Tarnaka","R",9,"phm","12-13-40, Street 5, opp. RTC Hospital, Krishna Giri Enclave, 500017","+91 40 2701 9957","9 AM to 11 PM daily",17.42633,78.532,"ChIJIXhVtXyZyzsRTORJ2-IXkLI"],
+    ["Sri Sai Ram Generic Medical Shop, Nacharam","R",9,"phm","Nacharam–Mallapur Rd, MBD Complex, Bapu Nagar, 500076","+91 70362 79337","8:30 AM to 9:50 PM daily",17.42228,78.54547,"ChIJbR1RDV2ZyzsRUSF_6sUd6XM"],
+    ["Nanda Medicals (generic store), Tarnaka","R",9,"phm","Sudharshan Reddy Sweet Shop Lane, Street 1, Laxmi Starch Colony, 500017","+91 81063 00080","9:30 AM to 6:30 PM, closed Sunday",17.42692,78.53835,"ChIJVyO_L2GZyzsR-zCvPtSZMng"],
+    ["Arun Medical & General Stores, Tarnaka","R",9,"phm","No. 12, 5-29/1, Tarnaka Main Rd, opp. Andhra Bank, Mettuguda, 500017","+91 89775 17944","9 AM to 3 PM and 4:30 to 11 PM (Sunday 9:30 to 2)",17.42938,78.53351,"ChIJHbLQlGKZyzsR9Ex7QhbqTTY"],
+    ["Medi Gallery medical shop, Tarnaka","R",9,"phm","12-13-1249/aA, opp. Innova Hospital, Tarnaka Main Rd, 500017","+91 99514 06000","8:30 AM to 11:30 PM daily",17.42936,78.53346,"ChIJ19VpT9ibyzsRHfZtisyhvik"],
+    ["MedPlus Nacharam Pharmacy and Lab","R",9,"phm","4-9-126/NR, Nacharam Rd, Kapra Circle, Bapuji Nagar, MBD Complex, 500076","+91 84980 96704","7 AM to 11 PM daily",17.42388,78.5471,"ChIJL30qw52ZyzsRElEXl9KafHE"],
+    ["Ankur Medicals, HMT Nagar","R",9,"phm","4-7-41/2, near Bapuji Nagar Main Road, MBD Complex, 500076","+91 99597 42442","7 AM to 11:30 PM daily",17.42306,78.54624,"ChIJTeC_cACZyzsRM5sY8TkfQ5Y"],
+    ["MedPlus, Tarnaka","R",9,"phm","Room 2, Ground Floor, 12-13-868, Street 2, Hanuman Nagar, 500017","+91 40 6700 6700","7 AM to 11 PM daily",17.43211,78.54248,"ChIJ__9PmHyZyzsRQcBYzCZjEGM"],
+    ["Balu Herbals Ayurvedic Medicine Store, Nacharam","R",9,"phm uni","Koundinya Nagar, Ram Reddy Colony, Nacharam, 500076","+91 81218 20006","10 AM to 10 PM daily",17.42987,78.55237,"ChIJ1Z8_ql2ZyzsR0P7hBuGYLkU","Ayurvedic and herbal products."],
+    ["Mohammedia Medical & General Store, Khilwat","R",6,"phm","20-4-55/1/A/2, opp. Play Ground, Mahboob Chowk, Khilwat, 500002","+91 81210 44600","11 AM to 1 AM daily",17.35823,78.47042,"ChIJ5_VjRIuXyzsRnHUQFmFUNjs"],
+    ["Al Kareem Medical & General Store, Tolichowki","R",7,"phm","M.D. Line, beside Trojan Gym, Owaisi Colony, Toli Chowki, 500008","+91 98664 90851","9 AM to 1 AM daily",17.39814,78.41714,"ChIJWXvWYOiWyzsRgctKgtpcR1I"],
+    ["Health Plus Medical & General Stores, Mehdipatnam","R",7,"phm","12-2-709/A/12, opp. 777 Hotel, Khader Bagh, Padmanabha Nagar, 500008","+91 93330 08001","8 AM to 1 AM daily",17.39211,78.42658,"ChIJdc0T2-KWyzsRCDwglCJIS_c"],
+    ["S K Medical Hall, Mozampura","R",5,"phm","Ground Floor, Ali Chambers, 11-3-928/2, opp. Prince Hotel, Mozampura, Mallepally, 500001","+91 85558 52021","Open 24 hours",17.38972,78.45583,"ChIJ1V7vXXKXyzsR7y6BZtBM2lM"],
+    ["Mehdipatnam Drug Mart","R",7,"phm","9CQQ+JW7, Gudi Malkapur Rd, Amba Gardens, Mehdipatnam, 500006","+91 98858 55598","7 AM to 1 AM daily",17.38904,78.43979,"ChIJU2rBYACXyzsRUE6QQz0KnO0"],
+    ["Mawa Medical & General Store, Tolichowki","R",7,"phm","8-1-6/1, 7 Tombs Rd, beside Rehan Arbaab hotel, Surya Nagar, Toli Chowki, 500008","+91 80070 80077","9:15 AM to 1 AM daily",17.39884,78.41493,"ChIJk021sOmWyzsRwdejGX5Hvn4","Large store with medicines, baby products and general items."],
+    ["New Mehmood Medical and General Stores, New Mallepally","R",5,"phm","11-3-45, Bazar Ghat, New Mallepally, 500001","+91 98491 46091","Hours not listed",17.39069,78.4596,"ChIJpcToMsaXyzsRhTZjALehuHs"],
+    ["Livlife Pharmacy, Nanakramguda","R",1,"phm","Plot 348, TNGOS Colony, Gachibowli, Nanakramguda, 500046","+91 96403 47348","7 AM to 12 midnight daily",17.4327,78.33394,"ChIJNRTofvOTyzsRxEwqmbt5InE"],
+    ["MedPlus Whitefield, Kondapur","R",1,"phm","D No 2/91/12, Shop 3, Sanjeeva Enclave, Whitefields, Kondapur, 500084","+91 76600 27140","7 AM to 10:30 PM daily",17.45368,78.36724,"ChIJKb3E18WTyzsRwfp43AmWdkE"],
+    ["Sri Bhaghavan Medical General Stores, Kondapur","R",1,"phm","2-41/5/1, Rahmat Gulshan Colony, P Janardhan Reddy Nagar, 500032","+91 91776 27081","Hours not listed",17.43906,78.36396,"ChIJA1I1jgOTyzsR_QasTK_xnis"],
+    ["Apollo Pharmacy, DLF Road, Gachibowli","R",1,"phm","30, DLF Rd, near Chef Bakers, APHB Colony, 500032","+91 79 4284 5607","7 AM to 11 PM daily",17.4489,78.35711,"ChIJc6w6uL6TyzsRQrXSQvOCdho"],
+    ["MedPlus Gachibowli (Cyberhills)","R",1,"phm","Shops 3 & 4, 1/73/8, Cyberhills Colony, P Janardhan Reddy Nagar, 500032","+91 76600 27128","6 AM to 11 PM (Sunday to 7 PM)",17.43716,78.36608,"ChIJj7vaFeyTyzsRqZYog1hlgMY"],
+    ["Balaji Medicals and General, near AIG Hospital","R",1,"phm","Shutter 2, 1-72/5/2/P/3, Babukhan Ln, beside AIG Hospital, 500032","+91 98851 26643","9:30 AM to 11 PM daily",17.44134,78.3669,"ChIJUWsqjzSTyzsRoY9itcanVKk","Reviews mention discounts of 20 to 25 percent and courier delivery."],
+    ["MedPlus Gachibowli Diagnostics Pharmacy","R",1,"phm","Shop 4, Survey No. 136, P Janardhan Reddy Nagar, 500032","+91 63005 31154","7 AM to 10 PM daily",17.44657,78.36394,"ChIJ6X9dKSuTyzsRhEq-obO_ipU"]
+  ];
+
+  // Words people type, mapped to departments. A leading = means the whole word must match; otherwise any word starting with it matches.
+  var K = {
+    car:["heart","cardi","chest pain","angioplasty","bypass","blood pressure","=bp","hypertension","cholesterol","palpitation","stent","valve","heart attack"],
+    onc:["cancer","tumor","tumour","chemo","radiation","oncolog","lump","leukemia","lymphoma","biopsy"],
+    uro:["kidney","renal","dialysis","stone","prostate","urine","urinary","=uti","bladder","nephro","urolog","transplant"],
+    neu:["brain","stroke","epilep","seizure","headache","migraine","paralysis","nerve","spine","spinal","disc","neuro","parkinson","memory","dementia","vertigo"],
+    ort:["bone","fracture","knee","joint","arthritis","=hip","ortho","back pain","shoulder","ligament","=acl","osteopor","sports injury"],
+    gas:["liver","stomach","gastr","acidity","ulcer","endoscop","colonoscop","jaundice","hepatitis","pancrea","intestin","=ibs","crohn","constipation"],
+    gyn:["pregnan","delivery","maternity","fibroid","pcos","period","menstru","women","gynec","gynaec","infertil","c-section","cesarean","uterus"],
+    ped:["child","kid","baby","babies","newborn","infant","pediatric","paediatric","vaccin"],
+    eye:["=eye","eyes","cataract","retina","glaucoma","vision","squint","lasik","cornea","ophthal"],
+    ent:["=ear","=nose","throat","tonsil","sinus","hearing","snoring","=ent"],
+    men:["depress","anxiety","mental","psychiat","schizophrenia","addiction","bipolar","panic","ocd"],
+    inf:["fever","dengue","malaria","typhoid","covid","=hiv","rabies","dog bite","tetanus","diphtheria","infection","chikungunya","swine flu","viral"],
+    che:["=tb","tubercul","asthma","=copd","lung","breath","pneumonia","pulmon","chest infection","wheez"],
+    end:["diabet","sugar","thyroid","hormone","endocrin","obesity"],
+    der:["skin","rash","acne","eczema","psoriasis","allergy","hair","fungal","derma"],
+    sur:["hernia","appendix","appendicitis","gallbladder","gallstone","piles","fistula","varicose","surgery","bariatric","fissure"],
+    den:["tooth","teeth","dental","dentist","gums"],
+    tra:["accident","trauma","emergency","burn","poison","snake","=icu"],
+    gen:["=cold","general","checkup","check-up","body pain","weakness","vomit","diarrhea","food poisoning","dehydration","physician"],
+    uni:["unani","ayurved","homeo","herbal","ayush"]
+  };
+
+  var MORE = {
+    car:["heart failure","arrhythm","angina","cardiac","blood clot","=dvt","vascular","hypotension"],
+    onc:["breast cancer","lung cancer","prostate cancer","oral cancer","mouth cancer","cervical cancer","colon cancer","blood cancer","brain tumor","immunotherapy"],
+    uro:["=ckd","kidney failure","urinary infection","hydronephrosis","erectile","dialysis"],
+    neu:["alzheimer","neuropath","=gbs","bell","tremor","numbness","tingling","spinal cord"],
+    ort:["sciatica","slip disc","cervical","spondyl","frozen shoulder","tennis elbow","heel pain","gout","rheumat","osteoarthritis","scoliosis","ankle","sprain","back","knee"],
+    gas:["gerd","reflux","fatty liver","cirrhosis","colitis","diarrhea","diarrhoea","bloating","indigestion","hepatitis b","hepatitis c"],
+    gyn:["pcod","menopause","breast lump","endometriosis","=ivf","antenatal","postpartum","abortion","leucorrhea","irregular periods"],
+    ped:["vaccination","growth","measles","chickenpox","colic","teething"],
+    eye:["conjunctivitis","myopia","dry eye","red eye","eye infection","spectacles","retinopathy"],
+    ent:["ear infection","tinnitus","nosebleed","sore throat","adenoid","hearing loss"],
+    men:["insomnia","=stress","=adhd","autism","ptsd","mood","psychologist","counselling","counseling"],
+    inf:["cholera","=flu","leptospirosis","scrub typhus","sepsis","=h1n1","mumps","=std"],
+    che:["bronchitis","sleep apnea","emphysema","pleural","oxygen"],
+    end:["hba1c","hypothyroid","hyperthyroid","insulin","vitamin d","weight loss"],
+    der:["hair fall","dandruff","vitiligo","scabies","wart","urticaria","ringworm","pigmentation","skin allergy","boils"],
+    sur:["lipoma","abscess","hydrocele","thyroid nodule","amputation","wound"],
+    den:["root canal","cavity","wisdom tooth","braces","dentures"],
+    tra:["head injury","road accident","poisoning","snake bite","dog bite"],
+    gen:["body pain","weakness","fatigue","vitamin","cough and cold","throat infection"],
+    phm:["medicines","tablets","injection","syrup","prescription","pharmacy","medical store","drug","chemist","generic"],
+    bld:["blood bank","blood donation","blood donor","blood group","blood transfusion","blood loss","platelet","transfusion","anemia","anaemia","thalassemia","hemophilia","plasma","=donor","dengue"],
+    ivc:["infusion","drip","=iv","iv therapy","chemo","chemotherapy","dialysis","iron infusion","antibiotic injection","saline","day care","immunotherapy","home nursing","nursing"],
+    phy:["physio","rehab","back pain","neck pain","knee pain","frozen shoulder","sciatica","stroke recovery","paralysis","hemiplegia","spondylosis","slip disc","sports injury","muscle","post surgery","post-operative","=acl","cervical","lumbar","posture","joint pain","lymphedema","parkinson","=gbs","cerebral palsy"]
+  };
+  MORE.nrs = ["nursing home","residential","long stay","long-stay","transitional care","assisted living","palliative","elderly care","geriatric","old age","post hospital","bedridden","tracheostomy","neuro rehab","rehabilitation centre","rehab centre","stroke","paralysis","brain injury","spinal injury","home care"];
+  MORE.lab = ["blood test", "blood tests", "=cbc", "complete blood", "haemogram", "hemogram", "hba1c", "lipid", "cholesterol test", "thyroid test", "thyroid profile", "=tsh", "vitamin d", "vitamin b12", "=b12", "liver function", "=lft", "kidney function", "=kft", "=rft", "creatinine", "uric acid", "urine test", "urine routine", "stool test", "health checkup", "health check-up", "full body", "master health", "executive health", "fasting sugar", "sugar test", "blood sugar test", "=ppbs", "=fbs", "=esr", "=crp", "iron studies", "ferritin", "dengue test", "=ns1", "malaria test", "typhoid test", "widal", "hiv test", "hbsag", "=psa", "scan", "=mri", "ct scan", "ultrasound", "=usg", "x-ray", "xray", "=ecg", "2d echo", "=tmt", "mammogram", "pet-ct", "=bmd", "doppler", "culture test", "covid test", "pathology", "laboratory", "lab test", "diagnostic", "sample collection", "home collection"];
+  Object.keys(MORE).forEach(function (c) { K[c] = (K[c] || []).concat(MORE[c]); });
+
+  var EX = ["Heart attack","Cancer","Kidney stone","Diabetes","Pregnancy","Eye","Fever","Stroke","Back pain","Knee pain","Dialysis","Chemotherapy","Platelets","Health checkup","Thyroid test","TB","Skin","Mental health"];
+
+  var TYPES = [
+    { c:"G", label:"Government hospitals", short:"Government", v:"--gov" },
+    { c:"P", label:"Private hospitals", short:"Private", v:"--pvt" },
+    { c:"C", label:"Clinics and doctors", short:"Clinic", v:"--cln" },
+    { c:"N", label:"Nursing and rehab centres", short:"Nursing & rehab", v:"--nrs" },
+    { c:"I", label:"Dialysis and infusion", short:"Infusion / dialysis", v:"--ivc" },
+    { c:"F", label:"Physiotherapy", short:"Physiotherapy", v:"--phy" },
+    { c:"L", label:"Diagnostic labs and checkups", short:"Diagnostic lab", v:"--lab" },
+    { c:"B", label:"Blood banks", short:"Blood bank", v:"--bld" },
+    { c:"R", label:"Pharmacies", short:"Pharmacy", v:"--pha" }
+  ];
+  var TMAP = {}; TYPES.forEach(function (t) { TMAP[t.c] = t; });
+  var TORDER = {}; TYPES.forEach(function (t, i) { TORDER[t.c] = i; });
+
+  // Typical conditions per department, used for the Condition dropdown.
+  var CONDITIONS = {
+    car:["Heart attack","Chest pain","High blood pressure","Heart failure","Angioplasty"],
+    onc:["Breast cancer","Oral cancer","Lung cancer","Chemotherapy"],
+    uro:["Kidney stone","Kidney failure","Prostate problem","Urine problems","Dialysis"],
+    neu:["Stroke","Epilepsy","Migraine","Slip disc","Parkinson’s disease"],
+    ort:["Fracture","Knee pain","Arthritis","Back pain","Hip replacement"],
+    gas:["Liver disease","Acidity and ulcer","Jaundice","Fatty liver"],
+    gyn:["Pregnancy and delivery","PCOS","Fibroids","Infertility","Menopause"],
+    ped:["Newborn care","Child fever","Vaccination"],
+    eye:["Cataract","Glaucoma","Red eye","Retina problem"],
+    ent:["Ear problems","Sinusitis","Tonsils","Hearing loss"],
+    men:["Depression","Anxiety","Addiction","Insomnia"],
+    inf:["Fever","Dengue","Typhoid","Malaria","Dog bite and rabies"],
+    che:["Asthma","TB","Pneumonia","COPD"],
+    end:["Diabetes","Thyroid","Obesity"],
+    der:["Skin allergy","Acne","Hair fall","Psoriasis"],
+    sur:["Hernia","Appendicitis","Gallstones","Varicose veins","Piles"],
+    den:["Tooth pain","Root canal","Teeth and gums"],
+    tra:["Road accident","Burns","Snake bite","Poisoning"],
+    gen:["Cold and cough","Body pain","General health check"],
+    uni:["Unani treatment","Ayurveda and homeopathy"],
+    phy:["Physiotherapy after surgery","Frozen shoulder","Sciatica","Stroke recovery","Sports injury"],
+    ivc:["IV drip at home","Iron infusion","Dialysis"],
+    bld:["Blood bank","Platelets for dengue","Anaemia"],
+    phm:["Medicines and pharmacy"],
+    nrs:["Long-stay nursing care","Palliative care","Bedridden patient care","Tracheostomy care"],
+    lab:["Full body health checkup","Thyroid test","Vitamin D and B12 test","Lipid profile","Liver function test","Kidney function test","HbA1c","Dengue test","CBC blood test"]
+  };
+
+  var state = { q:"", type:"All", area:"All", only24:false, depts:[] };
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]; }); }
+  function reEsc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+  function matchDepts(q) {
+    var out = [];
+    q = q.toLowerCase();
+    Object.keys(K).forEach(function (code) {
+      var hit = K[code].some(function (kw) {
+        var whole = kw.charAt(0) === "=";
+        if (whole) kw = kw.slice(1);
+        var re = new RegExp("(^|[^a-z])" + reEsc(kw) + (whole ? "($|[^a-z])" : ""), "i");
+        return re.test(q);
+      });
+      if (hit) out.push(code);
+    });
+    return out;
+  }
+
+  function countType(c) { return D.filter(function (d) { return d[1] === c; }).length; }
+
+  function buildStatic() {
+    // hero pills
+    $("heroPills").innerHTML =
+      "<span class='pill'>" + D.length + " places</span>" +
+      "<span class='pill'>" + AREAS.length + " areas</span>" +
+      "<span class='pill'>" + TYPES.length + " types of care</span>";
+
+    // condition dropdown, grouped by department
+    var h = "<option value=''>Any condition</option>";
+    Object.keys(CONDITIONS).forEach(function (code) {
+      h += "<optgroup label='" + esc(DEPT[code]) + "'>" + CONDITIONS[code].map(function (c) { return "<option value='" + esc(c) + "'>" + esc(c) + "</option>"; }).join("") + "</optgroup>";
+    });
+    $("selCond").innerHTML = h;
+
+    // area dropdown
+    var a = "<option value='All'>All areas (" + D.length + ")</option>";
+    AREAS.forEach(function (name, i) {
+      var n = D.filter(function (d) { return d[2] === i; }).length;
+      a += "<option value='" + i + "'>" + esc(name) + " (" + n + ")</option>";
+    });
+    $("selArea").innerHTML = a;
+
+    // type dropdown
+    var t = "<option value='All'>All types (" + D.length + ")</option>";
+    TYPES.forEach(function (x) { t += "<option value='" + x.c + "'>" + esc(x.label) + " (" + countType(x.c) + ")</option>"; });
+    $("selType").innerHTML = t;
+
+    // quick picks
+    var q = $("quick");
+    EX.forEach(function (name) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "qchip"; b.textContent = name;
+      b.addEventListener("click", function () { $("q").value = name; $("selCond").value = ""; runSearch(true); });
+      q.appendChild(b);
+    });
+
+    // type tiles
+    drawTiles();
+  }
+
+  function drawTiles() {
+    var box = $("tiles"); box.innerHTML = "";
+    TYPES.forEach(function (x) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "tile";
+      b.style.setProperty("--c", "var(" + x.v + ")");
+      b.setAttribute("aria-pressed", state.type === x.c ? "true" : "false");
+      b.innerHTML = "<b>" + countType(x.c) + "</b><span>" + esc(x.label) + "</span>";
+      b.addEventListener("click", function () {
+        state.type = state.type === x.c ? "All" : x.c;
+        $("selType").value = state.type;
+        drawTiles(); render();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function runSearch(scroll) {
+    state.q = $("q").value.trim();
+    state.depts = state.q ? matchDepts(state.q) : [];
+    render();
+    if (scroll) {
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      $("summary").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    }
+  }
+
+  function render() {
+    var out = $("out"), sum = $("summary");
+    var q = state.q, depts = state.depts;
+
+    if (q && !depts.length) {
+      sum.innerHTML = "No disease or department matched <b>“" + esc(q) + "”</b>.";
+      out.innerHTML = "<div class='empty'>Try a disease, symptom or department, for example heart, cancer, kidney stone, diabetes, pregnancy, eye, fever, stroke, fracture, TB, skin or depression. You can also pick one from the Condition list.</div>";
+      return;
+    }
+
+    var rows = D.filter(function (d) {
+      if (state.type !== "All" && d[1] !== state.type) return false;
+      if (state.area !== "All" && String(d[2]) !== state.area) return false;
+      if (state.only24 && String(d[6]).toLowerCase().indexOf("24 hours") === -1) return false;
+      if (d[1] === "R" && depts.length) return state.type === "R" || depts.indexOf("phm") > -1;
+      if (depts.length) { var t = d[3].split(" "); return depts.some(function (c) { return t.indexOf(c) > -1; }); }
+      return true;
+    });
+
+    var parts = [];
+    TYPES.forEach(function (x) {
+      var n = rows.filter(function (d) { return d[1] === x.c; }).length;
+      if (n) parts.push(n + " " + x.label.toLowerCase());
+    });
+    var head = "<b>" + rows.length + "</b> place" + (rows.length === 1 ? "" : "s");
+    if (depts.length) head += " for <b>“" + esc(q) + "”</b>. Matched departments: " + depts.map(function (c) { return "<b>" + esc(DEPT[c]) + "</b>"; }).join(", ") + ".";
+    else head += " across Hyderabad. Pick a condition or type a disease above to narrow the list.";
+    if (parts.length && rows.length) head += "<br><span style='color:var(--soft)'>" + esc(parts.join(" · ")) + "</span>";
+    sum.innerHTML = head;
+
+    if (!rows.length) { out.innerHTML = "<div class='empty'>No places match these filters. Try All areas, All types, or switch off Open 24 hours.</div>"; return; }
+
+    function score(d) { var t = d[3].split(" "); return depts.filter(function (c) { return t.indexOf(c) > -1; }).length; }
+    var html = "";
+    AREAS.forEach(function (name, ai) {
+      var list = rows.filter(function (d) { return d[2] === ai; });
+      if (!list.length) return;
+      list.sort(function (a, b) { return score(b) - score(a) || TORDER[a[1]] - TORDER[b[1]] || a[0].localeCompare(b[0]); });
+      html += "<div class='grp'><h3>" + esc(name) + "</h3><span>" + list.length + " place" + (list.length === 1 ? "" : "s") + "</span></div><ul class='list'>";
+      list.forEach(function (d) {
+        var tp = TMAP[d[1]];
+        var tags = d[3].split(" ").map(function (c) { return "<span class='d" + (depts.indexOf(c) > -1 ? " hit" : "") + "'>" + esc(DEPT[c]) + "</span>"; }).join("");
+        var tel = d[5] ? "<a href='tel:" + esc(d[5].replace(/[^\d+]/g, "")) + "'>" + esc(d[5]) + "</a>" : "<span style='color:var(--soft)'>Phone not listed</span>";
+        var mapUrl = d[9] ? "https://www.google.com/maps/place/?q=place_id:" + d[9] : "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(d[0] + " " + d[4]);
+        var dirUrl = "https://www.google.com/maps/dir/?api=1&destination=" + (d[9] ? d[7] + "," + d[8] : encodeURIComponent(d[0] + " " + d[4]));
+        html += "<li class='card' style='--c:var(" + tp.v + ")'>" +
+          "<div class='top'><h4>" + esc(d[0]) + "</h4><span class='badge'>" + esc(tp.short) + "</span></div>" +
+          "<p class='addr'>" + esc(d[4]) + "</p><div class='depts'>" + tags + "</div>" +
+          "<div class='meta'><span class='hrs'>" + esc(d[6]) + "</span>" + tel +
+          "<a href='" + esc(mapUrl) + "' target='_blank' rel='noopener'>Open in Google Maps</a>" +
+          "<a href='" + esc(dirUrl) + "' target='_blank' rel='noopener'>Directions</a>" +
+          (d[11] ? "<a href='" + esc(d[11]) + "' target='_blank' rel='noopener'>Website</a>" : "") + "</div>" +
+          (d[10] ? "<p class='note'>" + esc(d[10]) + "</p>" : "") + "</li>";
+      });
+      html += "</ul>";
+    });
+    out.innerHTML = html;
+  }
+
+  var TESTS = [["Complete blood count (CBC)", "Haemoglobin, red and white blood cells, platelets", "Anaemia, infections, platelet count in dengue", "No fasting needed."], ["Fasting and post-meal blood sugar", "Blood glucose before and 2 hours after a meal", "Screening and monitoring of diabetes", "Fasting sugar needs an 8 to 10 hour fast; the post-meal sample is taken 2 hours after eating."], ["HbA1c", "Average blood sugar over about the last 3 months", "Diagnosing diabetes and checking control", "Usually no fasting needed."], ["Lipid profile", "Total, LDL and HDL cholesterol and triglycerides", "Heart and stroke risk", "Many labs ask for a 9 to 12 hour fast. Follow your lab’s instructions."], ["Liver function test (LFT)", "Bilirubin, SGOT and SGPT, ALP, proteins", "Jaundice, fatty liver, hepatitis, medicine safety", "Fasting may be advised; ask the lab."], ["Kidney function test (KFT or RFT)", "Creatinine, urea, uric acid, salts (electrolytes)", "Kidney disease, dehydration, gout", "Often no fasting; ask the lab."], ["Thyroid profile", "T3, T4 and TSH", "Underactive or overactive thyroid, unexplained weight or tiredness", "Usually no fasting needed."], ["Vitamin D and vitamin B12", "Vitamin levels in the blood", "Bone pain, tiredness, tingling or numbness", "Ask the lab; fasting rules vary."], ["Iron studies and ferritin", "Iron, iron-binding capacity, iron stores", "Finding the cause of anaemia", "A morning sample is often preferred; ask the lab."], ["ESR and CRP", "Markers of inflammation", "Infections, arthritis flare-ups", "No fasting needed."], ["Urine routine and culture", "Sugar, protein, cells, infection", "Urine infection, kidney problems, diabetes", "Use a clean mid-stream sample."], ["Dengue, malaria and typhoid tests", "Causes of fever", "Fever with body pain, chills or rash", "No fasting. Dengue NS1 works best in the first few days of fever."], ["Blood group and Rh type", "ABO group and Rh factor", "Before surgery, during pregnancy, blood donation", "No preparation."], ["HIV, hepatitis B and hepatitis C screening", "Infections that can be silent", "Before surgery, in pregnancy, routine screening", "No fasting. Results are confidential."], ["PSA (prostate)", "Prostate-specific antigen", "Prostate screening when a doctor advises it", "No fasting needed."]];
+  var PKG = "Typical checkup packages: a basic package covers CBC, blood sugar, lipid profile, liver and kidney tests and urine; an executive package adds thyroid, HbA1c, vitamins, ECG, X-ray and ultrasound; women’s, senior and diabetic packages add tests chosen for that group. Contents differ by lab, so ask for the exact list. This is general information, not medical advice, and your doctor decides which tests you need.";
+  function drawTests() {
+    var box = $("tests");
+    box.innerHTML = TESTS.map(function (t, i) {
+      return "<div class='tcard'><h4>" + esc(t[0]) + "</h4><p><b>Checks:</b> " + esc(t[1]) + "</p><p><b>Useful for:</b> " + esc(t[2]) + "</p><p><b>Preparation:</b> " + esc(t[3]) + "</p><button type='button' data-i='" + i + "'>Find labs</button></div>";
+    }).join("");
+    $("pkgnote").textContent = PKG;
+    box.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-i]");
+      if (!b) return;
+      $("q").value = ""; $("selCond").value = "";
+      state.q = ""; state.depts = []; state.type = "L"; $("selType").value = "L";
+      drawTiles(); render();
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      $("summary").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    });
+  }
+
+  // events
+  $("go").addEventListener("click", function () { $("selCond").value = ""; runSearch(true); });
+  $("q").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); $("selCond").value = ""; runSearch(true); } });
+  $("selCond").addEventListener("change", function (e) {
+    var v = e.target.value;
+    $("q").value = v;
+    runSearch(!!v);
+  });
+  $("selArea").addEventListener("change", function (e) { state.area = e.target.value; render(); });
+  $("selType").addEventListener("change", function (e) { state.type = e.target.value; drawTiles(); render(); });
+  $("only24").addEventListener("change", function (e) { state.only24 = e.target.checked; render(); });
+  $("reset").addEventListener("click", function () {
+    $("q").value = ""; $("selCond").value = ""; $("selArea").value = "All"; $("selType").value = "All"; $("only24").checked = false;
+    state = { q:"", type:"All", area:"All", only24:false, depts:[] };
+    drawTiles(); render();
+  });
+
+  drawTests();
+  buildStatic();
+  render();
+})();
+</script>
+</body>
+</html>
