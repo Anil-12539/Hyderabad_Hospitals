@@ -9,9 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#F3F7F8; --card:#FFFFFF; --ink:#0E2A33; --soft:#587079; --line:#DCE6E9; --brand:#0E7C86; --brand-ink:#FFFFFF; --mark:#FFF1BF;
+    --bg:#F8FAFB; --card:#FFFFFF; --ink:#0A1F2E; --soft:#536878; --line:#E1E8ED; --brand:#0E7C86; --brand-ink:#FFFFFF; --mark:#FFF1BF;
     --gov:#2563C9; --pvt:#0F8A6B; --cln:#C2670A; --pha:#3C8D0D; --bld:#C0213F; --ivc:#7A3FC0; --phy:#0B7F8C; --nrs:#A33E8F; --lab:#4E5BD9;
-    --shadow:0 12px 32px rgba(8,80,90,.13);
+    --shadow:0 16px 48px rgba(8,80,90,.12);
     box-sizing:border-box;
     padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   }
@@ -36,71 +36,77 @@
 
   /* hero */
   .hero {
-    color:#fff; padding:40px 20px 110px; position:relative; overflow:hidden;
+    color:#fff; padding:40px 20px 44px; position:relative; overflow:hidden;
     background:
-      radial-gradient(800px 380px at 88% -10%, rgba(255,255,255,.20), transparent 62%),
-      radial-gradient(560px 300px at 0% 115%, rgba(242,164,58,.28), transparent 60%),
-      linear-gradient(135deg,#07434C 0%,#0E7C86 55%,#2BA89B 100%);
+      radial-gradient(900px 420px at 90% -12%, rgba(255,255,255,.22), transparent 65%),
+      radial-gradient(600px 320px at 0% 118%, rgba(45,200,195,.35), transparent 62%),
+      linear-gradient(140deg,#0A6A74 0%,#0E8894 45%,#2DB8AB 100%);
+    box-shadow: 0 8px 32px rgba(0,0,0,.12);
   }
-  .wrap { max-width:1040px; margin:0 auto; }
-  .brand { display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.01em; font-size:.95rem; opacity:.95; }
+  .wrap { max-width:1100px; margin:0 auto; text-align:center; }
+  .brand { display:inline-flex; align-items:center; gap:9px; font-weight:700; letter-spacing:.01em; font-size:.9rem; opacity:.95; }
   .logo { width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,.18); display:grid; place-items:center; border:1px solid rgba(255,255,255,.35); }
-  .hero h1 { margin:22px 0 10px; font-size:clamp(1.9rem,5vw,3rem); line-height:1.08; letter-spacing:-.02em; font-weight:800; max-width:16em; }
-  .hero p { margin:0; max-width:40em; font-size:clamp(.98rem,2.2vw,1.12rem); opacity:.92; }
-  .pillrow { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
-  .pill { padding:6px 12px; border-radius:99px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); font-size:.8rem; font-weight:600; }
+  .hero h1 { margin:20px auto 10px; font-size:clamp(1.85rem,4.8vw,2.9rem); line-height:1.1; letter-spacing:-.02em; font-weight:800; max-width:20em; }
+  .hero p { margin:0 auto; max-width:48em; font-size:clamp(.96rem,2.1vw,1.1rem); opacity:.93; }
+  .pillrow { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; justify-content:center; }
+  .pill { padding:7px 14px; border-radius:99px; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); font-size:.84rem; font-weight:600; }
 
   /* search panel */
   .panel {
-    position:relative; margin:-76px auto 0; background:var(--card); border-radius:22px; box-shadow:var(--shadow);
-    padding:20px; border:1px solid var(--line);
+    position:relative; margin:28px auto 0; max-width:1100px; background:rgba(255,255,255,.12); border-radius:24px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.15);
+    padding:28px 36px 32px; border:1px solid rgba(255,255,255,.2);
+    backdrop-filter: blur(24px);
   }
   .searchrow { display:flex; gap:10px; }
   .searchbox { position:relative; flex:1; min-width:0; }
-  .searchbox svg { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--soft); }
+  .searchbox svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--soft); width:18px; height:18px; }
   .searchbox input {
-    width:100%; padding:16px 16px 16px 48px; border-radius:14px; border:2px solid var(--line);
-    background:var(--bg); font-size:1.05rem; font-weight:500;
+    width:100%; padding:14px 14px 14px 42px; border-radius:14px; border:2px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.95); font-size:.98rem; font-weight:500;
+    transition: all .2s ease; color:#0A1F2E;
   }
-  .searchbox input::placeholder { color:var(--soft); font-weight:400; }
-  .searchbox input:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 20%,transparent); }
-  .go { padding:0 28px; border:0; border-radius:14px; background:var(--brand); color:var(--brand-ink); font-weight:700; font-size:1rem; cursor:pointer; box-shadow:0 6px 16px color-mix(in srgb,var(--brand) 40%,transparent); }
-  .go:hover { filter:brightness(1.06); }
+  .searchbox input::placeholder { color:#536878; font-weight:400; }
+  .searchbox input:focus { outline:none; border-color:rgba(255,255,255,.5); box-shadow:0 0 0 5px rgba(255,255,255,.15), 0 4px 16px rgba(0,0,0,.2); background:#fff; }
+  .go { padding:0 30px; border:0; border-radius:14px; background:#fff; color:#0E7C86; font-weight:800; font-size:.98rem; cursor:pointer; box-shadow:0 6px 20px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.15); transition: all .2s ease; }
+  .go:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.32), 0 4px 14px rgba(0,0,0,.18); background:rgba(255,255,255,1); }
 
-  .selects { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:14px; }
-  .field label { display:block; font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--soft); margin:0 0 6px 2px; }
+  .selects { display:flex; gap:14px; margin-top:20px; align-items:flex-end; }
+  .field { flex:1; min-width:0; }
+  .field label { display:block; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:rgba(255,255,255,.85); margin:0 0 7px 4px; }
   .sel { position:relative; }
-  .sel::after { content:""; position:absolute; right:16px; top:50%; width:8px; height:8px; border-right:2px solid var(--soft); border-bottom:2px solid var(--soft); transform:translateY(-70%) rotate(45deg); pointer-events:none; }
+  .sel::after { content:""; position:absolute; right:14px; top:50%; width:7px; height:7px; border-right:2px solid var(--soft); border-bottom:2px solid var(--soft); transform:translateY(-70%) rotate(45deg); pointer-events:none; }
   .sel select {
-    width:100%; appearance:none; -webkit-appearance:none; padding:13px 40px 13px 14px; border-radius:12px;
-    border:2px solid var(--line); background:var(--bg); font-weight:600; font-size:.95rem; cursor:pointer; text-overflow:ellipsis;
+    width:100%; appearance:none; -webkit-appearance:none; padding:12px 36px 12px 13px; border-radius:12px;
+    border:2px solid rgba(255,255,255,.25); background:rgba(255,255,255,.95); font-weight:600; font-size:.9rem; cursor:pointer; text-overflow:ellipsis;
+    transition: all .2s ease; color:#0A1F2E;
   }
-  .sel select:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 20%,transparent); }
+  .sel select:focus { outline:none; border-color:rgba(255,255,255,.5); box-shadow:0 0 0 5px rgba(255,255,255,.15), 0 4px 16px rgba(0,0,0,.2); background:#fff; }
   .sel select option, .sel select optgroup { color:#0E2A33; background:#fff; }
 
-  .tools { display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-top:14px; }
-  .check { display:flex; align-items:center; gap:8px; font-weight:600; font-size:.92rem; cursor:pointer; }
-  .check input { width:18px; height:18px; accent-color:var(--brand); }
-  .reset { margin-left:auto; background:none; border:0; color:var(--brand); font-weight:700; cursor:pointer; padding:6px 4px; text-decoration:underline; text-underline-offset:3px; }
+  .tools { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:16px; }
+  .check { display:flex; align-items:center; gap:9px; font-weight:600; font-size:.88rem; cursor:pointer; color:rgba(255,255,255,.95); }
+  .check input { width:18px; height:18px; accent-color:#fff; cursor:pointer; }
+  .reset { margin-left:auto; background:none; border:0; color:rgba(255,255,255,.95); font-weight:700; cursor:pointer; padding:6px 4px; text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:2px; font-size:.88rem; }
 
-  .quick { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; align-items:center; }
-  .quick span { font-size:.78rem; font-weight:700; color:var(--soft); text-transform:uppercase; letter-spacing:.07em; margin-right:2px; }
-  .qchip { padding:7px 13px; border-radius:99px; border:1.5px solid var(--line); background:var(--card); cursor:pointer; font-weight:600; font-size:.85rem; }
-  .qchip:hover { border-color:var(--brand); color:var(--brand); }
+  /* browse */
+  .browse { margin-top:28px; padding-top:28px; border-top:2px solid rgba(255,255,255,.2); }
+  .btitle { margin:0 0 18px; font-size:1.16rem; font-weight:800; letter-spacing:-.01em; color:#fff; text-align:center; }
 
   /* tiles */
-  .sec { margin:30px auto 0; }
-  .sec h2 { margin:0 0 12px; font-size:1.05rem; font-weight:800; letter-spacing:-.01em; }
-  .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+  .sec { margin:36px auto 0; }
+  .tiles { display:flex; gap:12px; flex-wrap:nowrap; }
   .tile {
-    text-align:left; background:var(--card); border:1.5px solid var(--line); border-radius:16px; padding:14px 14px 14px 16px; cursor:pointer;
-    position:relative; overflow:hidden; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    text-align:left; background:rgba(255,255,255,.95); border:2px solid rgba(255,255,255,.3); border-radius:16px; padding:16px 18px 16px 20px; cursor:pointer;
+    position:relative; overflow:hidden; transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 3px 12px rgba(0,0,0,.14); flex:1; min-width:0;
   }
-  .tile::before { content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--c); }
-  .tile:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
-  .tile[aria-pressed="true"] { border-color:var(--c); background:color-mix(in srgb,var(--c) 10%,var(--card)); }
-  .tile b { display:block; font-size:1.7rem; line-height:1; letter-spacing:-.02em; color:var(--c); }
-  .tile span { display:block; margin-top:6px; font-size:.82rem; font-weight:600; color:var(--soft); }
+  .tile::before { content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--c); transition: width .3s ease; }
+  .tile:hover { transform:translateY(-3px); box-shadow:0 16px 40px rgba(0,0,0,.28), 0 6px 20px rgba(0,0,0,.18); border-color: rgba(255,255,255,.5); background:#fff; }
+  .tile:hover::before { width:7px; }
+  .tile[aria-pressed="true"] { border-color:var(--c); background:#fff; box-shadow:0 10px 28px rgba(0,0,0,.22); }
+  .tile b { display:block; font-size:1.6rem; line-height:1; letter-spacing:-.03em; color:var(--c); font-weight:800; }
+  .tile span { display:block; margin-top:7px; font-size:.78rem; font-weight:600; color:#0A1F2E; line-height:1.25; }
   @media (prefers-reduced-motion: reduce) { .tile { transition:none; } .tile:hover { transform:none; } }
 
   .tests { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; }
@@ -138,7 +144,7 @@
   .foot { margin:34px auto 40px; font-size:.8rem; color:var(--soft); max-width:60em; }
 
   @media (max-width:820px) {
-    .selects { grid-template-columns:1fr; }
+    .selects { flex-direction:column; }
     .list { grid-template-columns:1fr; }
     .searchrow { flex-direction:column; }
     .go { padding:15px; }
@@ -156,21 +162,18 @@
   <div class="wrap">
     <div class="brand">
       <div class="logo" aria-hidden="true">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       </div>
       Hyderabad Health Finder
     </div>
     <h1>Find the right care, anywhere in Hyderabad</h1>
     <p>Hospitals, clinics, pharmacies, blood banks, dialysis, physiotherapy and nursing care. Search by disease or symptom, then narrow down by area and type.</p>
     <div class="pillrow" id="heroPills"></div>
-  </div>
-</header>
 
-<main class="wrap" style="padding:0 20px">
-  <section class="panel" aria-label="Search and filters">
+    <section class="panel" aria-label="Search and filters">
     <form class="searchrow" role="search" onsubmit="return false">
       <div class="searchbox">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <input id="q" type="search" placeholder="Type a disease or symptom, for example kidney stone or fever" aria-label="Disease or symptom" autocomplete="off">
       </div>
       <button type="button" class="go" id="go">Search</button>
@@ -196,24 +199,19 @@
       <button type="button" class="reset" id="reset">Reset all</button>
     </div>
 
-    <div class="quick" id="quick"><span>Popular</span></div>
+    <div class="browse">
+      <h2 class="btitle">Browse by type</h2>
+      <div class="tiles" id="tiles"></div>
+    </div>
   </section>
+  </div>
+</header>
 
-  <section class="sec" aria-label="Browse by type">
-    <h2>Browse by type</h2>
-    <div class="tiles" id="tiles"></div>
-  </section>
-
-  <section class="sec" aria-label="Blood tests in health checkups">
-    <h2>Blood tests in health checkups</h2>
-    <div class="tests" id="tests"></div>
-    <p class="tnote" id="pkgnote"></p>
-  </section>
-
+<main class="wrap" style="padding:0 20px">
   <div class="summary" id="summary" aria-live="polite"></div>
   <div id="out"></div>
 
-  <p class="foot">Departments are taken from Google Maps listings and patient reviews, and from each place’s well-known services, so please confirm the department and timings by phone before you travel. Hours and phone numbers are as listed on Google Maps or on the centre’s own website. This covers the main government hospitals and a sample of private hospitals, clinics, pharmacies, blood banks, dialysis, physiotherapy and nursing centres, not every one in the city. In an emergency dial 108 for an ambulance.</p>
+  <p class="foot">Departments are taken from Google Maps listings and patient reviews, and from each place's well-known services, so please confirm the department and timings by phone before you travel. Hours and phone numbers are as listed on Google Maps or on the centre's own website. This covers the main government hospitals and a sample of private hospitals, clinics, pharmacies, blood banks, dialysis, physiotherapy and nursing centres, not every one in the city. In an emergency dial 108 for an ambulance.</p>
 </main>
 
 <script>
@@ -977,15 +975,6 @@
     TYPES.forEach(function (x) { t += "<option value='" + x.c + "'>" + esc(x.label) + " (" + countType(x.c) + ")</option>"; });
     $("selType").innerHTML = t;
 
-    // quick picks
-    var q = $("quick");
-    EX.forEach(function (name) {
-      var b = document.createElement("button");
-      b.type = "button"; b.className = "qchip"; b.textContent = name;
-      b.addEventListener("click", function () { $("q").value = name; $("selCond").value = ""; runSearch(true); });
-      q.appendChild(b);
-    });
-
     // type tiles
     drawTiles();
   }
@@ -1076,25 +1065,6 @@
     out.innerHTML = html;
   }
 
-  var TESTS = [["Complete blood count (CBC)", "Haemoglobin, red and white blood cells, platelets", "Anaemia, infections, platelet count in dengue", "No fasting needed."], ["Fasting and post-meal blood sugar", "Blood glucose before and 2 hours after a meal", "Screening and monitoring of diabetes", "Fasting sugar needs an 8 to 10 hour fast; the post-meal sample is taken 2 hours after eating."], ["HbA1c", "Average blood sugar over about the last 3 months", "Diagnosing diabetes and checking control", "Usually no fasting needed."], ["Lipid profile", "Total, LDL and HDL cholesterol and triglycerides", "Heart and stroke risk", "Many labs ask for a 9 to 12 hour fast. Follow your lab’s instructions."], ["Liver function test (LFT)", "Bilirubin, SGOT and SGPT, ALP, proteins", "Jaundice, fatty liver, hepatitis, medicine safety", "Fasting may be advised; ask the lab."], ["Kidney function test (KFT or RFT)", "Creatinine, urea, uric acid, salts (electrolytes)", "Kidney disease, dehydration, gout", "Often no fasting; ask the lab."], ["Thyroid profile", "T3, T4 and TSH", "Underactive or overactive thyroid, unexplained weight or tiredness", "Usually no fasting needed."], ["Vitamin D and vitamin B12", "Vitamin levels in the blood", "Bone pain, tiredness, tingling or numbness", "Ask the lab; fasting rules vary."], ["Iron studies and ferritin", "Iron, iron-binding capacity, iron stores", "Finding the cause of anaemia", "A morning sample is often preferred; ask the lab."], ["ESR and CRP", "Markers of inflammation", "Infections, arthritis flare-ups", "No fasting needed."], ["Urine routine and culture", "Sugar, protein, cells, infection", "Urine infection, kidney problems, diabetes", "Use a clean mid-stream sample."], ["Dengue, malaria and typhoid tests", "Causes of fever", "Fever with body pain, chills or rash", "No fasting. Dengue NS1 works best in the first few days of fever."], ["Blood group and Rh type", "ABO group and Rh factor", "Before surgery, during pregnancy, blood donation", "No preparation."], ["HIV, hepatitis B and hepatitis C screening", "Infections that can be silent", "Before surgery, in pregnancy, routine screening", "No fasting. Results are confidential."], ["PSA (prostate)", "Prostate-specific antigen", "Prostate screening when a doctor advises it", "No fasting needed."]];
-  var PKG = "Typical checkup packages: a basic package covers CBC, blood sugar, lipid profile, liver and kidney tests and urine; an executive package adds thyroid, HbA1c, vitamins, ECG, X-ray and ultrasound; women’s, senior and diabetic packages add tests chosen for that group. Contents differ by lab, so ask for the exact list. This is general information, not medical advice, and your doctor decides which tests you need.";
-  function drawTests() {
-    var box = $("tests");
-    box.innerHTML = TESTS.map(function (t, i) {
-      return "<div class='tcard'><h4>" + esc(t[0]) + "</h4><p><b>Checks:</b> " + esc(t[1]) + "</p><p><b>Useful for:</b> " + esc(t[2]) + "</p><p><b>Preparation:</b> " + esc(t[3]) + "</p><button type='button' data-i='" + i + "'>Find labs</button></div>";
-    }).join("");
-    $("pkgnote").textContent = PKG;
-    box.addEventListener("click", function (e) {
-      var b = e.target.closest("button[data-i]");
-      if (!b) return;
-      $("q").value = ""; $("selCond").value = "";
-      state.q = ""; state.depts = []; state.type = "L"; $("selType").value = "L";
-      drawTiles(); render();
-      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      $("summary").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-    });
-  }
-
   // events
   $("go").addEventListener("click", function () { $("selCond").value = ""; runSearch(true); });
   $("q").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); $("selCond").value = ""; runSearch(true); } });
@@ -1112,7 +1082,6 @@
     drawTiles(); render();
   });
 
-  drawTests();
   buildStatic();
   render();
 })();
